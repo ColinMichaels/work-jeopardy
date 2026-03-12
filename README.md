@@ -19,6 +19,7 @@ Work Jeopardy is a browser-only Jeopardy-style trivia board for internal team me
 - [Gameplay guide for players](./docs/GAMEPLAY_GUIDE.md)
 - [Host manual and meeting runbook](./docs/HOST_MANUAL.md)
 - [Game schema and JSON editing guide](./docs/GAME_SCHEMA.md)
+- [AI game-set authoring guide](./docs/AI_GAMESET_AUTHORING.md)
 - [GitHub Pages deployment guide](./docs/GITHUB_PAGES.md)
 - [Local build and distribution guide](./docs/LOCAL_BUILD.md)
 - [Project rules and implementation constraints](./docs/PROJECT_RULES.md)
