@@ -1,3 +1,5 @@
+import type { GameSoundSettings } from './game-audio';
+
 export type GameMediaType = 'image' | 'audio' | 'video';
 
 export interface GameMediaReference {
@@ -31,6 +33,7 @@ export interface GameSettings {
   subtractOnIncorrect: boolean;
   enableLocalStorage: boolean;
   storageKey?: string;
+  sounds: GameSoundSettings;
 }
 
 export interface GameConfig {

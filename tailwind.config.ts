@@ -5,8 +5,9 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        body: ['"Segoe UI"', '"Trebuchet MS"', 'sans-serif'],
-        display: ['"Avenir Next"', '"Trebuchet MS"', '"Segoe UI"', 'sans-serif'],
+        body: ['var(--font-ui)'],
+        display: ['var(--font-display)'],
+        board: ['var(--font-board)'],
       },
       boxShadow: {
         board: '0 24px 80px rgba(2, 6, 23, 0.4)',

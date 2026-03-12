@@ -1,3 +1,5 @@
+import { GAME_SOUND_CUES } from '../types/game-audio';
+import type { GameSoundCueOverrides } from '../types/game-audio';
 import type { ConfigParseResult, GameConfig, GameMediaReference, GameSettings } from '../types/game-config';
 import type { ResolvedClue } from '../models/game';
 
@@ -5,6 +7,10 @@ const DEFAULT_SETTINGS: GameSettings = {
   subtractOnIncorrect: true,
   enableLocalStorage: true,
   storageKey: 'team-jeopardy-state',
+  sounds: {
+    enabled: true,
+    volume: 0.85,
+  },
 };
 
 const VALID_MEDIA_TYPES = new Set(['image', 'audio', 'video']);
@@ -72,6 +78,84 @@ function readOptionalBoolean(
   }
 
   return value;
+}
+
+function readOptionalNumber(
+  source: Record<string, unknown>,
+  key: string,
+  path: string,
+  errors: string[],
+  fallback?: number,
+): number | undefined {
+  const value = source[key];
+
+  if (value === undefined) {
+    return fallback;
+  }
+
+  if (typeof value !== 'number' || !Number.isFinite(value)) {
+    errors.push(`${path}.${key} must be a finite number.`);
+    return fallback;
+  }
+
+  return value;
+}
+
+function readOptionalNumberInRange(
+  source: Record<string, unknown>,
+  key: string,
+  path: string,
+  errors: string[],
+  min: number,
+  max: number,
+  fallback?: number,
+): number | undefined {
+  const value = readOptionalNumber(source, key, path, errors, fallback);
+
+  if (value === undefined) {
+    return fallback;
+  }
+
+  if (value < min || value > max) {
+    errors.push(`${path}.${key} must be between ${min} and ${max}.`);
+    return fallback;
+  }
+
+  return value;
+}
+
+function parseSoundOverrides(
+  value: unknown,
+  path: string,
+  errors: string[],
+): GameSoundCueOverrides | undefined {
+  if (value === undefined) {
+    return undefined;
+  }
+
+  if (!isRecord(value)) {
+    errors.push(`${path}.cues must be an object when provided.`);
+    return undefined;
+  }
+
+  const cueOverrides: GameSoundCueOverrides = {};
+  const validCueKeys = new Set<string>(GAME_SOUND_CUES);
+
+  Object.entries(value).forEach(([cue, src]) => {
+    if (!validCueKeys.has(cue)) {
+      errors.push(`${path}.cues contains an unknown cue key: "${cue}".`);
+      return;
+    }
+
+    if (typeof src !== 'string' || src.trim().length === 0) {
+      errors.push(`${path}.cues.${cue} must be a non-empty string.`);
+      return;
+    }
+
+    cueOverrides[cue as keyof GameSoundCueOverrides] = src.trim();
+  });
+
+  return Object.keys(cueOverrides).length > 0 ? cueOverrides : undefined;
 }
 
 function parseMedia(
@@ -284,7 +368,36 @@ export function loadGameConfig(rawConfig: string): ConfigParseResult {
     ),
     storageKey:
       readOptionalString(settingsSource, 'storageKey') ?? DEFAULT_SETTINGS.storageKey,
+    sounds: DEFAULT_SETTINGS.sounds,
   };
+
+  const soundsInput = settingsSource.sounds;
+
+  if (soundsInput !== undefined) {
+    if (!isRecord(soundsInput)) {
+      errors.push('config.settings.sounds must be an object when provided.');
+    } else {
+      settings.sounds = {
+        enabled: readOptionalBoolean(
+          soundsInput,
+          'enabled',
+          'config.settings.sounds',
+          errors,
+          DEFAULT_SETTINGS.sounds.enabled,
+        ),
+        volume: readOptionalNumberInRange(
+          soundsInput,
+          'volume',
+          'config.settings.sounds',
+          errors,
+          0,
+          1,
+          DEFAULT_SETTINGS.sounds.volume,
+        ),
+        cues: parseSoundOverrides(soundsInput.cues, 'config.settings.sounds', errors),
+      };
+    }
+  }
 
   assertUniqueIds('Team', teams.map((team) => team.id), errors);
   assertUniqueIds('Category', categories.map((category) => category.id), errors);

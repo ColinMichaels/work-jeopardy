@@ -5,15 +5,57 @@ import { Tooltip } from './Tooltip';
 interface ScoreBoardProps {
   teams: TeamState[];
   activeTeamId: string | null;
+  isInteractive?: boolean;
+  compact?: boolean;
   onSelectTeam: (teamId: string) => void;
 }
 
-export function ScoreBoard({ teams, activeTeamId, onSelectTeam }: ScoreBoardProps) {
+export function ScoreBoard({
+  teams,
+  activeTeamId,
+  isInteractive = true,
+  compact = false,
+  onSelectTeam,
+}: ScoreBoardProps) {
   return (
-    <section className="panel p-3 sm:p-4">
+    <section className={`score-ribbon ${compact ? 'px-2 py-2 sm:px-3' : 'px-3 py-3 sm:px-4'}`}>
       <div className="flex gap-3 overflow-x-auto pb-1">
         {teams.map((team) => {
           const isActive = team.id === activeTeamId;
+          const cardClassName = [
+            'score-card flex-1 rounded-[1.55rem] border text-left transition',
+            'focus:outline-none focus:ring-4 focus:ring-[rgba(255,223,133,0.22)]',
+            compact ? 'min-w-[150px] px-3 py-2' : 'min-w-[210px] px-4 py-3',
+            isActive ? 'score-card--active' : '',
+          ]
+            .filter(Boolean)
+            .join(' ');
+
+          const content = (
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <div className={`score-name font-bold uppercase ${compact ? 'text-sm sm:text-base' : 'text-lg sm:text-xl'}`}>
+                  {team.name.trim() || 'Unnamed Team'}
+                </div>
+                {isActive ? (
+                  <div className="mt-2 h-1.5 w-14 rounded-full bg-amber-200/75" />
+                ) : (
+                  <div className="mt-2 h-1.5 w-10 rounded-full bg-white/10" />
+                )}
+              </div>
+              <div className={`score-value font-black ${compact ? 'text-xl sm:text-2xl' : 'text-2xl sm:text-3xl'}`}>
+                {formatScore(team.score)}
+              </div>
+            </div>
+          );
+
+          if (!isInteractive) {
+            return (
+              <div key={team.id} className={cardClassName}>
+                {content}
+              </div>
+            );
+          }
 
           return (
             <Tooltip
@@ -28,27 +70,9 @@ export function ScoreBoard({ teams, activeTeamId, onSelectTeam }: ScoreBoardProp
               <button
                 type="button"
                 onClick={() => onSelectTeam(team.id)}
-                className={[
-                  'h-full w-full rounded-[1.6rem] border px-4 py-3 text-left transition',
-                  'focus:outline-none focus:ring-4 focus:ring-amber-300/30',
-                  isActive
-                    ? 'border-amber-300/55 bg-amber-300/10 shadow-board'
-                    : 'border-white/10 bg-slate-950/40 hover:border-sky-300/30 hover:bg-slate-900/80',
-                ].join(' ')}
+                className={`${cardClassName} h-full w-full`}
               >
-                <div className="flex items-center justify-between gap-3">
-                  <div>
-                    <div className="font-display text-lg font-bold text-slate-50 sm:text-xl">
-                      {team.name.trim() || 'Unnamed Team'}
-                    </div>
-                    <div className="mt-1 text-[11px] uppercase tracking-[0.28em] text-slate-400">
-                      {isActive ? 'Active' : 'Standby'}
-                    </div>
-                  </div>
-                  <div className="font-display text-2xl font-black text-amber-200 sm:text-3xl">
-                    {formatScore(team.score)}
-                  </div>
-                </div>
+                {content}
               </button>
             </Tooltip>
           );

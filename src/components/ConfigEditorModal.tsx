@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { ConfigCategoryEditor } from './ConfigCategoryEditor';
 import type { CategoryConfig, ClueConfig, GameConfig, TeamConfig } from '../types/game-config';
 
 interface ApplyConfigResult {
@@ -51,6 +52,14 @@ function nextClueValue(category: CategoryConfig): number {
   return Math.max(...category.clues.map((clue) => clue.value)) + 100;
 }
 
+function getFirstCategoryId(config: Pick<GameConfig, 'categories'>): string | null {
+  return config.categories[0]?.id ?? null;
+}
+
+function getFirstClueId(category?: CategoryConfig | null): string | null {
+  return category?.clues[0]?.id ?? null;
+}
+
 export function ConfigEditorModal({
   isOpen,
   config,
@@ -59,15 +68,48 @@ export function ConfigEditorModal({
 }: ConfigEditorModalProps) {
   const [draft, setDraft] = useState<GameConfig>(() => cloneConfig(config));
   const [errors, setErrors] = useState<string[]>([]);
+  const [activeCategoryId, setActiveCategoryId] = useState<string | null>(
+    getFirstCategoryId(config),
+  );
+  const [activeClueId, setActiveClueId] = useState<string | null>(
+    getFirstClueId(config.categories[0]),
+  );
 
   useEffect(() => {
     if (!isOpen) {
       return;
     }
 
-    setDraft(cloneConfig(config));
+    const nextDraft = cloneConfig(config);
+    const firstCategory = nextDraft.categories[0];
+
+    setDraft(nextDraft);
     setErrors([]);
+    setActiveCategoryId(firstCategory?.id ?? null);
+    setActiveClueId(getFirstClueId(firstCategory));
   }, [config, isOpen]);
+
+  useEffect(() => {
+    const nextCategory =
+      draft.categories.find((category) => category.id === activeCategoryId) ??
+      draft.categories[0] ??
+      null;
+    const nextCategoryId = nextCategory?.id ?? null;
+
+    if (nextCategoryId !== activeCategoryId) {
+      setActiveCategoryId(nextCategoryId);
+    }
+
+    const nextClue =
+      nextCategory?.clues.find((clue) => clue.id === activeClueId) ??
+      nextCategory?.clues[0] ??
+      null;
+    const nextClueId = nextClue?.id ?? null;
+
+    if (nextClueId !== activeClueId) {
+      setActiveClueId(nextClueId);
+    }
+  }, [activeCategoryId, activeClueId, draft.categories]);
 
   if (!isOpen) {
     return null;
@@ -119,13 +161,16 @@ export function ConfigEditorModal({
   };
 
   const handleAddCategory = () => {
+    let nextCategoryId = '';
+    let nextClueId = '';
+
     setDraft((current) => {
-      const nextCategoryId = createUniqueId(
+      nextCategoryId = createUniqueId(
         current.categories.map((category) => category.id),
         `category-${current.categories.length + 1}`,
         'category',
       );
-      const clueId = createUniqueId(
+      nextClueId = createUniqueId(
         current.categories.flatMap((category) => category.clues.map((clue) => clue.id)),
         `${nextCategoryId}-100`,
         'clue',
@@ -140,7 +185,7 @@ export function ConfigEditorModal({
             title: `Category ${current.categories.length + 1}`,
             clues: [
               {
-                id: clueId,
+                id: nextClueId,
                 value: 100,
                 answer: '',
                 question: '',
@@ -151,24 +196,45 @@ export function ConfigEditorModal({
         ],
       };
     });
+
+    setActiveCategoryId(nextCategoryId);
+    setActiveClueId(nextClueId);
   };
 
-  const handleAddClue = (category: CategoryConfig) => {
+  const handleRemoveCategory = (categoryId: string) => {
+    setDraft((current) => ({
+      ...current,
+      categories: current.categories.filter((category) => category.id !== categoryId),
+    }));
+  };
+
+  const handleAddClue = (categoryId: string) => {
+    let nextClueId = '';
+
     setDraft((current) => {
-      const allClueIds = current.categories.flatMap((entry) => entry.clues.map((clue) => clue.id));
-      const value = nextClueValue(category);
-      const clueId = createUniqueId(allClueIds, `${category.id}-${value}`, 'clue');
+      const targetCategory = current.categories.find((category) => category.id === categoryId);
+
+      if (!targetCategory) {
+        return current;
+      }
+
+      const value = nextClueValue(targetCategory);
+      nextClueId = createUniqueId(
+        current.categories.flatMap((category) => category.clues.map((clue) => clue.id)),
+        `${categoryId}-${value}`,
+        'clue',
+      );
 
       return {
         ...current,
-        categories: current.categories.map((entry) =>
-          entry.id === category.id
+        categories: current.categories.map((category) =>
+          category.id === categoryId
             ? {
-                ...entry,
+                ...category,
                 clues: [
-                  ...entry.clues,
+                  ...category.clues,
                   {
-                    id: clueId,
+                    id: nextClueId,
                     value,
                     answer: '',
                     question: '',
@@ -176,10 +242,20 @@ export function ConfigEditorModal({
                   },
                 ],
               }
-            : entry,
+            : category,
         ),
       };
     });
+
+    setActiveCategoryId(categoryId);
+    setActiveClueId(nextClueId);
+  };
+
+  const handleRemoveClue = (categoryId: string, clueId: string) => {
+    updateCategory(categoryId, (category) => ({
+      ...category,
+      clues: category.clues.filter((clue) => clue.id !== clueId),
+    }));
   };
 
   const handleApply = () => {
@@ -195,18 +271,18 @@ export function ConfigEditorModal({
 
   return (
     <div className="fixed inset-0 z-50 bg-slate-950/80 p-4 backdrop-blur-md sm:p-6">
-      <div className="mx-auto flex h-full max-w-7xl flex-col rounded-[2rem] border border-white/10 bg-slate-950/95 shadow-board">
-        <div className="flex items-center justify-between gap-4 border-b border-white/10 px-6 py-5">
+      <div className="modal-shell mx-auto flex h-full max-w-[1680px] flex-col">
+        <div className="flex flex-col gap-4 border-b border-white/10 px-6 py-5 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.35em] text-sky-200/70">
+            <p className="brand-overline text-[11px] font-semibold uppercase tracking-[0.35em]">
               Local Host Editor
             </p>
-            <h2 className="mt-1 font-display text-3xl font-black uppercase tracking-[0.14em] text-slate-50">
+            <h2 className="brand-title mt-2 text-3xl font-black uppercase tracking-[0.14em]">
               Edit Game Config
             </h2>
           </div>
 
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <button type="button" onClick={onClose} className="secondary-button">
               Cancel
             </button>
@@ -218,7 +294,7 @@ export function ConfigEditorModal({
 
         <div className="flex-1 overflow-y-auto px-6 py-6">
           {errors.length > 0 ? (
-            <div className="mb-5 space-y-2 rounded-[1.75rem] border border-rose-300/20 bg-rose-300/10 p-4">
+            <div className="mb-5 space-y-2 rounded-[1.6rem] border border-rose-300/30 bg-rose-300/10 p-4">
               {errors.map((error) => (
                 <p key={error} className="text-sm text-rose-50">
                   {error}
@@ -229,8 +305,8 @@ export function ConfigEditorModal({
 
           <div className="grid gap-6 xl:grid-cols-[360px_minmax(0,1fr)]">
             <section className="space-y-6">
-              <div className="rounded-[1.75rem] border border-white/10 bg-slate-900/60 p-5">
-                <h3 className="text-[11px] font-semibold uppercase tracking-[0.35em] text-sky-200/70">
+              <div className="panel-inset p-5">
+                <h3 className="brand-overline text-[11px] font-semibold uppercase tracking-[0.35em]">
                   General
                 </h3>
                 <div className="mt-4 space-y-4">
@@ -242,12 +318,14 @@ export function ConfigEditorModal({
                       onChange={(event) =>
                         setDraft((current) => ({ ...current, title: event.target.value }))
                       }
-                      className="w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-lg text-slate-50 outline-none transition focus:border-amber-300/40 focus:ring-4 focus:ring-amber-300/20"
+                      className="field-input text-lg"
                     />
                   </label>
 
                   <label className="block">
-                    <span className="mb-2 block text-sm font-semibold text-slate-200">Subtitle</span>
+                    <span className="mb-2 block text-sm font-semibold text-slate-200">
+                      Subtitle
+                    </span>
                     <input
                       type="text"
                       value={draft.subtitle ?? ''}
@@ -257,19 +335,21 @@ export function ConfigEditorModal({
                           subtitle: event.target.value,
                         }))
                       }
-                      className="w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-base text-slate-50 outline-none transition focus:border-amber-300/40 focus:ring-4 focus:ring-amber-300/20"
+                      className="field-input text-base"
                     />
                   </label>
                 </div>
               </div>
 
-              <div className="rounded-[1.75rem] border border-white/10 bg-slate-900/60 p-5">
-                <h3 className="text-[11px] font-semibold uppercase tracking-[0.35em] text-sky-200/70">
+              <div className="panel-inset p-5">
+                <h3 className="brand-overline text-[11px] font-semibold uppercase tracking-[0.35em]">
                   Settings
                 </h3>
                 <div className="mt-4 space-y-4">
-                  <label className="flex items-center justify-between gap-4 rounded-2xl border border-white/10 bg-slate-950/50 px-4 py-3">
-                    <span className="text-sm font-semibold text-slate-200">Subtract on incorrect</span>
+                  <label className="flex items-center justify-between gap-4 rounded-2xl border border-white/10 bg-[rgba(2,8,33,0.64)] px-4 py-3">
+                    <span className="text-sm font-semibold text-slate-200">
+                      Subtract on incorrect
+                    </span>
                     <input
                       type="checkbox"
                       checked={draft.settings.subtractOnIncorrect}
@@ -286,8 +366,10 @@ export function ConfigEditorModal({
                     />
                   </label>
 
-                  <label className="flex items-center justify-between gap-4 rounded-2xl border border-white/10 bg-slate-950/50 px-4 py-3">
-                    <span className="text-sm font-semibold text-slate-200">Enable local storage</span>
+                  <label className="flex items-center justify-between gap-4 rounded-2xl border border-white/10 bg-[rgba(2,8,33,0.64)] px-4 py-3">
+                    <span className="text-sm font-semibold text-slate-200">
+                      Enable local storage
+                    </span>
                     <input
                       type="checkbox"
                       checked={draft.settings.enableLocalStorage}
@@ -305,7 +387,9 @@ export function ConfigEditorModal({
                   </label>
 
                   <label className="block">
-                    <span className="mb-2 block text-sm font-semibold text-slate-200">Storage key</span>
+                    <span className="mb-2 block text-sm font-semibold text-slate-200">
+                      Storage Key
+                    </span>
                     <input
                       type="text"
                       value={draft.settings.storageKey ?? ''}
@@ -318,15 +402,15 @@ export function ConfigEditorModal({
                           },
                         }))
                       }
-                      className="w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-base text-slate-50 outline-none transition focus:border-amber-300/40 focus:ring-4 focus:ring-amber-300/20"
+                      className="field-input text-base"
                     />
                   </label>
                 </div>
               </div>
 
-              <div className="rounded-[1.75rem] border border-white/10 bg-slate-900/60 p-5">
+              <div className="panel-inset p-5">
                 <div className="flex items-center justify-between gap-3">
-                  <h3 className="text-[11px] font-semibold uppercase tracking-[0.35em] text-sky-200/70">
+                  <h3 className="brand-overline text-[11px] font-semibold uppercase tracking-[0.35em]">
                     Teams
                   </h3>
                   <button type="button" onClick={handleAddTeam} className="secondary-button">
@@ -336,11 +420,12 @@ export function ConfigEditorModal({
 
                 <div className="mt-4 space-y-3">
                   {draft.teams.map((team) => (
-                    <div key={team.id} className="rounded-2xl border border-white/10 bg-slate-950/50 p-4">
+                    <div
+                      key={team.id}
+                      className="rounded-[1.35rem] border border-white/10 bg-[rgba(2,8,33,0.64)] p-4"
+                    >
                       <div className="flex items-center justify-between gap-3">
-                        <span className="rounded-full border border-white/10 px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-slate-400">
-                          {team.id}
-                        </span>
+                        <span className="brand-tag">{team.id}</span>
                         <button
                           type="button"
                           onClick={() =>
@@ -363,7 +448,7 @@ export function ConfigEditorModal({
                             name: event.target.value,
                           }))
                         }
-                        className="mt-3 w-full rounded-2xl border border-white/10 bg-slate-900/70 px-4 py-3 text-base text-slate-50 outline-none transition focus:border-amber-300/40 focus:ring-4 focus:ring-amber-300/20"
+                        className="field-input mt-3 text-base"
                       />
                     </div>
                   ))}
@@ -371,185 +456,34 @@ export function ConfigEditorModal({
               </div>
             </section>
 
-            <section className="space-y-4">
-              <div className="flex items-center justify-between gap-3">
-                <h3 className="text-[11px] font-semibold uppercase tracking-[0.35em] text-sky-200/70">
-                  Categories And Clues
-                </h3>
-                <button type="button" onClick={handleAddCategory} className="secondary-button">
-                  Add Category
-                </button>
-              </div>
-
-              {draft.categories.map((category) => (
-                <details
-                  key={category.id}
-                  open
-                  className="rounded-[1.75rem] border border-white/10 bg-slate-900/60 p-5"
-                >
-                  <summary className="cursor-pointer list-none">
-                    <div className="flex items-center justify-between gap-3">
-                      <div>
-                        <p className="font-display text-2xl font-black text-slate-50">
-                          {category.title || 'Untitled Category'}
-                        </p>
-                        <p className="mt-1 text-[11px] uppercase tracking-[0.28em] text-slate-400">
-                          {category.id} | {category.clues.length} clues
-                        </p>
-                      </div>
-                      <span className="rounded-full border border-white/10 px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-slate-300">
-                        Open
-                      </span>
-                    </div>
-                  </summary>
-
-                  <div className="mt-5 space-y-4">
-                    <div className="flex flex-col gap-3 sm:flex-row">
-                      <input
-                        type="text"
-                        value={category.title}
-                        onChange={(event) =>
-                          updateCategory(category.id, (currentCategory) => ({
-                            ...currentCategory,
-                            title: event.target.value,
-                          }))
-                        }
-                        className="flex-1 rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-lg text-slate-50 outline-none transition focus:border-amber-300/40 focus:ring-4 focus:ring-amber-300/20"
-                      />
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setDraft((current) => ({
-                            ...current,
-                            categories: current.categories.filter(
-                              (entry) => entry.id !== category.id,
-                            ),
-                          }))
-                        }
-                        className="secondary-button sm:self-start"
-                      >
-                        Remove Category
-                      </button>
-                    </div>
-
-                    <div className="space-y-3">
-                      {category.clues.map((clue) => (
-                        <article
-                          key={clue.id}
-                          className="rounded-[1.5rem] border border-white/10 bg-slate-950/50 p-4"
-                        >
-                          <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-                            <div className="flex flex-wrap items-center gap-2">
-                              <span className="rounded-full border border-white/10 px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-slate-400">
-                                {clue.id}
-                              </span>
-                              <label className="flex items-center gap-2 rounded-full border border-white/10 px-3 py-1 text-xs uppercase tracking-[0.2em] text-slate-300">
-                                <input
-                                  type="checkbox"
-                                  checked={Boolean(clue.dailyDouble)}
-                                  onChange={(event) =>
-                                    updateClue(category.id, clue.id, (currentClue) => ({
-                                      ...currentClue,
-                                      dailyDouble: event.target.checked,
-                                    }))
-                                  }
-                                  className="h-4 w-4 rounded border-white/20 bg-slate-950 text-amber-300 focus:ring-amber-300/30"
-                                />
-                                Daily Double
-                              </label>
-                            </div>
-
-                            <div className="flex items-center gap-2">
-                              <input
-                                type="number"
-                                step="100"
-                                value={clue.value}
-                                onChange={(event) =>
-                                  updateClue(category.id, clue.id, (currentClue) => ({
-                                    ...currentClue,
-                                    value: Number.parseInt(event.target.value, 10) || 0,
-                                  }))
-                                }
-                                className="w-28 rounded-2xl border border-white/10 bg-slate-900/70 px-4 py-2 text-base text-slate-50 outline-none transition focus:border-amber-300/40 focus:ring-4 focus:ring-amber-300/20"
-                              />
-                              <button
-                                type="button"
-                                onClick={() =>
-                                  updateCategory(category.id, (currentCategory) => ({
-                                    ...currentCategory,
-                                    clues: currentCategory.clues.filter(
-                                      (entry) => entry.id !== clue.id,
-                                    ),
-                                  }))
-                                }
-                                className="secondary-button"
-                              >
-                                Remove Clue
-                              </button>
-                            </div>
-                          </div>
-
-                          <div className="mt-4 grid gap-3">
-                            <label className="block">
-                              <span className="mb-2 block text-sm font-semibold text-slate-200">Answer</span>
-                              <textarea
-                                rows={2}
-                                value={clue.answer}
-                                onChange={(event) =>
-                                  updateClue(category.id, clue.id, (currentClue) => ({
-                                    ...currentClue,
-                                    answer: event.target.value,
-                                  }))
-                                }
-                                className="w-full rounded-2xl border border-white/10 bg-slate-900/70 px-4 py-3 text-base text-slate-50 outline-none transition focus:border-amber-300/40 focus:ring-4 focus:ring-amber-300/20"
-                              />
-                            </label>
-
-                            <label className="block">
-                              <span className="mb-2 block text-sm font-semibold text-slate-200">Question</span>
-                              <textarea
-                                rows={2}
-                                value={clue.question}
-                                onChange={(event) =>
-                                  updateClue(category.id, clue.id, (currentClue) => ({
-                                    ...currentClue,
-                                    question: event.target.value,
-                                  }))
-                                }
-                                className="w-full rounded-2xl border border-white/10 bg-slate-900/70 px-4 py-3 text-base text-slate-50 outline-none transition focus:border-amber-300/40 focus:ring-4 focus:ring-amber-300/20"
-                              />
-                            </label>
-
-                            <label className="block">
-                              <span className="mb-2 block text-sm font-semibold text-slate-200">Host Notes</span>
-                              <textarea
-                                rows={2}
-                                value={clue.notes ?? ''}
-                                onChange={(event) =>
-                                  updateClue(category.id, clue.id, (currentClue) => ({
-                                    ...currentClue,
-                                    notes: event.target.value,
-                                  }))
-                                }
-                                className="w-full rounded-2xl border border-white/10 bg-slate-900/70 px-4 py-3 text-base text-slate-50 outline-none transition focus:border-amber-300/40 focus:ring-4 focus:ring-amber-300/20"
-                              />
-                            </label>
-                          </div>
-                        </article>
-                      ))}
-                    </div>
-
-                    <button
-                      type="button"
-                      onClick={() => handleAddClue(category)}
-                      className="secondary-button"
-                    >
-                      Add Clue
-                    </button>
-                  </div>
-                </details>
-              ))}
-            </section>
+            <ConfigCategoryEditor
+              categories={draft.categories}
+              activeCategoryId={activeCategoryId}
+              activeClueId={activeClueId}
+              onSelectCategory={(categoryId) => {
+                const nextCategory =
+                  draft.categories.find((category) => category.id === categoryId) ?? null;
+                setActiveCategoryId(categoryId);
+                setActiveClueId(getFirstClueId(nextCategory));
+              }}
+              onSelectClue={setActiveClueId}
+              onAddCategory={handleAddCategory}
+              onRemoveCategory={handleRemoveCategory}
+              onUpdateCategoryTitle={(categoryId, title) =>
+                updateCategory(categoryId, (category) => ({
+                  ...category,
+                  title,
+                }))
+              }
+              onAddClue={handleAddClue}
+              onRemoveClue={handleRemoveClue}
+              onUpdateClue={(categoryId, clueId, updates) =>
+                updateClue(categoryId, clueId, (clue) => ({
+                  ...clue,
+                  ...updates,
+                }))
+              }
+            />
           </div>
         </div>
       </div>

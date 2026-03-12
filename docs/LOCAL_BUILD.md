@@ -2,6 +2,8 @@
 
 This project is designed to build into static files that can be copied to another machine and opened locally during a meeting.
 
+For the actual meeting run flow after the build is ready, see the [host manual](./HOST_MANUAL.md).
+
 ## Prerequisites
 
 - Node.js 20+ recommended
@@ -56,6 +58,36 @@ Important:
 - Browser-local overrides are useful for meeting-time tweaks, but they do not change the source files in this repo.
 - If a local edit should become part of the distributable build, copy that change into `src/data/sample-game.json` and rebuild.
 
+## Sound Assets
+
+The app now supports optional sound cues.
+
+How it works:
+
+1. Add or replace audio files in `public/sounds/`.
+2. Point the cue paths in [`src/data/sample-game.json`](../src/data/sample-game.json) at those file names.
+3. Run `npm run build`.
+
+Example:
+
+```json
+"sounds": {
+  "enabled": true,
+  "volume": 0.85,
+  "cues": {
+    "dailyDouble": "sounds/daily-double.mp3",
+    "tripleStumper": "sounds/jeopardy-incorrect-answer.mp3"
+  }
+}
+```
+
+Important:
+
+- Use relative paths like `sounds/daily-double.mp3`, not `/sounds/daily-double.mp3`.
+- Files placed in `public/sounds/` are copied to the final build automatically.
+- If a configured file is missing, the app falls back to an internal synth cue so gameplay still works.
+- In dual-window mode, sound playback is triggered from the host-control window because that is the reliable user-interaction source for browsers.
+
 ## Running The Built Game On Another Computer
 
 Preferred option:
@@ -77,6 +109,29 @@ Then open:
 ```text
 http://localhost:4173
 ```
+
+## Dual-Window Host Mode
+
+The app can run as a synced two-window session:
+
+1. Open the game.
+2. Click `Board Window` to open a presentation-only board.
+3. Click `Host Window` to open the host-control view.
+4. Share the board window in the meeting and keep the host window off-screen.
+
+Both windows stay in sync for:
+
+- clue selection
+- reveal state
+- score changes
+- resets
+- local config edits
+
+Important:
+
+- Dual-window sync is most reliable when the app is served from `http://localhost`, not directly from `file://`.
+- For meeting use, prefer `npm run preview` during development or `python3 -m http.server` from `dist/` after building.
+- If you need meeting audio, share system audio or the host-control window; browsers do not reliably allow the presentation window to auto-play audio that was triggered elsewhere.
 
 ## Notes On Persistence
 

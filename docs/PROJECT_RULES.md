@@ -55,7 +55,7 @@ Do not spend time on:
 - login systems
 - hosting pipelines
 - heavy animation systems
-- sound systems before MVP
+- overbuilt sound systems
 - advanced editor tooling before MVP
 
 ## Coding Standards

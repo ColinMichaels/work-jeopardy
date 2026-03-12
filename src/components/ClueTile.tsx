@@ -5,38 +5,67 @@ interface ClueTileProps {
   clue?: ClueConfig;
   isAnswered: boolean;
   isActive: boolean;
+  isInteractive: boolean;
+  compact: boolean;
+  showDailyDoubleHint: boolean;
   onSelect: (clueId: string) => void;
 }
 
-export function ClueTile({ clue, isAnswered, isActive, onSelect }: ClueTileProps) {
+export function ClueTile({
+  clue,
+  isAnswered,
+  isActive,
+  isInteractive,
+  compact,
+  showDailyDoubleHint,
+  onSelect,
+}: ClueTileProps) {
   if (!clue) {
-    return <div className="min-h-32 rounded-[1.75rem] border border-transparent bg-slate-950/25" />;
+    return (
+      <div
+        className={`board-empty border ${compact ? 'h-full min-h-0 rounded-[1.2rem]' : 'min-h-32 rounded-[1.75rem]'}`}
+      />
+    );
   }
 
-  const disabled = isAnswered;
+  const tileClassName = [
+    'flex flex-col items-center justify-center border text-center transition duration-150',
+    'focus:outline-none focus:ring-4 focus:ring-[rgba(255,223,133,0.25)]',
+    'board-tile',
+    compact ? 'h-full min-h-0 rounded-[1.2rem] px-2 py-2' : 'min-h-32 rounded-[1.75rem] px-3 py-4',
+    isAnswered ? 'board-tile--used' : '',
+    isActive ? 'board-tile--active' : '',
+    isInteractive && !isAnswered ? 'hover:-translate-y-0.5' : 'cursor-default',
+  ]
+    .filter(Boolean)
+    .join(' ');
 
-  return (
-    <button
-      type="button"
-      onClick={() => onSelect(clue.id)}
-      disabled={disabled}
-      className={[
-        'group min-h-32 rounded-[1.75rem] border px-3 py-4 text-center transition duration-150',
-        'focus:outline-none focus:ring-4 focus:ring-amber-300/30',
-        disabled
-          ? 'border-slate-900 bg-slate-950/75 text-slate-600'
-          : 'border-amber-300/20 bg-gradient-to-b from-sky-900 to-sky-950 text-amber-200 shadow-board hover:-translate-y-0.5 hover:border-amber-300/40 hover:from-sky-800 hover:to-sky-950',
-        isActive ? 'border-amber-300/80 ring-4 ring-amber-300/20' : 'hover:shadow-[0_18px_40px_rgba(8,47,73,0.55)]',
-      ].join(' ')}
-    >
-      <span className="font-display text-4xl font-black tracking-tight sm:text-5xl">
-        {isAnswered ? 'USED' : formatCurrencyValue(clue.value)}
-      </span>
-      {clue.dailyDouble && !isAnswered ? (
-        <span className="mt-2 block text-[11px] font-semibold uppercase tracking-[0.34em] text-amber-100/80">
+  const content = (
+    <>
+      {!isAnswered ? (
+        <span
+          className={`board-tile-value block font-black tracking-tight ${compact ? 'text-[clamp(1.25rem,2.55vw,2.8rem)]' : 'text-4xl sm:text-5xl'}`}
+        >
+          {formatCurrencyValue(clue.value)}
+        </span>
+      ) : null}
+      {showDailyDoubleHint && clue.dailyDouble && !isAnswered ? (
+        <span
+          className={`board-tile-label mt-2 block font-semibold uppercase tracking-[0.34em] ${compact ? 'text-[9px]' : 'text-[11px]'}`}
+        >
           Daily Double
         </span>
       ) : null}
+    </>
+  );
+
+  if (!isInteractive || isAnswered) {
+    return <div className={tileClassName}>{content}</div>;
+  }
+
+  return (
+    <button type="button" onClick={() => onSelect(clue.id)} className={tileClassName}>
+      {content}
     </button>
   );
 }
