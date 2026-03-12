@@ -6,6 +6,12 @@ import { HostControlsSections } from './HostControlsSections';
 import { Tooltip } from './Tooltip';
 
 interface HostConsoleProps {
+  bundledGames: ReadonlyArray<{
+    id: string;
+    label: string;
+    description: string;
+  }>;
+  selectedBundledGameId: string;
   clueEntry: ResolvedClue | null;
   isRevealed: boolean;
   teams: TeamState[];
@@ -33,6 +39,7 @@ interface HostConsoleProps {
   onPreviewCue: (cue: GameSoundCue) => void;
   onStopCue: (cue: GameSoundCue) => void;
   onStopAllSounds: () => void;
+  onSelectBundledGame: (bundledGameId: string) => void;
   onOpenConfigEditor: () => void;
   onResetScores: () => void;
   onResetGame: () => void;
@@ -47,6 +54,8 @@ interface HostConsoleProps {
 }
 
 export function HostConsole({
+  bundledGames,
+  selectedBundledGameId,
   clueEntry,
   isRevealed,
   teams,
@@ -69,6 +78,7 @@ export function HostConsole({
   onPreviewCue,
   onStopCue,
   onStopAllSounds,
+  onSelectBundledGame,
   onOpenConfigEditor,
   onResetScores,
   onResetGame,
@@ -235,6 +245,8 @@ export function HostConsole({
       <section className="panel p-5">
         <div className="space-y-4">
           <HostControlsSections
+            bundledGames={bundledGames}
+            selectedBundledGameId={selectedBundledGameId}
             teams={teams}
             activeTeamId={activeTeamId}
             manualScoreDelta={manualScoreDelta}
@@ -254,6 +266,7 @@ export function HostConsole({
             onPreviewCue={onPreviewCue}
             onStopCue={onStopCue}
             onStopAllSounds={onStopAllSounds}
+            onSelectBundledGame={onSelectBundledGame}
             onOpenConfigEditor={onOpenConfigEditor}
             onResetScores={onResetScores}
             onResetGame={onResetGame}

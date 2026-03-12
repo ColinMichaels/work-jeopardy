@@ -13,7 +13,8 @@ export function ErrorScreen({ errors }: ErrorScreenProps) {
           The game JSON could not be loaded.
         </h1>
         <p className="mt-3 text-base text-slate-300">
-          Fix the issues in <code className="rounded bg-slate-900 px-2 py-1">src/data/sample-game.json</code> and reload.
+          Fix the issues in the bundled files under{' '}
+          <code className="rounded bg-slate-900 px-2 py-1">src/data/</code> and reload.
         </p>
 
         <ul className="mt-6 space-y-3">

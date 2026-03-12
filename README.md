@@ -46,6 +46,6 @@ To publish a GitHub Pages demo:
 npm run deploy
 ```
 
-Game content lives in [`src/data/sample-game.json`](./src/data/sample-game.json). Bundled sound files live in [`public/sounds`](./public/sounds), and the default game config is already wired to that asset set.
+Bundled game content lives in [`src/data/`](./src/data/). The app now ships with multiple sample boards that hosts can choose from in the host controls, and each file is a valid hand-editable JSON config. Bundled sound files live in [`public/sounds`](./public/sounds).
 
 For actual meeting use, start with the [host manual](./docs/HOST_MANUAL.md). For participants, share the [gameplay guide](./docs/GAMEPLAY_GUIDE.md).

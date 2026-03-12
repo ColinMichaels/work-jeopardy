@@ -45,6 +45,7 @@ export interface ResolvedClue {
 
 export interface SharedSessionSnapshot {
   config: GameConfig;
+  selectedBundledGameId: string;
   isUsingLocalConfig: boolean;
   gameState: GameState;
   activeTeamId: string | null;

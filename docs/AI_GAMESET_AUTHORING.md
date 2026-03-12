@@ -4,7 +4,7 @@ This guide is for an AI agent that needs to research and produce a new Jeopardy-
 
 The expected output is a complete JSON game file that matches the app schema and can be:
 
-- copied into [`src/data/sample-game.json`](../src/data/sample-game.json) for a bundled build
+- copied into a file under [`src/data/`](../src/data/) for a bundled build
 - pasted or adapted into the host-side editor
 - used by a future host-panel import or upload flow without further restructuring
 
@@ -216,7 +216,7 @@ Also provide a short summary of the theme and any clues that may need human revi
 After the JSON is created:
 
 1. Validate it against the schema expectations in [GAME_SCHEMA.md](./GAME_SCHEMA.md).
-2. If you want the game bundled into the distributable build, replace [`src/data/sample-game.json`](../src/data/sample-game.json) and rebuild.
+2. If you want the game bundled into the distributable build, add or replace a JSON file under [`src/data/`](../src/data/) and rebuild.
 3. If you only need a local host copy, use the host-side editing flow now.
 4. If a host-panel upload or import flow is added later, this same JSON should be the input format.
 

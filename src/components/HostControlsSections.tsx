@@ -5,6 +5,12 @@ import { SoundControls } from './SoundControls';
 import { Tooltip } from './Tooltip';
 
 interface HostControlsSectionsProps {
+  bundledGames: ReadonlyArray<{
+    id: string;
+    label: string;
+    description: string;
+  }>;
+  selectedBundledGameId: string;
   teams: TeamState[];
   activeTeamId: string | null;
   manualScoreDelta: number;
@@ -29,6 +35,7 @@ interface HostControlsSectionsProps {
   onPreviewCue: (cue: GameSoundCue) => void;
   onStopCue: (cue: GameSoundCue) => void;
   onStopAllSounds: () => void;
+  onSelectBundledGame: (bundledGameId: string) => void;
   onOpenConfigEditor: () => void;
   onResetScores: () => void;
   onResetGame: () => void;
@@ -38,6 +45,8 @@ interface HostControlsSectionsProps {
 }
 
 export function HostControlsSections({
+  bundledGames,
+  selectedBundledGameId,
   teams,
   activeTeamId,
   manualScoreDelta,
@@ -57,6 +66,7 @@ export function HostControlsSections({
   onPreviewCue,
   onStopCue,
   onStopAllSounds,
+  onSelectBundledGame,
   onOpenConfigEditor,
   onResetScores,
   onResetGame,
@@ -66,6 +76,55 @@ export function HostControlsSections({
 }: HostControlsSectionsProps) {
   return (
     <>
+      <section className="panel-inset p-4">
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <p className="brand-overline text-[11px] font-semibold uppercase tracking-[0.35em]">
+              Bundled Games
+            </p>
+            <p className="mt-2 text-sm text-slate-300">
+              Load a built-in board for a fresh session.
+            </p>
+          </div>
+          {isUsingLocalConfig ? <span className="brand-tag">Local Edits Active</span> : null}
+        </div>
+
+        <div className="mt-4 space-y-2">
+          {bundledGames.map((bundledGame) => {
+            const isSelected = bundledGame.id === selectedBundledGameId;
+            const isActive = isSelected && !isUsingLocalConfig;
+
+            return (
+              <button
+                key={bundledGame.id}
+                type="button"
+                onClick={() => onSelectBundledGame(bundledGame.id)}
+                disabled={isActive}
+                className={[
+                  'flex w-full items-center justify-between gap-3 rounded-[1.35rem] border px-4 py-3 text-left transition',
+                  isSelected
+                    ? 'border-amber-300/35 bg-amber-300/10'
+                    : 'border-white/10 bg-white/5 hover:border-sky-300/35 hover:bg-sky-300/10',
+                  isActive ? 'cursor-default' : '',
+                ].join(' ')}
+              >
+                <div>
+                  <p className="text-sm font-bold uppercase tracking-[0.18em] text-slate-50">
+                    {bundledGame.label}
+                  </p>
+                  <p className="mt-1 text-xs leading-5 text-slate-300">
+                    {bundledGame.description}
+                  </p>
+                </div>
+                <span className="brand-tag shrink-0">
+                  {isActive ? 'Active' : isSelected ? 'Base Game' : 'Load'}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </section>
+
       {isFinalJeopardyReady && onStartFinalJeopardy ? (
         <section className="panel-inset border-amber-300/30 bg-amber-300/10 p-4">
           <div className="flex flex-wrap items-center justify-between gap-3">
@@ -116,9 +175,9 @@ export function HostControlsSections({
             </Tooltip>
           ) : null}
           {isUsingLocalConfig ? (
-            <Tooltip content="Discard the browser-only game override and return to the bundled config.">
+            <Tooltip content="Discard the browser-only game override and return to the selected bundled game.">
               <button type="button" onClick={onResetLocalConfig} className="secondary-button">
-                Use Bundled Config
+                Discard Local Edits
               </button>
             </Tooltip>
           ) : null}

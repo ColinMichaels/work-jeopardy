@@ -8,7 +8,11 @@ import { GameBoard } from './components/GameBoard';
 import { HostConsole } from './components/HostConsole';
 import { HostPanel } from './components/HostPanel';
 import { ScoreBoard } from './components/ScoreBoard';
-import sampleGameRaw from './data/sample-game.json?raw';
+import {
+  BUNDLED_GAME_SOURCES,
+  DEFAULT_BUNDLED_GAME_ID,
+  type BundledGameSource,
+} from './data/bundled-games';
 import {
   applyFinalJeopardyResults,
   applyClueOutcome,
@@ -39,13 +43,16 @@ import {
 } from './lib/session-sync';
 import { useSoundboard } from './lib/soundboard';
 import {
+  clearStoredBundledGameSelection,
   clearStoredConfigOverride,
   clearStoredGameState,
+  loadStoredBundledGameSelection,
   CONFIG_OVERRIDE_STORAGE_KEY,
   getStorageKey,
   loadStoredBoolean,
   loadStoredConfigOverride,
   loadStoredGameState,
+  saveStoredBundledGameSelection,
   saveStoredBoolean,
   saveStoredConfigOverride,
   saveStoredGameState,
@@ -54,8 +61,77 @@ import {
 import type { GameState, SharedSessionSnapshot } from './models/game';
 import type { GameConfig } from './types/game-config';
 
-// Import the JSON as raw text so malformed edits fail inside the app instead of crashing the build.
-const bundledConfigResult = loadGameConfig(sampleGameRaw);
+interface BundledGameDefinition extends BundledGameSource {
+  config: GameConfig;
+}
+
+interface BundledGameCatalog {
+  games: ReadonlyArray<BundledGameDefinition>;
+  byId: ReadonlyMap<string, BundledGameDefinition>;
+  defaultGame: BundledGameDefinition;
+}
+
+interface BundledGameCatalogResult {
+  ok: true;
+  value: BundledGameCatalog;
+}
+
+interface BundledGameCatalogFailure {
+  ok: false;
+  errors: string[];
+}
+
+type BundledGameCatalogParseResult = BundledGameCatalogResult | BundledGameCatalogFailure;
+
+function buildBundledGameCatalog(): BundledGameCatalogParseResult {
+  const errors: string[] = [];
+  const games: BundledGameDefinition[] = [];
+
+  BUNDLED_GAME_SOURCES.forEach((source) => {
+    const parseResult = loadGameConfig(source.rawConfig);
+
+    if (!parseResult.ok) {
+      errors.push(
+        ...parseResult.errors.map((error) => `${source.filename}: ${error}`),
+      );
+      return;
+    }
+
+    games.push({
+      ...source,
+      config: parseResult.value,
+    });
+  });
+
+  if (errors.length > 0) {
+    return {
+      ok: false,
+      errors,
+    };
+  }
+
+  const byId = new Map(games.map((game) => [game.id, game] as const));
+  const defaultGame = byId.get(DEFAULT_BUNDLED_GAME_ID) ?? games[0];
+
+  if (!defaultGame) {
+    return {
+      ok: false,
+      errors: ['No bundled games were found in src/data/.'],
+    };
+  }
+
+  return {
+    ok: true,
+    value: {
+      games,
+      byId,
+      defaultGame,
+    },
+  };
+}
+
+// Import bundled JSON files as raw text so malformed edits fail inside the app instead of crashing the build.
+const bundledGameCatalogResult = buildBundledGameCatalog();
 
 function shouldIgnoreKeyboardShortcut(target: EventTarget | null): boolean {
   return target instanceof HTMLElement && ['INPUT', 'TEXTAREA'].includes(target.tagName);
@@ -63,6 +139,7 @@ function shouldIgnoreKeyboardShortcut(target: EventTarget | null): boolean {
 
 interface BootstrapState {
   config: GameConfig;
+  selectedBundledGameId: string;
   gameState: GameState;
   activeTeamId: string | null;
   manualScoreDelta: number;
@@ -71,9 +148,19 @@ interface BootstrapState {
   isPresenterMode: boolean;
 }
 
-function buildBootstrapState(bundledConfig: GameConfig): BootstrapState {
+function buildBootstrapState(bundledGameCatalog: BundledGameCatalog): BootstrapState {
+  const storedBundledGameId = loadStoredBundledGameSelection();
+  const selectedBundledGame = storedBundledGameId
+    ? bundledGameCatalog.byId.get(storedBundledGameId) ?? null
+    : null;
+
+  if (storedBundledGameId && !selectedBundledGame) {
+    clearStoredBundledGameSelection();
+  }
+
   const storedOverride = loadStoredConfigOverride(CONFIG_OVERRIDE_STORAGE_KEY);
-  let config = bundledConfig;
+  const baseGame = selectedBundledGame ?? bundledGameCatalog.defaultGame;
+  let config = baseGame.config;
   let isUsingLocalConfig = false;
 
   if (storedOverride) {
@@ -94,6 +181,7 @@ function buildBootstrapState(bundledConfig: GameConfig): BootstrapState {
 
   return {
     config,
+    selectedBundledGameId: baseGame.id,
     gameState: hydrateGameState(config, storedState),
     activeTeamId: config.teams[0]?.id ?? null,
     manualScoreDelta: getMinimumClueValue(config),
@@ -104,18 +192,18 @@ function buildBootstrapState(bundledConfig: GameConfig): BootstrapState {
 }
 
 export default function App() {
-  if (!bundledConfigResult.ok) {
-    return <ErrorScreen errors={bundledConfigResult.errors} />;
+  if (!bundledGameCatalogResult.ok) {
+    return <ErrorScreen errors={bundledGameCatalogResult.errors} />;
   }
 
-  const bundledConfig = bundledConfigResult.value;
+  const bundledGameCatalog = bundledGameCatalogResult.value;
   const bootstrapRef = useRef<BootstrapState | null>(null);
   const hasPlayedInitialIntroRef = useRef(false);
   const sessionIdRef = useRef<string>(ensureSessionIdInUrl());
   const viewModeRef = useRef(getViewModeFromLocation());
 
   if (!bootstrapRef.current) {
-    bootstrapRef.current = buildBootstrapState(bundledConfig);
+    bootstrapRef.current = buildBootstrapState(bundledGameCatalog);
   }
 
   const bootstrapState = bootstrapRef.current;
@@ -123,6 +211,9 @@ export default function App() {
   const viewMode = viewModeRef.current;
 
   const [config, setConfig] = useState<GameConfig>(bootstrapState.config);
+  const [selectedBundledGameId, setSelectedBundledGameId] = useState<string>(
+    bootstrapState.selectedBundledGameId,
+  );
   const [isUsingLocalConfig, setIsUsingLocalConfig] = useState<boolean>(
     bootstrapState.isUsingLocalConfig,
   );
@@ -141,6 +232,8 @@ export default function App() {
   const [boardEntranceCycle, setBoardEntranceCycle] = useState(0);
 
   const storageKey = getStorageKey(config.settings);
+  const selectedBundledGame =
+    bundledGameCatalog.byId.get(selectedBundledGameId) ?? bundledGameCatalog.defaultGame;
   const activeClue = findClueById(config, gameState.selectedClueId);
   const totalClues = config.categories.reduce((sum, category) => sum + category.clues.length, 0);
   const answeredClues = Object.keys(gameState.answeredClueIds).length;
@@ -163,6 +256,7 @@ export default function App() {
 
   const sharedSnapshot: SharedSessionSnapshot = {
     config,
+    selectedBundledGameId,
     isUsingLocalConfig,
     gameState,
     activeTeamId,
@@ -381,23 +475,44 @@ export default function App() {
 
   const applyRuntimeConfig = (
     nextConfig: GameConfig,
-    options: { rawConfig: string | null; isLocalOverride: boolean },
+    options: {
+      rawConfig: string | null;
+      isLocalOverride: boolean;
+      selectedBundledGameId?: string;
+      resetGameState?: boolean;
+      clearTargetSavedState?: boolean;
+    },
   ) => {
+    const nextBundledGameId = options.selectedBundledGameId ?? selectedBundledGameId;
+
     if (options.isLocalOverride && options.rawConfig) {
       saveStoredConfigOverride(options.rawConfig, CONFIG_OVERRIDE_STORAGE_KEY);
     } else {
       clearStoredConfigOverride(CONFIG_OVERRIDE_STORAGE_KEY);
     }
 
+    saveStoredBundledGameSelection(nextBundledGameId);
+
+    if (options.clearTargetSavedState && nextConfig.settings.enableLocalStorage) {
+      clearStoredGameState(getStorageKey(nextConfig.settings));
+    }
+
     stopAll();
     setConfig(nextConfig);
+    setSelectedBundledGameId(nextBundledGameId);
     setIsUsingLocalConfig(options.isLocalOverride);
-    setGameState((currentState) => reconcileGameStateWithConfig(nextConfig, currentState));
-    setActiveTeamId((currentTeamId) =>
-      nextConfig.teams.some((team) => team.id === currentTeamId)
-        ? currentTeamId
-        : nextConfig.teams[0]?.id ?? null,
+    setGameState((currentState) =>
+      options.resetGameState ? resetGame(nextConfig) : reconcileGameStateWithConfig(nextConfig, currentState),
     );
+    setActiveTeamId((currentTeamId) => {
+      if (options.resetGameState) {
+        return nextConfig.teams[0]?.id ?? null;
+      }
+
+      return nextConfig.teams.some((team) => team.id === currentTeamId)
+        ? currentTeamId
+        : nextConfig.teams[0]?.id ?? null;
+    });
     setManualScoreDelta(getMinimumClueValue(nextConfig));
     setBoardEntranceCycle((currentCycle) => currentCycle + 1);
   };
@@ -416,6 +531,7 @@ export default function App() {
     applyRuntimeConfig(parseResult.value, {
       rawConfig,
       isLocalOverride: true,
+      selectedBundledGameId,
     });
     setIsHostPanelOpen(false);
 
@@ -423,13 +539,48 @@ export default function App() {
   };
 
   const handleResetLocalConfig = () => {
-    if (!window.confirm('Discard the local host config and return to the bundled game?')) {
+    if (!window.confirm('Discard the local host config and return to the selected bundled game?')) {
       return;
     }
 
-    applyRuntimeConfig(bundledConfig, {
+    applyRuntimeConfig(selectedBundledGame.config, {
       rawConfig: null,
       isLocalOverride: false,
+      selectedBundledGameId: selectedBundledGame.id,
+    });
+    setIsConfigEditorOpen(false);
+    setIsHostPanelOpen(false);
+  };
+
+  const handleSelectBundledGame = (bundledGameId: string) => {
+    const nextBundledGame = bundledGameCatalog.byId.get(bundledGameId);
+
+    if (!nextBundledGame) {
+      return;
+    }
+
+    const switchingFromLocalOverride = isUsingLocalConfig;
+    const switchingToNewGame =
+      bundledGameId !== selectedBundledGameId || isUsingLocalConfig;
+
+    if (!switchingToNewGame) {
+      return;
+    }
+
+    const confirmMessage = switchingFromLocalOverride
+      ? `Load "${nextBundledGame.label}" and discard the current browser-only edits?`
+      : `Load "${nextBundledGame.label}" and start a fresh board?`;
+
+    if (!window.confirm(confirmMessage)) {
+      return;
+    }
+
+    applyRuntimeConfig(nextBundledGame.config, {
+      rawConfig: null,
+      isLocalOverride: false,
+      selectedBundledGameId: nextBundledGame.id,
+      resetGameState: true,
+      clearTargetSavedState: true,
     });
     setIsConfigEditorOpen(false);
     setIsHostPanelOpen(false);
@@ -437,6 +588,7 @@ export default function App() {
 
   const handleApplySharedSnapshot = (snapshot: SharedSessionSnapshot) => {
     setConfig(snapshot.config);
+    setSelectedBundledGameId(snapshot.selectedBundledGameId || bundledGameCatalog.defaultGame.id);
     setIsUsingLocalConfig(snapshot.isUsingLocalConfig);
     setGameState(snapshot.gameState);
     setActiveTeamId(snapshot.activeTeamId);
@@ -585,6 +737,8 @@ export default function App() {
             />
 
             <HostConsole
+              bundledGames={bundledGameCatalog.games}
+              selectedBundledGameId={selectedBundledGameId}
               clueEntry={activeClue}
               isRevealed={gameState.isQuestionRevealed}
               teams={gameState.teams}
@@ -607,6 +761,7 @@ export default function App() {
               onPreviewCue={playCue}
               onStopCue={stopCue}
               onStopAllSounds={stopAll}
+              onSelectBundledGame={handleSelectBundledGame}
               onOpenConfigEditor={() => setIsConfigEditorOpen(true)}
               onResetScores={handleResetScores}
               onResetGame={handleResetGame}
@@ -662,6 +817,8 @@ export default function App() {
       {viewMode === 'single' && !activeFinalJeopardy ? (
         <HostPanel
           isOpen={isHostPanelOpen}
+          bundledGames={bundledGameCatalog.games}
+          selectedBundledGameId={selectedBundledGameId}
           teams={gameState.teams}
           activeTeamId={activeTeamId}
           manualScoreDelta={manualScoreDelta}
@@ -682,6 +839,7 @@ export default function App() {
           onPreviewCue={playCue}
           onStopCue={stopCue}
           onStopAllSounds={stopAll}
+          onSelectBundledGame={handleSelectBundledGame}
           onOpenConfigEditor={() => {
             setIsHostPanelOpen(false);
             setIsConfigEditorOpen(true);

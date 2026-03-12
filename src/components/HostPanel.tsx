@@ -4,6 +4,12 @@ import { HostControlsSections } from './HostControlsSections';
 
 interface HostPanelProps {
   isOpen: boolean;
+  bundledGames: ReadonlyArray<{
+    id: string;
+    label: string;
+    description: string;
+  }>;
+  selectedBundledGameId: string;
   teams: TeamState[];
   activeTeamId: string | null;
   manualScoreDelta: number;
@@ -29,6 +35,7 @@ interface HostPanelProps {
   onPreviewCue: (cue: GameSoundCue) => void;
   onStopCue: (cue: GameSoundCue) => void;
   onStopAllSounds: () => void;
+  onSelectBundledGame: (bundledGameId: string) => void;
   onOpenConfigEditor: () => void;
   onResetScores: () => void;
   onResetGame: () => void;
@@ -39,6 +46,8 @@ interface HostPanelProps {
 
 export function HostPanel({
   isOpen,
+  bundledGames,
+  selectedBundledGameId,
   teams,
   activeTeamId,
   manualScoreDelta,
@@ -59,6 +68,7 @@ export function HostPanel({
   onPreviewCue,
   onStopCue,
   onStopAllSounds,
+  onSelectBundledGame,
   onOpenConfigEditor,
   onResetScores,
   onResetGame,
@@ -106,6 +116,8 @@ export function HostPanel({
 
         <div className="flex-1 space-y-5 overflow-y-auto px-5 py-5">
           <HostControlsSections
+            bundledGames={bundledGames}
+            selectedBundledGameId={selectedBundledGameId}
             teams={teams}
             activeTeamId={activeTeamId}
             manualScoreDelta={manualScoreDelta}
@@ -125,6 +137,7 @@ export function HostPanel({
             onPreviewCue={onPreviewCue}
             onStopCue={onStopCue}
             onStopAllSounds={onStopAllSounds}
+            onSelectBundledGame={onSelectBundledGame}
             onOpenConfigEditor={onOpenConfigEditor}
             onResetScores={onResetScores}
             onResetGame={onResetGame}

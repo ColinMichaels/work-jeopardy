@@ -48,7 +48,7 @@ The deliverable is the full `dist/` folder.
 
 Recommended process:
 
-1. Update [`src/data/sample-game.json`](../src/data/sample-game.json) for the upcoming meeting.
+1. Choose which bundled game in [`src/data/`](../src/data/) should ship for the upcoming meeting, or edit one of those files.
 2. Run `npm run build`.
 3. Zip or copy the full `dist/` folder.
 4. Send that folder to the meeting host.
@@ -57,7 +57,7 @@ Important:
 
 - The in-app host editor saves a browser-local override only.
 - Browser-local overrides are useful for meeting-time tweaks, but they do not change the source files in this repo.
-- If a local edit should become part of the distributable build, copy that change into `src/data/sample-game.json` and rebuild.
+- If a local edit should become part of the distributable build, copy that change into the matching file under `src/data/` and rebuild.
 
 ## Sound Assets
 
@@ -66,7 +66,7 @@ The app now supports optional sound cues.
 How it works:
 
 1. Add or replace audio files in `public/sounds/`.
-2. Point the cue paths in [`src/data/sample-game.json`](../src/data/sample-game.json) at those file names.
+2. Point the cue paths in the relevant game JSON under [`src/data/`](../src/data/) at those file names.
 3. Run `npm run build`.
 
 Example:
@@ -127,6 +127,7 @@ Both windows stay in sync for:
 - score changes
 - resets
 - local config edits
+- bundled game selection
 
 Important:
 
