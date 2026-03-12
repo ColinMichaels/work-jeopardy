@@ -4,18 +4,88 @@
 
 :root {
   color-scheme: dark;
-  background-color: #020617;
+  background-color: #02082c;
+  --font-ui: 'Trebuchet MS', 'Segoe UI', sans-serif;
+  --font-display: 'Arial Narrow', 'Helvetica Neue Condensed Bold', 'Franklin Gothic Demi Cond',
+    'Impact', sans-serif;
+  --font-board: 'Arial Narrow', 'Helvetica Neue Condensed Bold', 'Franklin Gothic Demi Cond',
+    'Impact', sans-serif;
+
+  --brand-stage-top: #19309f;
+  --brand-stage-mid: #09155a;
+  --brand-stage-bottom: #020822;
+  --brand-stage-glow: rgba(76, 125, 255, 0.3);
+  --brand-stage-glow-soft: rgba(255, 215, 119, 0.14);
+  --brand-stage-grid: rgba(255, 255, 255, 0.028);
+
+  --brand-panel-bg: rgba(6, 12, 54, 0.78);
+  --brand-panel-bg-strong: rgba(3, 8, 34, 0.94);
+  --brand-panel-inset: rgba(3, 8, 33, 0.74);
+  --brand-panel-border: rgba(255, 219, 117, 0.2);
+  --brand-panel-border-soft: rgba(144, 170, 255, 0.16);
+  --brand-panel-shadow: rgba(0, 0, 0, 0.5);
+
+  --brand-board-frame-top: #08114d;
+  --brand-board-frame-bottom: #010519;
+  --brand-board-frame-border: rgba(255, 223, 122, 0.22);
+
+  --brand-category-top: #3660f0;
+  --brand-category-bottom: #1836c5;
+  --brand-category-text: #f7f1d3;
+
+  --brand-tile-top: #2354ec;
+  --brand-tile-bottom: #0a2aa9;
+  --brand-tile-border: rgba(255, 230, 148, 0.2);
+  --brand-tile-used-top: #121f66;
+  --brand-tile-used-bottom: #09103a;
+  --brand-tile-used-text: #5a679c;
+  --brand-tile-active: #ffe09b;
+
+  --brand-gold: #f6c14a;
+  --brand-gold-soft: #ffe9b6;
+  --brand-paper: #fbf8ee;
+  --brand-heading: #f9f4dc;
+  --brand-text: #f2f5ff;
+  --brand-text-muted: #c8d1f4;
+  --brand-text-dim: #93a4e0;
+  --brand-field-bg: rgba(2, 8, 32, 0.82);
+  --brand-field-border: rgba(255, 224, 138, 0.14);
+  --brand-field-focus: rgba(255, 223, 133, 0.22);
+
+  --brand-accent-bg: rgba(246, 193, 74, 0.18);
+  --brand-accent-border: rgba(246, 193, 74, 0.4);
+  --brand-accent-hover: rgba(246, 193, 74, 0.26);
+
+  --brand-secondary-bg: rgba(7, 14, 54, 0.66);
+  --brand-secondary-border: rgba(144, 172, 255, 0.18);
+  --brand-secondary-hover: rgba(23, 42, 126, 0.78);
+
+  --brand-danger-bg: rgba(178, 37, 37, 0.22);
+  --brand-danger-border: rgba(255, 148, 148, 0.3);
+  --brand-danger-hover: rgba(178, 37, 37, 0.34);
+
+  --brand-score-bg: rgba(11, 28, 123, 0.9);
+  --brand-score-active: rgba(246, 193, 74, 0.18);
+  --brand-score-border: rgba(255, 224, 138, 0.18);
+  --brand-tooltip-bg: rgba(1, 7, 36, 0.96);
 }
 
 body {
   min-height: 100vh;
   margin: 0;
   background:
-    radial-gradient(circle at top left, rgba(14, 165, 233, 0.18), transparent 28%),
-    radial-gradient(circle at top right, rgba(250, 204, 21, 0.12), transparent 24%),
-    linear-gradient(180deg, #020617 0%, #081227 46%, #0f172a 100%);
-  color: #e2e8f0;
-  font-family: 'Segoe UI', 'Trebuchet MS', sans-serif;
+    radial-gradient(circle at top left, var(--brand-stage-glow), transparent 30%),
+    radial-gradient(circle at top right, var(--brand-stage-glow-soft), transparent 24%),
+    linear-gradient(180deg, var(--brand-stage-top) 0%, var(--brand-stage-mid) 34%, var(--brand-stage-bottom) 100%),
+    repeating-linear-gradient(
+      90deg,
+      transparent 0,
+      transparent 120px,
+      var(--brand-stage-grid) 120px,
+      var(--brand-stage-grid) 121px
+    );
+  color: var(--brand-text);
+  font-family: var(--font-ui);
 }
 
 button,
@@ -29,22 +99,245 @@ input {
 
 @layer components {
   .panel {
-    @apply rounded-[2rem] border border-white/10 bg-slate-900/70 shadow-board backdrop-blur-md;
+    background: linear-gradient(180deg, rgba(10, 21, 92, 0.92), var(--brand-panel-bg));
+    border-color: var(--brand-panel-border);
+    box-shadow:
+      0 24px 80px var(--brand-panel-shadow),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    color: var(--brand-text);
+    @apply rounded-[2rem] border backdrop-blur-md;
+  }
+
+  .panel-inset {
+    background: linear-gradient(180deg, rgba(5, 12, 47, 0.9), var(--brand-panel-inset));
+    border-color: var(--brand-panel-border-soft);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.05),
+      inset 0 -4px 0 rgba(0, 0, 0, 0.12);
+    color: var(--brand-text);
+    @apply rounded-[1.6rem] border;
+  }
+
+  .panel-muted {
+    background: rgba(3, 8, 30, 0.5);
+    border-color: rgba(255, 255, 255, 0.08);
+    color: var(--brand-text-dim);
+    @apply rounded-[1.5rem] border border-dashed;
+  }
+
+  .modal-shell {
+    background: linear-gradient(180deg, rgba(8, 17, 74, 0.98), var(--brand-panel-bg-strong));
+    border-color: var(--brand-panel-border);
+    box-shadow:
+      0 28px 90px rgba(0, 0, 0, 0.56),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    @apply rounded-[2rem] border;
+  }
+
+  .field-input {
+    background: var(--brand-field-bg);
+    border-color: var(--brand-field-border);
+    color: var(--brand-text);
+    @apply w-full rounded-2xl border px-4 py-3 outline-none transition focus:ring-4;
+    --tw-ring-color: var(--brand-field-focus);
+  }
+
+  .brand-tag {
+    background: rgba(255, 224, 138, 0.08);
+    border-color: rgba(255, 224, 138, 0.24);
+    color: var(--brand-heading);
+    @apply rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-[0.26em];
   }
 
   .control-button {
-    @apply rounded-full border border-amber-300/40 bg-amber-300/15 px-4 py-2 text-sm font-semibold uppercase tracking-[0.2em] text-amber-100 transition hover:border-amber-200/60 hover:bg-amber-300/20 focus:outline-none focus:ring-4 focus:ring-amber-300/25;
+    background: linear-gradient(180deg, rgba(255, 213, 94, 0.2), var(--brand-accent-bg));
+    border-color: var(--brand-accent-border);
+    color: var(--brand-heading);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14);
+    @apply rounded-full border px-4 py-2 text-sm font-semibold uppercase tracking-[0.2em] transition focus:outline-none focus:ring-4;
+    --tw-ring-color: rgba(255, 223, 133, 0.25);
+  }
+
+  .control-button:hover {
+    background: linear-gradient(180deg, rgba(255, 213, 94, 0.28), var(--brand-accent-hover));
   }
 
   .secondary-button {
-    @apply rounded-full border border-white/10 bg-slate-950/45 px-4 py-2 text-sm font-semibold uppercase tracking-[0.2em] text-slate-200 transition hover:border-sky-300/30 hover:bg-slate-900/90 focus:outline-none focus:ring-4 focus:ring-sky-300/20;
+    background: linear-gradient(180deg, rgba(13, 24, 92, 0.84), var(--brand-secondary-bg));
+    border-color: var(--brand-secondary-border);
+    color: var(--brand-text);
+    @apply rounded-full border px-4 py-2 text-sm font-semibold uppercase tracking-[0.2em] transition focus:outline-none focus:ring-4;
+    --tw-ring-color: rgba(116, 150, 255, 0.2);
+  }
+
+  .secondary-button:hover {
+    background: linear-gradient(180deg, rgba(26, 48, 148, 0.86), var(--brand-secondary-hover));
   }
 
   .danger-button {
-    @apply rounded-full border border-rose-300/30 bg-rose-300/10 px-4 py-2 text-sm font-semibold uppercase tracking-[0.2em] text-rose-100 transition hover:border-rose-200/50 hover:bg-rose-300/20 focus:outline-none focus:ring-4 focus:ring-rose-300/20;
+    background: linear-gradient(180deg, rgba(178, 37, 37, 0.2), var(--brand-danger-bg));
+    border-color: var(--brand-danger-border);
+    color: var(--brand-paper);
+    @apply rounded-full border px-4 py-2 text-sm font-semibold uppercase tracking-[0.2em] transition focus:outline-none focus:ring-4;
+    --tw-ring-color: rgba(255, 170, 170, 0.2);
+  }
+
+  .danger-button:hover {
+    background: linear-gradient(180deg, rgba(178, 37, 37, 0.28), var(--brand-danger-hover));
   }
 
   .status-pill {
-    @apply rounded-full border border-white/10 bg-slate-950/45 px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-slate-200;
+    background: linear-gradient(180deg, rgba(11, 20, 78, 0.82), rgba(4, 11, 44, 0.9));
+    border-color: var(--brand-secondary-border);
+    color: var(--brand-text-muted);
+    @apply rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em];
+  }
+
+  .board-shell {
+    background:
+      linear-gradient(180deg, rgba(13, 24, 94, 0.96), rgba(3, 9, 39, 0.98)),
+      linear-gradient(180deg, var(--brand-board-frame-top), var(--brand-board-frame-bottom));
+    border-color: var(--brand-board-frame-border);
+    box-shadow:
+      0 26px 70px rgba(0, 0, 0, 0.46),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  }
+
+  .board-category {
+    background: linear-gradient(180deg, var(--brand-category-top), var(--brand-category-bottom));
+    border-color: rgba(255, 224, 138, 0.18);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.16),
+      inset 0 -4px 0 rgba(0, 0, 0, 0.12);
+  }
+
+  .board-category-title {
+    color: var(--brand-category-text);
+    font-family: var(--font-board);
+    text-shadow:
+      0 2px 0 rgba(0, 0, 0, 0.36),
+      0 0 18px rgba(255, 232, 167, 0.1);
+  }
+
+  .board-tile {
+    background: linear-gradient(180deg, var(--brand-tile-top), var(--brand-tile-bottom));
+    border-color: var(--brand-tile-border);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.14),
+      inset 0 -4px 0 rgba(0, 0, 0, 0.16),
+      0 18px 40px rgba(0, 0, 0, 0.26);
+    color: var(--brand-gold);
+  }
+
+  .board-tile:hover {
+    transform: translateY(-2px);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.18),
+      inset 0 -4px 0 rgba(0, 0, 0, 0.18),
+      0 24px 46px rgba(4, 24, 115, 0.48);
+  }
+
+  .board-tile--used {
+    background: linear-gradient(180deg, var(--brand-tile-used-top), var(--brand-tile-used-bottom));
+    border-color: rgba(126, 140, 198, 0.18);
+    color: var(--brand-tile-used-text);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.04),
+      inset 0 -4px 0 rgba(0, 0, 0, 0.12);
+  }
+
+  .board-tile--used:hover {
+    transform: none;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.04),
+      inset 0 -4px 0 rgba(0, 0, 0, 0.12);
+  }
+
+  .board-tile--active {
+    border-color: var(--brand-tile-active);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.18),
+      inset 0 -4px 0 rgba(0, 0, 0, 0.18),
+      0 0 0 4px rgba(255, 224, 138, 0.2),
+      0 18px 46px rgba(4, 24, 115, 0.52);
+  }
+
+  .board-tile-value {
+    font-family: var(--font-board);
+    color: inherit;
+    text-shadow:
+      0 3px 0 rgba(0, 0, 0, 0.35),
+      0 0 22px rgba(246, 193, 74, 0.12);
+  }
+
+  .board-tile-label {
+    color: var(--brand-gold-soft);
+  }
+
+  .board-empty {
+    background: linear-gradient(180deg, rgba(4, 9, 32, 0.35), rgba(2, 6, 20, 0.22));
+    border-color: rgba(255, 255, 255, 0.03);
+  }
+
+  .score-ribbon {
+    background: linear-gradient(180deg, rgba(17, 36, 132, 0.95), rgba(7, 19, 86, 0.95));
+    border-color: var(--brand-score-border);
+    box-shadow:
+      0 20px 54px rgba(0, 0, 0, 0.26),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    @apply rounded-[1.8rem] border;
+  }
+
+  .score-card {
+    background: linear-gradient(180deg, rgba(12, 30, 127, 0.92), var(--brand-score-bg));
+    border-color: rgba(255, 224, 138, 0.12);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.12),
+      inset 0 -4px 0 rgba(0, 0, 0, 0.12);
+  }
+
+  .score-card--active {
+    background: linear-gradient(180deg, rgba(36, 67, 210, 0.96), rgba(16, 37, 126, 0.96));
+    border-color: rgba(255, 224, 138, 0.42);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.18),
+      inset 0 -4px 0 rgba(0, 0, 0, 0.14),
+      0 0 0 3px rgba(255, 224, 138, 0.14);
+  }
+
+  .score-name {
+    color: var(--brand-heading);
+    font-family: var(--font-display);
+    text-shadow: 0 2px 0 rgba(0, 0, 0, 0.26);
+  }
+
+  .score-value {
+    color: var(--brand-gold-soft);
+    font-family: var(--font-board);
+    text-shadow:
+      0 3px 0 rgba(0, 0, 0, 0.32),
+      0 0 18px rgba(255, 224, 138, 0.12);
+  }
+
+  .brand-overline {
+    color: var(--brand-text-muted);
+  }
+
+  .brand-title {
+    color: var(--brand-heading);
+    font-family: var(--font-display);
+    text-shadow:
+      0 3px 0 rgba(0, 0, 0, 0.28),
+      0 0 24px rgba(255, 224, 138, 0.1);
+  }
+
+  .brand-subtitle {
+    color: var(--brand-text-muted);
+  }
+
+  .brand-tooltip {
+    background: var(--brand-tooltip-bg);
+    border-color: rgba(255, 224, 138, 0.14);
+    color: var(--brand-paper);
   }
 }

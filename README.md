@@ -9,6 +9,8 @@ Work Jeopardy is a browser-only Jeopardy-style trivia board for internal team me
 - Builds to a static `dist/` bundle for handoff
 - Keeps clue content editable through JSON
 - Includes a host-only local config editor for browser-local tweaks during a meeting
+- Supports linked `board` and `host` windows for dual-screen control
+- Supports optional local sound cues with browser-safe synth fallbacks
 - Designed for one host controlling the board during a meeting
 
 ## Docs
@@ -32,3 +34,5 @@ npm run build
 ```
 
 The output is written to `dist/`.
+
+Game content lives in [`src/data/sample-game.json`](./src/data/sample-game.json). Sound files, when used, should be placed in `public/sounds/` and are copied into the final `dist/` bundle automatically.

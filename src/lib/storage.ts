@@ -3,6 +3,7 @@ import type { GameSettings } from '../types/game-config';
 
 const DEFAULT_STORAGE_KEY = 'team-jeopardy-state';
 export const CONFIG_OVERRIDE_STORAGE_KEY = 'work-jeopardy-config-override';
+export const SOUND_ENABLED_STORAGE_KEY = 'work-jeopardy-sound-enabled';
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -72,6 +73,20 @@ function loadStoredString(storageKey: string): string | null {
   }
 }
 
+export function loadStoredBoolean(storageKey: string): boolean | null {
+  const storedValue = loadStoredString(storageKey);
+
+  if (storedValue === 'true') {
+    return true;
+  }
+
+  if (storedValue === 'false') {
+    return false;
+  }
+
+  return null;
+}
+
 export function saveStoredGameState(storageKey: string, state: PersistedGameState): void {
   saveStoredString(storageKey, JSON.stringify(state));
 }
@@ -86,6 +101,10 @@ function saveStoredString(storageKey: string, value: string): void {
   } catch {
     // Swallow storage failures so the game remains playable in restricted browsers.
   }
+}
+
+export function saveStoredBoolean(storageKey: string, value: boolean): void {
+  saveStoredString(storageKey, value ? 'true' : 'false');
 }
 
 export function clearStoredGameState(storageKey: string): void {

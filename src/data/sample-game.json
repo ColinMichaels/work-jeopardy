@@ -229,6 +229,18 @@
   "settings": {
     "subtractOnIncorrect": true,
     "enableLocalStorage": true,
-    "storageKey": "work-jeopardy-state"
+    "storageKey": "work-jeopardy-state",
+    "sounds": {
+      "enabled": true,
+      "volume": 0.85,
+      "cues": {
+        "thinkMusic": "sounds/think-music.mp3",
+        "boardFill": "sounds/board-fill.mp3",
+        "dailyDouble": "sounds/daily-double.mp3",
+        "tripleStumper": "sounds/triple-stumper.mp3",
+        "endRound": "sounds/end-round.mp3",
+        "contestantBuzzer": "sounds/contestant-buzzer.mp3"
+      }
+    }
   }
 }
