@@ -130,11 +130,8 @@ export function HostCluePreview({
         </div>
       ) : (
         <div className="panel-muted mt-5 px-4 py-10 text-center">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.34em]">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.34em] text-slate-300">
             Select A Clue To Preview It Here
-          </p>
-          <p className="mt-3 text-sm font-normal normal-case tracking-normal text-slate-300">
-            The host preview sits beside gameplay controls so reveal and scoring stay together.
           </p>
         </div>
       )}
