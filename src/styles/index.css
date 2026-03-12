@@ -1,0 +1,50 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+  background-color: #020617;
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  background:
+    radial-gradient(circle at top left, rgba(14, 165, 233, 0.18), transparent 28%),
+    radial-gradient(circle at top right, rgba(250, 204, 21, 0.12), transparent 24%),
+    linear-gradient(180deg, #020617 0%, #081227 46%, #0f172a 100%);
+  color: #e2e8f0;
+  font-family: 'Segoe UI', 'Trebuchet MS', sans-serif;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+@layer components {
+  .panel {
+    @apply rounded-[2rem] border border-white/10 bg-slate-900/70 shadow-board backdrop-blur-md;
+  }
+
+  .control-button {
+    @apply rounded-full border border-amber-300/40 bg-amber-300/15 px-4 py-2 text-sm font-semibold uppercase tracking-[0.2em] text-amber-100 transition hover:border-amber-200/60 hover:bg-amber-300/20 focus:outline-none focus:ring-4 focus:ring-amber-300/25;
+  }
+
+  .secondary-button {
+    @apply rounded-full border border-white/10 bg-slate-950/45 px-4 py-2 text-sm font-semibold uppercase tracking-[0.2em] text-slate-200 transition hover:border-sky-300/30 hover:bg-slate-900/90 focus:outline-none focus:ring-4 focus:ring-sky-300/20;
+  }
+
+  .danger-button {
+    @apply rounded-full border border-rose-300/30 bg-rose-300/10 px-4 py-2 text-sm font-semibold uppercase tracking-[0.2em] text-rose-100 transition hover:border-rose-200/50 hover:bg-rose-300/20 focus:outline-none focus:ring-4 focus:ring-rose-300/20;
+  }
+
+  .status-pill {
+    @apply rounded-full border border-white/10 bg-slate-950/45 px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-slate-200;
+  }
+}
