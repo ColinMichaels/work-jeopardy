@@ -21,12 +21,23 @@ export interface FinalJeopardyState {
   phaseStartedAt: number | null;
 }
 
+export type GameNotificationTone = 'info' | 'success' | 'warning' | 'error';
+
+export interface GameNotification {
+  id: string;
+  tone: GameNotificationTone;
+  title: string;
+  message: string;
+  expiresAt: number | null;
+}
+
 export interface GameState {
   teams: TeamState[];
   answeredClueIds: AnsweredClueMap;
   selectedClueId: string | null;
   activeClueMediaIndex: number | null;
   isQuestionRevealed: boolean;
+  notification: GameNotification | null;
   finalJeopardy: FinalJeopardyState | null;
 }
 

@@ -63,6 +63,9 @@
   --brand-danger-bg: rgba(178, 37, 37, 0.22);
   --brand-danger-border: rgba(255, 148, 148, 0.3);
   --brand-danger-hover: rgba(178, 37, 37, 0.34);
+  --brand-success-bg: rgba(15, 125, 74, 0.24);
+  --brand-success-border: rgba(133, 248, 187, 0.28);
+  --brand-success-hover: rgba(20, 156, 93, 0.34);
 
   --brand-score-bg: rgba(11, 28, 123, 0.9);
   --brand-score-active: rgba(246, 193, 74, 0.18);
@@ -226,6 +229,18 @@ input {
 
   .danger-button:hover {
     background: linear-gradient(180deg, rgba(178, 37, 37, 0.28), var(--brand-danger-hover));
+  }
+
+  .success-button {
+    background: linear-gradient(180deg, rgba(52, 211, 153, 0.18), var(--brand-success-bg));
+    border-color: var(--brand-success-border);
+    color: #ecfdf5;
+    @apply rounded-full border px-4 py-2 text-sm font-semibold uppercase tracking-[0.2em] transition focus:outline-none focus:ring-4;
+    --tw-ring-color: rgba(110, 231, 183, 0.2);
+  }
+
+  .success-button:hover {
+    background: linear-gradient(180deg, rgba(52, 211, 153, 0.26), var(--brand-success-hover));
   }
 
   .status-pill {
@@ -413,6 +428,13 @@ input {
     text-shadow:
       0 3px 0 rgba(0, 0, 0, 0.32),
       0 0 18px rgba(255, 224, 138, 0.12);
+  }
+
+  .score-value--negative {
+    color: #dfa4a4;
+    text-shadow:
+      0 3px 0 rgba(49, 10, 10, 0.28),
+      0 0 16px rgba(188, 74, 74, 0.12);
   }
 
   .brand-overline {

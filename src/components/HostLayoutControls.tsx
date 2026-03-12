@@ -42,7 +42,7 @@ export function HostLayoutControls({
       id: 'clue',
       label: 'Clue Preview',
       compactLabel: 'Clue',
-      description: 'Private answer, notes, and media preview.',
+      description: 'Private answer, notes, and reveal preview beside gameplay controls.',
     },
     {
       id: 'setup',

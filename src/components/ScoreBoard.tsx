@@ -22,6 +22,7 @@ export function ScoreBoard({
       <div className="flex gap-3 overflow-x-auto pb-1">
         {teams.map((team) => {
           const isActive = team.id === activeTeamId;
+          const isNegative = team.score < 0;
           const cardClassName = [
             'score-card flex-1 rounded-[1.55rem] border text-left transition',
             'focus:outline-none focus:ring-4 focus:ring-[rgba(255,223,133,0.22)]',
@@ -43,7 +44,13 @@ export function ScoreBoard({
                   <div className="mt-2 h-1.5 w-10 rounded-full bg-white/10" />
                 )}
               </div>
-              <div className={`score-value font-black ${compact ? 'text-xl sm:text-2xl' : 'text-2xl sm:text-3xl'}`}>
+              <div
+                className={[
+                  'score-value font-black',
+                  compact ? 'text-xl sm:text-2xl' : 'text-2xl sm:text-3xl',
+                  isNegative ? 'score-value--negative' : '',
+                ].join(' ')}
+              >
                 {formatScore(team.score)}
               </div>
             </div>

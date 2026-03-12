@@ -32,7 +32,14 @@ export function FinalJeopardyCategory({
             <p className="score-name text-xl font-bold uppercase tracking-[0.08em]">
               {team.name}
             </p>
-            <p className="score-value mt-2 text-3xl font-black">{formatScore(team.score)}</p>
+            <p
+              className={[
+                'score-value mt-2 text-3xl font-black',
+                team.score < 0 ? 'score-value--negative' : '',
+              ].join(' ')}
+            >
+              {formatScore(team.score)}
+            </p>
           </div>
         ))}
       </div>

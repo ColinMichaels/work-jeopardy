@@ -141,6 +141,7 @@ export function createInitialGameState(config: GameConfig): GameState {
     selectedClueId: null,
     activeClueMediaIndex: null,
     isQuestionRevealed: false,
+    notification: null,
     finalJeopardy: null,
   };
 }
@@ -318,6 +319,7 @@ export function resetScores(state: GameState): GameState {
     selectedClueId: null,
     activeClueMediaIndex: null,
     isQuestionRevealed: false,
+    notification: null,
     finalJeopardy: null,
   };
 }
@@ -356,6 +358,7 @@ export function reconcileGameStateWithConfig(
     selectedClueId: null,
     activeClueMediaIndex: null,
     isQuestionRevealed: false,
+    notification: null,
     finalJeopardy: normalizeFinalJeopardyState(config, teams, previousState.finalJeopardy),
   };
 }

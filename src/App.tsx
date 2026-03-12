@@ -5,6 +5,7 @@ import { ControlBar } from './components/ControlBar';
 import { ErrorScreen } from './components/ErrorScreen';
 import { FinalJeopardyScreen } from './components/final-jeopardy/FinalJeopardyScreen';
 import { GameBoard } from './components/GameBoard';
+import { GameNotificationBanner } from './components/GameNotificationBanner';
 import { HostConsole } from './components/HostConsole';
 import { HostGameplayBar } from './components/HostGameplayBar';
 import { HostLayoutControls } from './components/HostLayoutControls';
@@ -40,6 +41,7 @@ import {
 import { findClueById, getMinimumClueValue, loadGameConfig } from './lib/config-loader';
 import { downloadGameConfigJson } from './lib/config-transfer';
 import { getEligibleFinalJeopardyTeams, getFinalJeopardyConfig } from './lib/final-jeopardy';
+import { formatCurrencyValue, formatScore } from './lib/score-utils';
 import {
   buildWindowTargetName,
   buildWindowUrl,
@@ -64,7 +66,7 @@ import {
   saveStoredGameState,
   SOUND_ENABLED_STORAGE_KEY,
 } from './lib/storage';
-import type { GameState, SharedSessionSnapshot } from './models/game';
+import type { GameNotification, GameNotificationTone, GameState, SharedSessionSnapshot } from './models/game';
 import { GAME_SOUND_CUES, type GameSoundCue } from './types/game-audio';
 import type { GameConfig } from './types/game-config';
 
@@ -226,6 +228,92 @@ function hasKeyboardModifier(event: KeyboardEvent): boolean {
   return event.metaKey || event.ctrlKey || event.altKey;
 }
 
+interface GameNotificationInput {
+  tone: GameNotificationTone;
+  title: string;
+  message: string;
+  durationMs?: number | null;
+}
+
+function createGameNotification({
+  tone,
+  title,
+  message,
+  durationMs = 3600,
+}: GameNotificationInput): GameNotification {
+  return {
+    id: `notice-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+    tone,
+    title,
+    message,
+    expiresAt: durationMs === null ? null : Date.now() + durationMs,
+  };
+}
+
+function withGameNotification(
+  previousState: GameState,
+  nextState: GameState,
+  notification: GameNotificationInput,
+): GameState {
+  if (nextState === previousState) {
+    return previousState;
+  }
+
+  return {
+    ...nextState,
+    notification: createGameNotification(notification),
+  };
+}
+
+function getFinalJeopardyPhaseNotification(
+  phase: Parameters<typeof setFinalJeopardyPhase>[1],
+): GameNotificationInput {
+  switch (phase) {
+    case 'category':
+      return {
+        tone: 'warning',
+        title: 'Final Jeopardy',
+        message: 'The final category is now on the board.',
+        durationMs: 4200,
+      };
+    case 'wager':
+      return {
+        tone: 'warning',
+        title: 'Wagers Open',
+        message: 'Teams should lock in their Final Jeopardy wagers.',
+        durationMs: 4200,
+      };
+    case 'clue':
+      return {
+        tone: 'info',
+        title: 'Final Clue Live',
+        message: 'The final clue is live. Teams should prepare their responses.',
+        durationMs: 4200,
+      };
+    case 'responses':
+      return {
+        tone: 'info',
+        title: 'Responses In Progress',
+        message: 'Responses are being collected now.',
+        durationMs: 3600,
+      };
+    case 'review':
+      return {
+        tone: 'warning',
+        title: 'Judging Responses',
+        message: 'The host is reviewing each Final Jeopardy response.',
+        durationMs: 3600,
+      };
+    case 'results':
+      return {
+        tone: 'success',
+        title: 'Final Results',
+        message: 'Final Jeopardy results are on screen.',
+        durationMs: 5000,
+      };
+  }
+}
+
 interface BootstrapState {
   config: GameConfig;
   selectedBundledGameId: string;
@@ -362,9 +450,14 @@ export default function App() {
     shouldRouteAudioToBoard && routedLoopingCue ? [routedLoopingCue] : activeCueIds;
   const displayedActiveLoopingCue = shouldRouteAudioToBoard ? routedLoopingCue : activeLoopingCue;
   const shouldShowBoardHeader = !isBoardView || !isPresenterMode || isBoardHeaderForcedVisible;
-  const shouldShowHostSidebar = hostVisiblePanels.clue || hostVisiblePanels.setup;
+  const shouldShowHostSidebar = hostVisiblePanels.setup;
   const shouldShowControlBar =
     shouldShowBoardHeader && (viewMode !== 'host' || Boolean(activeFinalJeopardy));
+  const notificationOffsetClass = shouldShowControlBar
+    ? isBoardView
+      ? 'top-20 sm:top-24'
+      : 'top-24 sm:top-28'
+    : 'top-4 sm:top-6';
 
   const sharedSnapshot: SharedSessionSnapshot = {
     config,
@@ -519,9 +612,13 @@ export default function App() {
 
   useEffect(() => {
     const viewLabel =
-      viewMode === 'board' ? 'Board View' : viewMode === 'host' ? 'Host View' : 'Single View';
+      viewMode === 'board' ? 'Board' : viewMode === 'host' ? 'Host' : 'Single View';
     const roundLabel = activeFinalJeopardy ? ' | Final Jeopardy' : '';
-    document.title = `${config.title} | ${viewLabel}${roundLabel}`;
+    if(viewMode === 'board'){
+      document.title = `${config.title} | ${viewLabel}${roundLabel}`;
+    } else {
+      document.title = `${viewLabel}${roundLabel} | ${config.title}`;
+    }
   }, [activeFinalJeopardy, config.title, viewMode]);
 
   useEffect(() => {
@@ -580,12 +677,39 @@ export default function App() {
       void playSessionCue('dailyDouble');
     }
 
-    setGameState((currentState) => selectClue(currentState, clueId));
+    setGameState((currentState) =>
+      withGameNotification(
+        currentState,
+        selectClue(currentState, clueId),
+        clueEntry?.clue.dailyDouble
+          ? {
+              tone: 'warning',
+              title: 'Daily Double',
+              message: `${clueEntry.categoryTitle} for ${formatCurrencyValue(clueEntry.clue.value)} is live.`,
+              durationMs: 4500,
+            }
+          : {
+              tone: 'info',
+              title: 'New Clue',
+              message: clueEntry
+                ? `${clueEntry.categoryTitle} for ${formatCurrencyValue(clueEntry.clue.value)} is on screen.`
+                : 'A new clue is now on screen.',
+              durationMs: 3600,
+            },
+      ),
+    );
   };
 
   const handleReveal = () => {
     stopSessionCue('thinkMusic');
-    setGameState((currentState) => revealQuestion(currentState));
+    setGameState((currentState) =>
+      withGameNotification(currentState, revealQuestion(currentState), {
+        tone: 'warning',
+        title: 'Correct Response Revealed',
+        message: 'The host is judging the clue now.',
+        durationMs: 3200,
+      }),
+    );
   };
 
   const handleOpenClueMedia = (mediaIndex: number) => {
@@ -615,12 +739,31 @@ export default function App() {
 
   const handleCloseClue = () => {
     playClueCloseSound(false);
-    setGameState((currentState) => closeClue(currentState));
+    setGameState((currentState) =>
+      withGameNotification(currentState, closeClue(currentState), {
+        tone: answeredClues === totalClues ? 'warning' : 'info',
+        title: answeredClues === totalClues ? 'Board Complete' : 'Next Clue',
+        message:
+          answeredClues === totalClues
+            ? finalJeopardyConfig
+              ? 'Main board complete. Final Jeopardy is ready.'
+              : 'Main board complete.'
+            : 'Select the next clue on the board.',
+        durationMs: answeredClues === totalClues ? 4200 : 2600,
+      }),
+    );
   };
 
   const handleRestoreClue = () => {
     stopSessionCue('thinkMusic');
-    setGameState((currentState) => restoreSelectedClue(currentState));
+    setGameState((currentState) =>
+      withGameNotification(currentState, restoreSelectedClue(currentState), {
+        tone: 'warning',
+        title: 'Clue Returned',
+        message: 'That tile is back on the board.',
+        durationMs: 2800,
+      }),
+    );
   };
 
   const handleMarkClue = (isCorrect: boolean) => {
@@ -635,19 +778,54 @@ export default function App() {
       void playSessionCue(isCorrect ? 'correctAnswer' : 'tripleStumper');
     }
 
-    setGameState((currentState) =>
-      applyClueOutcome(
+    setGameState((currentState) => {
+      const activeTeam = currentState.teams.find((team) => team.id === activeTeamId);
+      const nextState = applyClueOutcome(
         currentState,
         activeTeamId,
         activeClue.clue.value,
         isCorrect,
         config.settings.subtractOnIncorrect,
-      ),
-    );
+      );
+
+      return withGameNotification(
+        currentState,
+        nextState,
+        isCorrect
+          ? {
+              tone: 'success',
+              title: `${activeTeam?.name ?? 'Team'} Correct`,
+              message: `${formatScore(activeClue.clue.value)} awarded.${isLastClue ? ` ${finalJeopardyConfig ? 'Main board complete. Final Jeopardy is ready.' : 'Main board complete.'}` : ''}`,
+              durationMs: 4200,
+            }
+          : {
+              tone: config.settings.subtractOnIncorrect ? 'error' : 'warning',
+              title: `${activeTeam?.name ?? 'Team'} Incorrect`,
+              message: config.settings.subtractOnIncorrect
+                ? `${formatScore(-activeClue.clue.value)} recorded.${isLastClue ? ` ${finalJeopardyConfig ? 'Main board complete. Final Jeopardy is ready.' : 'Main board complete.'}` : ''}`
+                : `Incorrect answer recorded with no score change.${isLastClue ? ` ${finalJeopardyConfig ? 'Main board complete. Final Jeopardy is ready.' : 'Main board complete.'}` : ''}`,
+              durationMs: 4200,
+            },
+      );
+    });
   };
 
   const handleAdjustTeamScore = (teamId: string, delta: number) => {
-    setGameState((currentState) => adjustTeamScore(currentState, teamId, delta));
+    setGameState((currentState) => {
+      const nextState = adjustTeamScore(currentState, teamId, delta);
+      const team = currentState.teams.find((entry) => entry.id === teamId);
+
+      return withGameNotification(
+        currentState,
+        nextState,
+        {
+          tone: delta > 0 ? 'success' : 'error',
+          title: 'Score Updated',
+          message: `${team?.name ?? 'Team'} ${delta > 0 ? 'gained' : 'lost'} ${formatCurrencyValue(Math.abs(delta))}.`,
+          durationMs: 3600,
+        },
+      );
+    });
   };
 
   const handleStartFinalJeopardy = () => {
@@ -658,13 +836,26 @@ export default function App() {
     stopAllSessionAudio();
     setIsHostPanelOpen(false);
     setIsConfigEditorOpen(false);
-    setGameState((currentState) => startFinalJeopardy(currentState, config));
+    setGameState((currentState) =>
+      withGameNotification(currentState, startFinalJeopardy(currentState, config), {
+        tone: 'warning',
+        title: 'Final Jeopardy',
+        message: 'Final Jeopardy is starting now.',
+        durationMs: 5000,
+      }),
+    );
   };
 
   const handleSetFinalJeopardyPhase = (
     phase: Parameters<typeof setFinalJeopardyPhase>[1],
   ) => {
-    setGameState((currentState) => setFinalJeopardyPhase(currentState, phase));
+    setGameState((currentState) =>
+      withGameNotification(
+        currentState,
+        setFinalJeopardyPhase(currentState, phase),
+        getFinalJeopardyPhaseNotification(phase),
+      ),
+    );
   };
 
   const handleSetFinalJeopardyWagers = (wagersByTeamId: Record<string, number>) => {
@@ -681,7 +872,14 @@ export default function App() {
 
   const handleApplyFinalJeopardyResults = () => {
     stopSessionCue('thinkMusic');
-    setGameState((currentState) => applyFinalJeopardyResults(currentState));
+    setGameState((currentState) =>
+      withGameNotification(currentState, applyFinalJeopardyResults(currentState), {
+        tone: 'success',
+        title: 'Scores Finalized',
+        message: 'Final Jeopardy scores have been applied.',
+        durationMs: 5000,
+      }),
+    );
   };
 
   const handleResetScores = () => {
@@ -689,7 +887,14 @@ export default function App() {
       return;
     }
 
-    setGameState((currentState) => resetScores(currentState));
+    setGameState((currentState) =>
+      withGameNotification(currentState, resetScores(currentState), {
+        tone: 'warning',
+        title: 'Scores Reset',
+        message: 'All team scores are back to zero.',
+        durationMs: 3600,
+      }),
+    );
   };
 
   const handleResetGame = () => {
@@ -702,7 +907,14 @@ export default function App() {
     }
 
     stopAllSessionAudio();
-    setGameState(resetGame(config));
+    setGameState((currentState) =>
+      withGameNotification(currentState, resetGame(config), {
+        tone: 'warning',
+        title: 'Board Reset',
+        message: 'The board and all team scores have been reset.',
+        durationMs: 4200,
+      }),
+    );
     setActiveTeamId(config.teams[0]?.id ?? null);
     setIsHostPanelOpen(false);
     setBoardEntranceCycle((currentCycle) => currentCycle + 1);
@@ -886,7 +1098,10 @@ export default function App() {
     setConfig(snapshot.config);
     setSelectedBundledGameId(snapshot.selectedBundledGameId || bundledGameCatalog.defaultGame.id);
     setIsUsingLocalConfig(snapshot.isUsingLocalConfig);
-    setGameState(snapshot.gameState);
+    setGameState({
+      ...snapshot.gameState,
+      notification: snapshot.gameState.notification ?? null,
+    });
     setActiveTeamId(snapshot.activeTeamId);
     setManualScoreDelta(snapshot.manualScoreDelta);
     setIsPresenterMode(snapshot.isPresenterMode);
@@ -1152,13 +1367,10 @@ export default function App() {
                     activeMediaIndex={gameState.activeClueMediaIndex}
                     teams={gameState.teams}
                     activeTeamId={activeTeamId}
-                    manualScoreDelta={manualScoreDelta}
                     isFinalJeopardyReady={isFinalJeopardyReady}
                     finalJeopardyEligibleTeamCount={eligibleFinalJeopardyTeams.length}
                     subtractOnIncorrect={config.settings.subtractOnIncorrect}
                     onSelectTeam={handleSelectTeam}
-                    onManualScoreDeltaChange={(value) => setManualScoreDelta(Math.max(0, value))}
-                    onAdjustTeamScore={handleAdjustTeamScore}
                     onStartFinalJeopardy={handleStartFinalJeopardy}
                     onReveal={handleReveal}
                     onMarkCorrect={() => handleMarkClue(true)}
@@ -1167,6 +1379,8 @@ export default function App() {
                     onRestoreClue={handleRestoreClue}
                     onOpenMedia={handleOpenClueMedia}
                     onCloseMedia={handleCloseClueMedia}
+                    showCluePreview={hostVisiblePanels.clue}
+                    onHideCluePreview={() => toggleHostVisiblePanel('clue')}
                     onHide={() => toggleHostVisiblePanel('gameplay')}
                   />
                 ) : null}
@@ -1219,9 +1433,9 @@ export default function App() {
                 <HostConsole
                   bundledGames={bundledGameCatalog.games}
                   selectedBundledGameId={selectedBundledGameId}
-                  clueEntry={activeClue}
-                  isRevealed={gameState.isQuestionRevealed}
-                  activeMediaIndex={gameState.activeClueMediaIndex}
+                  teams={gameState.teams}
+                  activeTeamId={activeTeamId}
+                  manualScoreDelta={manualScoreDelta}
                   isLocalStorageEnabled={config.settings.enableLocalStorage}
                   isUsingLocalConfig={isUsingLocalConfig}
                   isConfigSoundEnabled={isConfigSoundEnabled}
@@ -1241,11 +1455,10 @@ export default function App() {
                   onResetGame={handleResetGame}
                   onClearSavedState={handleClearSavedState}
                   onResetLocalConfig={handleResetLocalConfig}
-                  onOpenMedia={handleOpenClueMedia}
-                  onCloseMedia={handleCloseClueMedia}
-                  showClueSection={hostVisiblePanels.clue}
+                  onSelectTeam={handleSelectTeam}
+                  onManualScoreDeltaChange={(value) => setManualScoreDelta(Math.max(0, value))}
+                  onAdjustTeamScore={handleAdjustTeamScore}
                   showSetupSection={hostVisiblePanels.setup}
-                  onHideClueSection={() => toggleHostVisiblePanel('clue')}
                   onHideSetupSection={() => toggleHostVisiblePanel('setup')}
                 />
               ) : null}
@@ -1306,6 +1519,13 @@ export default function App() {
             </div>
           </div>
         </div>
+      ) : null}
+
+      {viewMode !== 'host' ? (
+        <GameNotificationBanner
+          notification={gameState.notification}
+          offsetClassName={notificationOffsetClass}
+        />
       ) : null}
 
       {viewMode === 'single' && !activeFinalJeopardy ? (

@@ -147,59 +147,12 @@ export function HostControlsSections({
       <section className="panel-inset p-4">
         <div className="flex items-center justify-between gap-3">
           <div>
-            <p className="panel-heading">Setup & Config</p>
+            <p className="panel-heading">Session Actions</p>
           </div>
           {isUsingLocalConfig ? <span className="brand-tag">Local Edits Active</span> : null}
         </div>
 
-        <div className="mt-5">
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">
-            Bundled Games
-          </p>
-        </div>
-
-        <div className="mt-3 space-y-2">
-          {bundledGames.map((bundledGame) => {
-            const isSelected = bundledGame.id === selectedBundledGameId;
-            const isActive = isSelected && !isUsingLocalConfig;
-
-            return (
-              <button
-                key={bundledGame.id}
-                type="button"
-                onClick={() => onSelectBundledGame(bundledGame.id)}
-                disabled={isActive}
-                className={[
-                  'flex w-full items-center justify-between gap-3 rounded-[1.35rem] border px-4 py-3 text-left transition',
-                  isSelected
-                    ? 'border-amber-300/35 bg-amber-300/10'
-                    : 'border-white/10 bg-white/5 hover:border-sky-300/35 hover:bg-sky-300/10',
-                  isActive ? 'cursor-default' : '',
-                ].join(' ')}
-              >
-                <div>
-                  <p className="text-sm font-bold uppercase tracking-[0.18em] text-slate-50">
-                    {bundledGame.label}
-                  </p>
-                  <p className="mt-1 text-xs leading-5 text-slate-300">
-                    {bundledGame.description}
-                  </p>
-                </div>
-                <span className="brand-tag shrink-0">
-                  {isActive ? 'Active' : isSelected ? 'Base Game' : 'Load'}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-
-        <div className="mt-5">
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">
-            Session Actions
-          </p>
-        </div>
-
-        <div className="mt-3 flex flex-wrap gap-2">
+        <div className="mt-4 flex flex-wrap gap-2">
           <Tooltip content="Open the local-only editor for title, teams, categories, clues, and settings.">
             <button type="button" onClick={onOpenConfigEditor} className="control-button">
               Edit Game
@@ -266,6 +219,62 @@ export function HostControlsSections({
             {transferStatus.message}
           </div>
         ) : null}
+      </section>
+
+      <SoundControls
+        soundDefinitions={soundDefinitions}
+        isConfigSoundEnabled={isConfigSoundEnabled}
+        isSoundOutputEnabled={isSoundOutputEnabled}
+        activeCueIds={activeCueIds}
+        activeLoopingCue={activeLoopingCue}
+        onToggleSoundOutput={onToggleSoundOutput}
+        onPreviewCue={onPreviewCue}
+        onStopCue={onStopCue}
+        onStopAll={onStopAllSounds}
+      />
+
+      <section className="panel-inset p-4">
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <p className="panel-heading">Bundled Games</p>
+          </div>
+          <span className="brand-tag">{bundledGames.length} Available</span>
+        </div>
+
+        <div className="mt-4 space-y-2">
+          {bundledGames.map((bundledGame) => {
+            const isSelected = bundledGame.id === selectedBundledGameId;
+            const isActive = isSelected && !isUsingLocalConfig;
+
+            return (
+              <button
+                key={bundledGame.id}
+                type="button"
+                onClick={() => onSelectBundledGame(bundledGame.id)}
+                disabled={isActive}
+                className={[
+                  'flex w-full items-center justify-between gap-3 rounded-[1.35rem] border px-4 py-3 text-left transition',
+                  isSelected
+                    ? 'border-amber-300/35 bg-amber-300/10'
+                    : 'border-white/10 bg-white/5 hover:border-sky-300/35 hover:bg-sky-300/10',
+                  isActive ? 'cursor-default' : '',
+                ].join(' ')}
+              >
+                <div>
+                  <p className="text-sm font-bold uppercase tracking-[0.18em] text-slate-50">
+                    {bundledGame.label}
+                  </p>
+                  <p className="mt-1 text-xs leading-5 text-slate-300">
+                    {bundledGame.description}
+                  </p>
+                </div>
+                <span className="brand-tag shrink-0">
+                  {isActive ? 'Active' : isSelected ? 'Base Game' : 'Load'}
+                </span>
+              </button>
+            );
+          })}
+        </div>
       </section>
 
       {showFinalJeopardyAction && onStartFinalJeopardy && isFinalJeopardyReady ? (
@@ -387,18 +396,6 @@ export function HostControlsSections({
           </div>
         </section>
       ) : null}
-
-      <SoundControls
-        soundDefinitions={soundDefinitions}
-        isConfigSoundEnabled={isConfigSoundEnabled}
-        isSoundOutputEnabled={isSoundOutputEnabled}
-        activeCueIds={activeCueIds}
-        activeLoopingCue={activeLoopingCue}
-        onToggleSoundOutput={onToggleSoundOutput}
-        onPreviewCue={onPreviewCue}
-        onStopCue={onStopCue}
-        onStopAll={onStopAllSounds}
-      />
 
       <section className="panel-inset p-4">
         <p className="panel-heading">Keyboard</p>
