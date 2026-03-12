@@ -13,6 +13,7 @@ interface ControlBarProps {
   syncTransport: 'broadcast' | 'broadcast+storage' | 'storage' | 'none';
   compact?: boolean;
   onOpenHostPanel?: () => void;
+  onHideCompactHeader?: () => void;
   onOpenBoardWindow: () => void;
   onOpenHostWindow: () => void;
   onOpenSingleWindow: () => void;
@@ -30,6 +31,7 @@ export function ControlBar({
   syncTransport,
   compact = false,
   onOpenHostPanel,
+  onHideCompactHeader,
   onOpenBoardWindow,
   onOpenHostWindow,
   onOpenSingleWindow,
@@ -96,6 +98,13 @@ export function ControlBar({
             <Tooltip content="Open or focus the combined single-window layout for this session.">
               <button type="button" onClick={onOpenSingleWindow} className="secondary-button">
                 Single
+              </button>
+            </Tooltip>
+          ) : null}
+          {compact && onHideCompactHeader ? (
+            <Tooltip content="Hide these header controls again and return to the presentation view.">
+              <button type="button" onClick={onHideCompactHeader} className="secondary-button">
+                Hide
               </button>
             </Tooltip>
           ) : null}

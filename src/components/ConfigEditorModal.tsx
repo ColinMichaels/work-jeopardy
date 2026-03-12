@@ -1,6 +1,12 @@
 import { useEffect, useState } from 'react';
 import { ConfigCategoryEditor } from './ConfigCategoryEditor';
-import type { CategoryConfig, ClueConfig, GameConfig, TeamConfig } from '../types/game-config';
+import type {
+  CategoryConfig,
+  ClueConfig,
+  FinalJeopardyConfig,
+  GameConfig,
+  TeamConfig,
+} from '../types/game-config';
 
 interface ApplyConfigResult {
   ok: boolean;
@@ -16,6 +22,17 @@ interface ConfigEditorModalProps {
 
 function cloneConfig(config: GameConfig): GameConfig {
   return JSON.parse(JSON.stringify(config)) as GameConfig;
+}
+
+function createDefaultFinalJeopardyConfig(): FinalJeopardyConfig {
+  return {
+    enabled: false,
+    category: '',
+    clue: '',
+    correctResponse: '',
+    timerSeconds: 30,
+    allowNonPositiveScores: false,
+  };
 }
 
 function slugify(value: string, fallback: string): string {
@@ -114,6 +131,8 @@ export function ConfigEditorModal({
   if (!isOpen) {
     return null;
   }
+
+  const finalJeopardy = draft.finalJeopardy ?? createDefaultFinalJeopardyConfig();
 
   const updateTeam = (teamId: string, updater: (team: TeamConfig) => TeamConfig) => {
     setDraft((current) => ({
@@ -403,6 +422,131 @@ export function ConfigEditorModal({
                         }))
                       }
                       className="field-input text-base"
+                    />
+                  </label>
+                </div>
+              </div>
+
+              <div className="panel-inset p-5">
+                <h3 className="brand-overline text-[11px] font-semibold uppercase tracking-[0.35em]">
+                  Final Jeopardy
+                </h3>
+                <div className="mt-4 space-y-4">
+                  <label className="flex items-center justify-between gap-4 rounded-2xl border border-white/10 bg-[rgba(2,8,33,0.64)] px-4 py-3">
+                    <span className="text-sm font-semibold text-slate-200">Enable round</span>
+                    <input
+                      type="checkbox"
+                      checked={finalJeopardy.enabled}
+                      onChange={(event) =>
+                        setDraft((current) => ({
+                          ...current,
+                          finalJeopardy: {
+                            ...(current.finalJeopardy ?? createDefaultFinalJeopardyConfig()),
+                            enabled: event.target.checked,
+                          },
+                        }))
+                      }
+                      className="h-5 w-5 rounded border-white/20 bg-slate-950 text-amber-300 focus:ring-amber-300/30"
+                    />
+                  </label>
+
+                  <label className="block">
+                    <span className="mb-2 block text-sm font-semibold text-slate-200">
+                      Category
+                    </span>
+                    <input
+                      type="text"
+                      value={finalJeopardy.category}
+                      onChange={(event) =>
+                        setDraft((current) => ({
+                          ...current,
+                          finalJeopardy: {
+                            ...(current.finalJeopardy ?? createDefaultFinalJeopardyConfig()),
+                            category: event.target.value,
+                          },
+                        }))
+                      }
+                      className="field-input text-base"
+                    />
+                  </label>
+
+                  <label className="block">
+                    <span className="mb-2 block text-sm font-semibold text-slate-200">Clue</span>
+                    <textarea
+                      value={finalJeopardy.clue}
+                      onChange={(event) =>
+                        setDraft((current) => ({
+                          ...current,
+                          finalJeopardy: {
+                            ...(current.finalJeopardy ?? createDefaultFinalJeopardyConfig()),
+                            clue: event.target.value,
+                          },
+                        }))
+                      }
+                      className="field-input min-h-28 resize-y text-base"
+                    />
+                  </label>
+
+                  <label className="block">
+                    <span className="mb-2 block text-sm font-semibold text-slate-200">
+                      Correct Response
+                    </span>
+                    <input
+                      type="text"
+                      value={finalJeopardy.correctResponse}
+                      onChange={(event) =>
+                        setDraft((current) => ({
+                          ...current,
+                          finalJeopardy: {
+                            ...(current.finalJeopardy ?? createDefaultFinalJeopardyConfig()),
+                            correctResponse: event.target.value,
+                          },
+                        }))
+                      }
+                      className="field-input text-base"
+                    />
+                  </label>
+
+                  <label className="block">
+                    <span className="mb-2 block text-sm font-semibold text-slate-200">
+                      Timer Seconds
+                    </span>
+                    <input
+                      type="number"
+                      min="1"
+                      value={finalJeopardy.timerSeconds ?? ''}
+                      onChange={(event) =>
+                        setDraft((current) => ({
+                          ...current,
+                          finalJeopardy: {
+                            ...(current.finalJeopardy ?? createDefaultFinalJeopardyConfig()),
+                            timerSeconds: event.target.value
+                              ? Number.parseInt(event.target.value, 10)
+                              : undefined,
+                          },
+                        }))
+                      }
+                      className="field-input text-base"
+                    />
+                  </label>
+
+                  <label className="flex items-center justify-between gap-4 rounded-2xl border border-white/10 bg-[rgba(2,8,33,0.64)] px-4 py-3">
+                    <span className="text-sm font-semibold text-slate-200">
+                      Allow non-positive scores
+                    </span>
+                    <input
+                      type="checkbox"
+                      checked={finalJeopardy.allowNonPositiveScores ?? false}
+                      onChange={(event) =>
+                        setDraft((current) => ({
+                          ...current,
+                          finalJeopardy: {
+                            ...(current.finalJeopardy ?? createDefaultFinalJeopardyConfig()),
+                            allowNonPositiveScores: event.target.checked,
+                          },
+                        }))
+                      }
+                      className="h-5 w-5 rounded border-white/20 bg-slate-950 text-amber-300 focus:ring-amber-300/30"
                     />
                   </label>
                 </div>

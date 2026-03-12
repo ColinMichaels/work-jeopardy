@@ -15,6 +15,7 @@ interface ClueModalProps {
   onMarkCorrect: () => void;
   onMarkIncorrect: () => void;
   onClose: () => void;
+  onRestoreClue: () => void;
 }
 
 export function ClueModal({
@@ -29,6 +30,7 @@ export function ClueModal({
   onMarkCorrect,
   onMarkIncorrect,
   onClose,
+  onRestoreClue,
 }: ClueModalProps) {
   if (!clueEntry) {
     return null;
@@ -38,8 +40,8 @@ export function ClueModal({
   const isPresentation = variant === 'presentation';
 
   return (
-    <div className="fixed inset-0 z-50 bg-slate-950/85 p-4 backdrop-blur-sm sm:p-6">
-      <div className="modal-shell mx-auto flex h-full max-w-6xl flex-col">
+    <div className="scene-overlay-enter fixed inset-0 z-50 bg-slate-950/85 p-4 backdrop-blur-sm sm:p-6">
+      <div className="modal-shell scene-stage-enter mx-auto flex h-full max-w-6xl flex-col">
         <div className="flex items-start justify-between gap-4 border-b border-white/10 px-6 py-5">
           <div>
             <p className="brand-overline text-xs font-semibold uppercase tracking-[0.45em]">
@@ -190,6 +192,15 @@ export function ClueModal({
                   <Tooltip content="Return to the board without changing scores.">
                     <button type="button" onClick={onClose} className="secondary-button w-full">
                       Return to Board
+                    </button>
+                  </Tooltip>
+                  <Tooltip content="Put this clue back on the board as unused and close it.">
+                    <button
+                      type="button"
+                      onClick={onRestoreClue}
+                      className="secondary-button w-full"
+                    >
+                      Return Tile
                     </button>
                   </Tooltip>
                 </div>

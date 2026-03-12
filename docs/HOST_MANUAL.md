@@ -46,6 +46,25 @@ Before the meeting starts:
 - Use `Mark Incorrect` to apply the incorrect-answer rule.
 - Use manual score controls when you need an adjustment outside normal clue scoring.
 
+### Final Jeopardy
+
+If Final Jeopardy is enabled in the game config:
+
+1. Finish the main board.
+2. Use `Start Final` from the host controls.
+3. Reveal the category and move to wagers.
+4. Enter wagers for each eligible team and lock them.
+5. Reveal the final clue.
+6. Record each team response.
+7. Judge each response as correct or incorrect.
+8. Apply the results and announce the winner.
+
+Important:
+
+- The host view sees the correct response during the clue and review phases before the board does.
+- The board window never shows wagers during the wager phase.
+- By default, only teams above `0` can participate unless the config allows otherwise.
+
 ### Sounds
 
 - Sound playback is most reliable from the host window.
@@ -85,6 +104,7 @@ Important:
 - Those edits are browser-local only.
 - They do not change the source JSON in the repo.
 - If you want those edits in the next distributable build, copy them back into [`src/data/sample-game.json`](../src/data/sample-game.json) and rebuild.
+- Final Jeopardy content can also be edited from the local host editor.
 
 ## Resets And Persistence
 
@@ -136,3 +156,10 @@ These shortcuts are ignored while typing in form fields.
 - Edit [`src/data/sample-game.json`](../src/data/sample-game.json).
 - Rebuild with `npm run build`.
 - Hand off the full `dist/` folder again.
+
+### Final Jeopardy will not start
+
+- Confirm the game config has `finalJeopardy.enabled` set to `true`.
+- Finish the main board first.
+- Check whether any teams are eligible under the current score rules.
+- If needed, enable `allowNonPositiveScores` in the config.

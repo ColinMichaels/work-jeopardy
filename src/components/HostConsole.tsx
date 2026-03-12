@@ -11,11 +11,14 @@ interface HostConsoleProps {
   teams: TeamState[];
   activeTeamId: string | null;
   manualScoreDelta: number;
+  isFinalJeopardyReady?: boolean;
+  finalJeopardyEligibleTeamCount?: number;
   subtractOnIncorrect: boolean;
   isLocalStorageEnabled: boolean;
   isUsingLocalConfig: boolean;
   isConfigSoundEnabled: boolean;
   isSoundOutputEnabled: boolean;
+  activeCueIds: GameSoundCue[];
   soundDefinitions: ReadonlyArray<{
     cue: GameSoundCue;
     label: string;
@@ -35,10 +38,12 @@ interface HostConsoleProps {
   onResetGame: () => void;
   onClearSavedState: () => void;
   onResetLocalConfig: () => void;
+  onStartFinalJeopardy?: () => void;
   onReveal: () => void;
   onMarkCorrect: () => void;
   onMarkIncorrect: () => void;
   onCloseClue: () => void;
+  onRestoreClue: () => void;
 }
 
 export function HostConsole({
@@ -47,11 +52,14 @@ export function HostConsole({
   teams,
   activeTeamId,
   manualScoreDelta,
+  isFinalJeopardyReady = false,
+  finalJeopardyEligibleTeamCount = 0,
   subtractOnIncorrect,
   isLocalStorageEnabled,
   isUsingLocalConfig,
   isConfigSoundEnabled,
   isSoundOutputEnabled,
+  activeCueIds,
   soundDefinitions,
   activeLoopingCue,
   onSelectTeam,
@@ -66,10 +74,12 @@ export function HostConsole({
   onResetGame,
   onClearSavedState,
   onResetLocalConfig,
+  onStartFinalJeopardy,
   onReveal,
   onMarkCorrect,
   onMarkIncorrect,
   onCloseClue,
+  onRestoreClue,
 }: HostConsoleProps) {
   const clue = clueEntry?.clue ?? null;
   const currentClue = clueEntry?.clue;
@@ -184,12 +194,36 @@ export function HostConsole({
                 <button
                   type="button"
                   onClick={onCloseClue}
-                  className="secondary-button w-full sm:col-span-2"
+                  className="secondary-button w-full"
                 >
                   Close Clue
                 </button>
               </Tooltip>
+              <Tooltip content="Return the current clue tile to the board as unused and close it everywhere.">
+                <button
+                  type="button"
+                  onClick={onRestoreClue}
+                  className="secondary-button w-full"
+                >
+                  Return Tile
+                </button>
+              </Tooltip>
             </div>
+          </div>
+        ) : isFinalJeopardyReady && onStartFinalJeopardy ? (
+          <div className="panel-inset mt-5 space-y-4 border-amber-300/30 bg-amber-300/10 p-5">
+            <div className="text-center">
+              <p className="brand-overline text-[11px] font-semibold uppercase tracking-[0.35em]">
+                Final Jeopardy Ready
+              </p>
+              <p className="mt-3 text-sm leading-6 text-slate-100">
+                The main board is complete. Start Final Jeopardy from here or from the host
+                controls below.
+              </p>
+            </div>
+            <button type="button" onClick={onStartFinalJeopardy} className="control-button w-full">
+              Start Final Jeopardy
+            </button>
           </div>
         ) : (
           <div className="panel-muted mt-5 px-4 py-10 text-center text-[11px] font-semibold uppercase tracking-[0.34em]">
@@ -204,10 +238,13 @@ export function HostConsole({
             teams={teams}
             activeTeamId={activeTeamId}
             manualScoreDelta={manualScoreDelta}
+            isFinalJeopardyReady={isFinalJeopardyReady}
+            finalJeopardyEligibleTeamCount={finalJeopardyEligibleTeamCount}
             isLocalStorageEnabled={isLocalStorageEnabled}
             isUsingLocalConfig={isUsingLocalConfig}
             isConfigSoundEnabled={isConfigSoundEnabled}
             isSoundOutputEnabled={isSoundOutputEnabled}
+            activeCueIds={activeCueIds}
             soundDefinitions={soundDefinitions}
             activeLoopingCue={activeLoopingCue}
             onSelectTeam={onSelectTeam}
@@ -222,6 +259,7 @@ export function HostConsole({
             onResetGame={onResetGame}
             onClearSavedState={onClearSavedState}
             onResetLocalConfig={onResetLocalConfig}
+            onStartFinalJeopardy={onStartFinalJeopardy}
           />
         </div>
       </section>

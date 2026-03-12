@@ -8,10 +8,13 @@ interface HostControlsSectionsProps {
   teams: TeamState[];
   activeTeamId: string | null;
   manualScoreDelta: number;
+  isFinalJeopardyReady?: boolean;
+  finalJeopardyEligibleTeamCount?: number;
   isLocalStorageEnabled: boolean;
   isUsingLocalConfig: boolean;
   isConfigSoundEnabled: boolean;
   isSoundOutputEnabled: boolean;
+  activeCueIds: GameSoundCue[];
   soundDefinitions: ReadonlyArray<{
     cue: GameSoundCue;
     label: string;
@@ -31,16 +34,20 @@ interface HostControlsSectionsProps {
   onResetGame: () => void;
   onClearSavedState: () => void;
   onResetLocalConfig: () => void;
+  onStartFinalJeopardy?: () => void;
 }
 
 export function HostControlsSections({
   teams,
   activeTeamId,
   manualScoreDelta,
+  isFinalJeopardyReady = false,
+  finalJeopardyEligibleTeamCount = 0,
   isLocalStorageEnabled,
   isUsingLocalConfig,
   isConfigSoundEnabled,
   isSoundOutputEnabled,
+  activeCueIds,
   soundDefinitions,
   activeLoopingCue,
   onSelectTeam,
@@ -55,9 +62,35 @@ export function HostControlsSections({
   onResetGame,
   onClearSavedState,
   onResetLocalConfig,
+  onStartFinalJeopardy,
 }: HostControlsSectionsProps) {
   return (
     <>
+      {isFinalJeopardyReady && onStartFinalJeopardy ? (
+        <section className="panel-inset border-amber-300/30 bg-amber-300/10 p-4">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <p className="brand-overline text-[11px] font-semibold uppercase tracking-[0.35em]">
+                Final Jeopardy
+              </p>
+              <p className="mt-2 text-sm text-slate-200">
+                {finalJeopardyEligibleTeamCount > 0
+                  ? `${finalJeopardyEligibleTeamCount} teams are eligible for the final round.`
+                  : 'No teams are currently eligible for the final round.'}
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={onStartFinalJeopardy}
+              disabled={finalJeopardyEligibleTeamCount === 0}
+              className="control-button disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Start Final
+            </button>
+          </div>
+        </section>
+      ) : null}
+
       <section className="panel-inset p-4">
         <div className="flex flex-wrap gap-2">
           <Tooltip content="Open the local-only editor for title, teams, categories, clues, and settings.">
@@ -96,6 +129,7 @@ export function HostControlsSections({
         soundDefinitions={soundDefinitions}
         isConfigSoundEnabled={isConfigSoundEnabled}
         isSoundOutputEnabled={isSoundOutputEnabled}
+        activeCueIds={activeCueIds}
         activeLoopingCue={activeLoopingCue}
         onToggleSoundOutput={onToggleSoundOutput}
         onPreviewCue={onPreviewCue}

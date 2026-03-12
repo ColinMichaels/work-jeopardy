@@ -1,6 +1,17 @@
-import type { GameState, PersistedGameState } from '../models/game';
+import type {
+  FinalJeopardyPhase,
+  FinalJeopardyState,
+  GameState,
+  PersistedGameState,
+} from '../models/game';
 import type { TeamState } from '../models/team';
 import type { GameConfig } from '../types/game-config';
+import {
+  applyFinalJeopardyScores,
+  buildTeamScoreSnapshot,
+  getEligibleFinalJeopardyTeams,
+  getFinalJeopardyConfig,
+} from './final-jeopardy';
 import { getScoreDelta } from './score-utils';
 
 function buildInitialTeams(config: GameConfig): TeamState[] {
@@ -15,12 +26,120 @@ function buildClueIdSet(config: GameConfig): Set<string> {
   return new Set(config.categories.flatMap((category) => category.clues.map((clue) => clue.id)));
 }
 
+function isFinalJeopardyPhase(value: unknown): value is FinalJeopardyPhase {
+  return (
+    value === 'category' ||
+    value === 'wager' ||
+    value === 'clue' ||
+    value === 'responses' ||
+    value === 'review' ||
+    value === 'results'
+  );
+}
+
+function buildPhaseTimestamp(phase: FinalJeopardyPhase): number | null {
+  return phase === 'clue' ? Date.now() : null;
+}
+
+function filterNumberRecord(
+  source: Record<string, number>,
+  validKeys: Set<string>,
+): Record<string, number> {
+  return Object.entries(source).reduce<Record<string, number>>((result, [key, value]) => {
+    if (validKeys.has(key) && Number.isFinite(value)) {
+      result[key] = value;
+    }
+
+    return result;
+  }, {});
+}
+
+function filterStringRecord(
+  source: Record<string, string>,
+  validKeys: Set<string>,
+): Record<string, string> {
+  return Object.entries(source).reduce<Record<string, string>>((result, [key, value]) => {
+    if (validKeys.has(key) && typeof value === 'string') {
+      result[key] = value;
+    }
+
+    return result;
+  }, {});
+}
+
+function filterBooleanRecord(
+  source: Record<string, boolean>,
+  validKeys: Set<string>,
+): Record<string, boolean> {
+  return Object.entries(source).reduce<Record<string, boolean>>((result, [key, value]) => {
+    if (validKeys.has(key) && typeof value === 'boolean') {
+      result[key] = value;
+    }
+
+    return result;
+  }, {});
+}
+
+function normalizeFinalJeopardyState(
+  config: GameConfig,
+  teams: TeamState[],
+  finalJeopardyState: FinalJeopardyState | null | undefined,
+): FinalJeopardyState | null {
+  const finalJeopardyConfig = getFinalJeopardyConfig(config);
+
+  if (!finalJeopardyConfig || !finalJeopardyState || !isFinalJeopardyPhase(finalJeopardyState.phase)) {
+    return null;
+  }
+
+  const validTeamIds = new Set(teams.map((team) => team.id));
+  const eligibleTeamIds = finalJeopardyState.eligibleTeamIds.filter((teamId, index, values) => {
+    return validTeamIds.has(teamId) && values.indexOf(teamId) === index;
+  });
+  const eligibleTeamIdSet = new Set(eligibleTeamIds);
+  const startingScores = teams.reduce<Record<string, number>>((result, team) => {
+    const storedScore = finalJeopardyState.startingScores[team.id];
+    result[team.id] = Number.isFinite(storedScore) ? storedScore : team.score;
+    return result;
+  }, {});
+
+  return {
+    phase: finalJeopardyState.phase,
+    eligibleTeamIds,
+    startingScores,
+    wagers: filterNumberRecord(finalJeopardyState.wagers, eligibleTeamIdSet),
+    responses: filterStringRecord(finalJeopardyState.responses, eligibleTeamIdSet),
+    judgments: filterBooleanRecord(finalJeopardyState.judgments, eligibleTeamIdSet),
+    scoresApplied: finalJeopardyState.scoresApplied,
+    phaseStartedAt:
+      typeof finalJeopardyState.phaseStartedAt === 'number'
+        ? finalJeopardyState.phaseStartedAt
+        : buildPhaseTimestamp(finalJeopardyState.phase),
+  };
+}
+
+function updateFinalJeopardyState(
+  state: GameState,
+  updater: (finalJeopardyState: FinalJeopardyState) => FinalJeopardyState,
+): GameState {
+  if (!state.finalJeopardy) {
+    return state;
+  }
+
+  return {
+    ...state,
+    selectedClueId: null,
+    isQuestionRevealed: false,
+    finalJeopardy: updater(state.finalJeopardy),
+  };
+}
+
 export function createInitialGameState(config: GameConfig): GameState {
   return {
     teams: buildInitialTeams(config),
     answeredClueIds: {},
     selectedClueId: null,
     isQuestionRevealed: false,
+    finalJeopardy: null,
   };
 }
 
@@ -53,23 +172,26 @@ export function hydrateGameState(
     {},
   );
 
+  const teams = config.teams.map((team) => {
+    const storedTeam = storedTeams.get(team.id);
+
+    return {
+      id: team.id,
+      name: storedTeam?.name ?? team.name,
+      score: Number.isFinite(storedTeam?.score) ? storedTeam!.score : 0,
+    };
+  });
+
   return {
     ...initialState,
-    teams: config.teams.map((team) => {
-      const storedTeam = storedTeams.get(team.id);
-
-      return {
-        id: team.id,
-        name: storedTeam?.name ?? team.name,
-        score: Number.isFinite(storedTeam?.score) ? storedTeam!.score : 0,
-      };
-    }),
+    teams,
     answeredClueIds,
+    finalJeopardy: normalizeFinalJeopardyState(config, teams, persistedState.finalJeopardy),
   };
 }
 
 export function selectClue(state: GameState, clueId: string): GameState {
-  if (state.answeredClueIds[clueId]) {
+  if (state.answeredClueIds[clueId] || state.finalJeopardy) {
     return state;
   }
 
@@ -92,8 +214,24 @@ export function closeClue(state: GameState): GameState {
   };
 }
 
-export function revealQuestion(state: GameState): GameState {
+export function restoreSelectedClue(state: GameState): GameState {
   if (!state.selectedClueId) {
+    return state;
+  }
+
+  const nextAnsweredClueIds = { ...state.answeredClueIds };
+  delete nextAnsweredClueIds[state.selectedClueId];
+
+  return {
+    ...state,
+    answeredClueIds: nextAnsweredClueIds,
+    selectedClueId: null,
+    isQuestionRevealed: false,
+  };
+}
+
+export function revealQuestion(state: GameState): GameState {
+  if (!state.selectedClueId || state.finalJeopardy) {
     return state;
   }
 
@@ -150,6 +288,9 @@ export function resetScores(state: GameState): GameState {
       ...team,
       score: 0,
     })),
+    selectedClueId: null,
+    isQuestionRevealed: false,
+    finalJeopardy: null,
   };
 }
 
@@ -175,15 +316,18 @@ export function reconcileGameStateWithConfig(
     {},
   );
 
+  const teams = config.teams.map((team) => ({
+    id: team.id,
+    name: team.name,
+    score: previousScores.get(team.id) ?? 0,
+  }));
+
   return {
-    teams: config.teams.map((team) => ({
-      id: team.id,
-      name: team.name,
-      score: previousScores.get(team.id) ?? 0,
-    })),
+    teams,
     answeredClueIds,
     selectedClueId: null,
     isQuestionRevealed: false,
+    finalJeopardy: normalizeFinalJeopardyState(config, teams, previousState.finalJeopardy),
   };
 }
 
@@ -191,5 +335,148 @@ export function toPersistedGameState(state: GameState): PersistedGameState {
   return {
     teams: state.teams,
     answeredClueIds: Object.keys(state.answeredClueIds),
+    finalJeopardy: state.finalJeopardy
+      ? {
+          phase: state.finalJeopardy.phase,
+          eligibleTeamIds: [...state.finalJeopardy.eligibleTeamIds],
+          startingScores: { ...state.finalJeopardy.startingScores },
+          wagers: { ...state.finalJeopardy.wagers },
+          responses: { ...state.finalJeopardy.responses },
+          judgments: { ...state.finalJeopardy.judgments },
+          scoresApplied: state.finalJeopardy.scoresApplied,
+          phaseStartedAt: state.finalJeopardy.phaseStartedAt,
+        }
+      : null,
+  };
+}
+
+export function startFinalJeopardy(state: GameState, config: GameConfig): GameState {
+  const finalJeopardyConfig = getFinalJeopardyConfig(config);
+
+  if (!finalJeopardyConfig || state.finalJeopardy) {
+    return state;
+  }
+
+  const eligibleTeams = getEligibleFinalJeopardyTeams(state.teams, finalJeopardyConfig);
+
+  return {
+    ...closeClue(state),
+    finalJeopardy: {
+      phase: 'category',
+      eligibleTeamIds: eligibleTeams.map((team) => team.id),
+      startingScores: buildTeamScoreSnapshot(state.teams),
+      wagers: {},
+      responses: {},
+      judgments: {},
+      scoresApplied: false,
+      phaseStartedAt: null,
+    },
+  };
+}
+
+export function setFinalJeopardyPhase(
+  state: GameState,
+  phase: FinalJeopardyPhase,
+): GameState {
+  return updateFinalJeopardyState(state, (finalJeopardyState) => ({
+    ...finalJeopardyState,
+    phase,
+    phaseStartedAt: buildPhaseTimestamp(phase),
+  }));
+}
+
+export function setFinalJeopardyWager(
+  state: GameState,
+  teamId: string,
+  wager: number | null,
+): GameState {
+  return updateFinalJeopardyState(state, (finalJeopardyState) => {
+    if (!finalJeopardyState.eligibleTeamIds.includes(teamId)) {
+      return finalJeopardyState;
+    }
+
+    const wagers = { ...finalJeopardyState.wagers };
+
+    if (wager === null) {
+      delete wagers[teamId];
+    } else {
+      wagers[teamId] = wager;
+    }
+
+    return {
+      ...finalJeopardyState,
+      wagers,
+    };
+  });
+}
+
+export function setFinalJeopardyWagers(
+  state: GameState,
+  wagersByTeamId: Record<string, number>,
+): GameState {
+  return updateFinalJeopardyState(state, (finalJeopardyState) => {
+    const eligibleTeamIds = new Set(finalJeopardyState.eligibleTeamIds);
+
+    return {
+      ...finalJeopardyState,
+      wagers: filterNumberRecord(wagersByTeamId, eligibleTeamIds),
+    };
+  });
+}
+
+export function setFinalJeopardyResponse(
+  state: GameState,
+  teamId: string,
+  response: string,
+): GameState {
+  return updateFinalJeopardyState(state, (finalJeopardyState) => {
+    if (!finalJeopardyState.eligibleTeamIds.includes(teamId)) {
+      return finalJeopardyState;
+    }
+
+    return {
+      ...finalJeopardyState,
+      responses: {
+        ...finalJeopardyState.responses,
+        [teamId]: response,
+      },
+    };
+  });
+}
+
+export function setFinalJeopardyJudgment(
+  state: GameState,
+  teamId: string,
+  isCorrect: boolean,
+): GameState {
+  return updateFinalJeopardyState(state, (finalJeopardyState) => {
+    if (!finalJeopardyState.eligibleTeamIds.includes(teamId)) {
+      return finalJeopardyState;
+    }
+
+    return {
+      ...finalJeopardyState,
+      judgments: {
+        ...finalJeopardyState.judgments,
+        [teamId]: isCorrect,
+      },
+    };
+  });
+}
+
+export function applyFinalJeopardyResults(state: GameState): GameState {
+  if (!state.finalJeopardy || state.finalJeopardy.scoresApplied) {
+    return state;
+  }
+
+  return {
+    ...state,
+    teams: applyFinalJeopardyScores(state.teams, state.finalJeopardy),
+    finalJeopardy: {
+      ...state.finalJeopardy,
+      phase: 'results',
+      scoresApplied: true,
+      phaseStartedAt: null,
+    },
   };
 }
