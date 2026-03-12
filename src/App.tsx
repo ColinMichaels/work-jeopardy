@@ -230,6 +230,7 @@ function hasKeyboardModifier(event: KeyboardEvent): boolean {
 
 interface GameNotificationInput {
   tone: GameNotificationTone;
+  variant?: GameNotification['variant'];
   title: string;
   message: string;
   durationMs?: number | null;
@@ -237,6 +238,7 @@ interface GameNotificationInput {
 
 function createGameNotification({
   tone,
+  variant = 'default',
   title,
   message,
   durationMs = 3600,
@@ -244,6 +246,7 @@ function createGameNotification({
   return {
     id: `notice-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
     tone,
+    variant,
     title,
     message,
     expiresAt: durationMs === null ? null : Date.now() + durationMs,
@@ -668,6 +671,7 @@ export default function App() {
 
   const handleSelectClue = (clueId: string) => {
     const clueEntry = findClueById(config, clueId);
+    const activeTeam = gameState.teams.find((team) => team.id === activeTeamId) ?? null;
 
     stopSessionCue('thinkMusic');
     stopSessionCue('introJeopardy');
@@ -684,9 +688,10 @@ export default function App() {
         clueEntry?.clue.dailyDouble
           ? {
               tone: 'warning',
+              variant: 'featured',
               title: 'Daily Double',
-              message: `${clueEntry.categoryTitle} for ${formatCurrencyValue(clueEntry.clue.value)} is live.`,
-              durationMs: 4500,
+              message: `${activeTeam?.name ?? 'A player'} found the Daily Double in ${clueEntry.categoryTitle} for ${formatCurrencyValue(clueEntry.clue.value)}.`,
+              durationMs: 5200,
             }
           : {
               tone: 'info',
@@ -1100,7 +1105,12 @@ export default function App() {
     setIsUsingLocalConfig(snapshot.isUsingLocalConfig);
     setGameState({
       ...snapshot.gameState,
-      notification: snapshot.gameState.notification ?? null,
+      notification: snapshot.gameState.notification
+        ? {
+            ...snapshot.gameState.notification,
+            variant: snapshot.gameState.notification.variant ?? 'default',
+          }
+        : null,
     });
     setActiveTeamId(snapshot.activeTeamId);
     setManualScoreDelta(snapshot.manualScoreDelta);

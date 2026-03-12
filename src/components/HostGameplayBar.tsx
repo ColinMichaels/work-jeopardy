@@ -113,21 +113,20 @@ export function HostGameplayBar({
               <>
                 <div
                   className={[
-                    'mt-4 rounded-[1.4rem] border px-4 py-4',
+                    'mt-4 rounded-[1.4rem] border px-4 py-3',
                     isRevealed
                       ? 'border-amber-300/35 bg-amber-300/12'
                       : 'border-sky-300/20 bg-sky-300/10',
                   ].join(' ')}
                 >
                   <div className="flex flex-wrap items-center justify-between gap-3">
-                    <div>
+                    <div className="flex items-center gap-3">
                       <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-slate-200">
                         {isRevealed ? 'Action Required' : 'Ready To Reveal'}
                       </p>
-                      <p className="mt-2 text-sm leading-6 text-slate-100">
-                        {isRevealed
-                          ? 'The correct response is live on the board. Mark the active team correct or incorrect to finish this clue.'
-                          : 'Reveal when the room is ready. You can also click the host preview card to send the response to the board.'}
+                      <div className="h-3 w-px bg-white/10" />
+                      <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-slate-400">
+                        {isRevealed ? 'Score Next' : 'Preview Click Also Reveals'}
                       </p>
                     </div>
                     <span className="brand-tag">{isRevealed ? 'Judging' : 'Private'}</span>
@@ -191,19 +190,18 @@ export function HostGameplayBar({
 
                 <div
                   className={[
-                    'mt-4 rounded-[1.45rem] border px-4 py-4',
+                    'mt-4 rounded-[1.45rem] border px-4 py-3',
                     isRevealed
                       ? 'border-amber-300/35 bg-[rgba(78,49,8,0.22)]'
                       : 'border-white/10 bg-[rgba(2,8,33,0.62)]',
                   ].join(' ')}
                 >
                   <div className="flex flex-wrap items-center justify-between gap-3">
-                    <div>
+                    <div className="flex items-center gap-3">
                       <p className="panel-heading">Judge Response</p>
-                      <p className="mt-2 text-sm leading-6 text-slate-200">
-                        {isRevealed
-                          ? 'Score the active team now. Correct and incorrect are separated so the next action is obvious.'
-                          : 'Select the active team now so scoring is ready after reveal.'}
+                      <div className="h-3 w-px bg-white/10" />
+                      <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-slate-400">
+                        {isRevealed ? 'Mark Result' : 'Pick Active Team'}
                       </p>
                     </div>
                     <span className="brand-tag">

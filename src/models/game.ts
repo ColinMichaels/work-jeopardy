@@ -22,10 +22,12 @@ export interface FinalJeopardyState {
 }
 
 export type GameNotificationTone = 'info' | 'success' | 'warning' | 'error';
+export type GameNotificationVariant = 'default' | 'featured';
 
 export interface GameNotification {
   id: string;
   tone: GameNotificationTone;
+  variant: GameNotificationVariant;
   title: string;
   message: string;
   expiresAt: number | null;
