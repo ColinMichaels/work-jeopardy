@@ -235,6 +235,49 @@ input {
     @apply rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em];
   }
 
+  .panel-heading {
+    color: var(--brand-heading);
+    @apply text-sm font-bold uppercase tracking-[0.22em];
+  }
+
+  .panel-window-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 9999px;
+    border: 1px solid rgba(144, 172, 255, 0.18);
+    background: rgba(7, 14, 54, 0.66);
+    color: rgba(233, 239, 255, 0.92);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.08),
+      0 8px 18px rgba(0, 0, 0, 0.16);
+    transition:
+      transform 140ms ease,
+      filter 140ms ease,
+      box-shadow 140ms ease;
+  }
+
+  .panel-window-button__icon {
+    font-size: 1rem;
+    line-height: 1;
+    transform: translateY(-0.04rem);
+  }
+
+  .panel-window-button:hover {
+    background: rgba(26, 48, 148, 0.54);
+    transform: translateY(-1px);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.12),
+      0 12px 22px rgba(0, 0, 0, 0.2);
+  }
+
+  .panel-window-button:focus-visible {
+    outline: 2px solid rgba(255, 224, 138, 0.55);
+    outline-offset: 2px;
+  }
+
   .board-shell {
     background:
       linear-gradient(180deg, rgba(13, 24, 94, 0.96), rgba(3, 9, 39, 0.98)),

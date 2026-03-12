@@ -1,10 +1,9 @@
 import type { GameSoundCue } from '../types/game-audio';
 import type { ResolvedClue } from '../models/game';
-import type { TeamState } from '../models/team';
 import { formatCurrencyValue } from '../lib/score-utils';
 import { ClueMediaPanel } from './ClueMediaPanel';
 import { HostControlsSections } from './HostControlsSections';
-import { Tooltip } from './Tooltip';
+import { PanelWindowButton } from './PanelWindowButton';
 
 interface HostConsoleProps {
   bundledGames: ReadonlyArray<{
@@ -16,12 +15,6 @@ interface HostConsoleProps {
   clueEntry: ResolvedClue | null;
   isRevealed: boolean;
   activeMediaIndex: number | null;
-  teams: TeamState[];
-  activeTeamId: string | null;
-  manualScoreDelta: number;
-  isFinalJeopardyReady?: boolean;
-  finalJeopardyEligibleTeamCount?: number;
-  subtractOnIncorrect: boolean;
   isLocalStorageEnabled: boolean;
   isUsingLocalConfig: boolean;
   isConfigSoundEnabled: boolean;
@@ -34,9 +27,6 @@ interface HostConsoleProps {
     loop?: boolean;
   }>;
   activeLoopingCue: GameSoundCue | null;
-  onSelectTeam: (teamId: string) => void;
-  onManualScoreDeltaChange: (value: number) => void;
-  onAdjustTeamScore: (teamId: string, delta: number) => void;
   onToggleSoundOutput: (enabled: boolean) => void;
   onPreviewCue: (cue: GameSoundCue) => void;
   onStopCue: (cue: GameSoundCue) => void;
@@ -54,14 +44,12 @@ interface HostConsoleProps {
   onResetGame: () => void;
   onClearSavedState: () => void;
   onResetLocalConfig: () => void;
-  onStartFinalJeopardy?: () => void;
-  onReveal: () => void;
-  onMarkCorrect: () => void;
-  onMarkIncorrect: () => void;
-  onCloseClue: () => void;
-  onRestoreClue: () => void;
   onOpenMedia: (index: number) => void;
   onCloseMedia: () => void;
+  showClueSection?: boolean;
+  showSetupSection?: boolean;
+  onHideClueSection?: () => void;
+  onHideSetupSection?: () => void;
 }
 
 export function HostConsole({
@@ -70,12 +58,6 @@ export function HostConsole({
   clueEntry,
   isRevealed,
   activeMediaIndex,
-  teams,
-  activeTeamId,
-  manualScoreDelta,
-  isFinalJeopardyReady = false,
-  finalJeopardyEligibleTeamCount = 0,
-  subtractOnIncorrect,
   isLocalStorageEnabled,
   isUsingLocalConfig,
   isConfigSoundEnabled,
@@ -83,9 +65,6 @@ export function HostConsole({
   activeCueIds,
   soundDefinitions,
   activeLoopingCue,
-  onSelectTeam,
-  onManualScoreDeltaChange,
-  onAdjustTeamScore,
   onToggleSoundOutput,
   onPreviewCue,
   onStopCue,
@@ -98,200 +77,142 @@ export function HostConsole({
   onResetGame,
   onClearSavedState,
   onResetLocalConfig,
-  onStartFinalJeopardy,
-  onReveal,
-  onMarkCorrect,
-  onMarkIncorrect,
-  onCloseClue,
-  onRestoreClue,
   onOpenMedia,
   onCloseMedia,
+  showClueSection = true,
+  showSetupSection = true,
+  onHideClueSection,
+  onHideSetupSection,
 }: HostConsoleProps) {
   const clue = clueEntry?.clue ?? null;
   const currentClue = clueEntry?.clue;
 
   return (
-    <aside className="space-y-4">
-      <section className="panel p-5">
-        <div className="flex items-center justify-between gap-3">
-          <div>
-            <p className="brand-overline text-[11px] font-semibold uppercase tracking-[0.35em]">
-              Host Console
-            </p>
-            <h2 className="brand-title mt-1 text-2xl font-black uppercase tracking-[0.14em]">
-              Current Clue
-            </h2>
-          </div>
-          <div className="flex items-center gap-2">
-            {clue?.dailyDouble ? <span className="brand-tag">Daily Double</span> : null}
-            {clue ? <span className="brand-tag">{formatCurrencyValue(clue.value)}</span> : null}
-          </div>
-        </div>
-
-        {clueEntry ? (
-          <div className="mt-5 space-y-4">
-            <div className="panel-inset p-4">
-              <p className="brand-overline text-[11px] font-semibold uppercase tracking-[0.3em]">
-                {clueEntry.categoryTitle}
-              </p>
-              <p className="mt-3 text-2xl font-bold leading-snug text-slate-50">
-                {currentClue?.answer}
-              </p>
+    <aside className="space-y-4 xl:sticky xl:top-4 xl:max-h-[calc(100vh-2rem)] xl:overflow-y-auto xl:pr-1">
+      {showClueSection ? (
+        <section className="panel relative p-5">
+          {onHideClueSection ? (
+            <div className="absolute right-4 top-4 z-10">
+              <PanelWindowButton label="Hide clue preview" onClick={onHideClueSection} />
             </div>
+          ) : null}
 
-            {currentClue?.notes ? (
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <h2 className="panel-heading">Clue Preview</h2>
+            </div>
+            <div className="flex items-center gap-2">
+              {clue?.dailyDouble ? <span className="brand-tag">Daily Double</span> : null}
+              {clue ? <span className="brand-tag">{formatCurrencyValue(clue.value)}</span> : null}
+            </div>
+          </div>
+
+          {clueEntry ? (
+            <div className="mt-5 space-y-4">
               <div className="panel-inset p-4">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-slate-400">
-                  Host Notes
+                <p className="panel-heading">{clueEntry.categoryTitle}</p>
+                <p className="mt-3 text-2xl font-bold leading-snug text-slate-50">
+                  {currentClue?.answer}
                 </p>
-                <p className="mt-2 text-sm leading-6 text-slate-200">{currentClue.notes}</p>
               </div>
-            ) : null}
 
-            {currentClue?.media?.length ? (
-              <ClueMediaPanel
-                media={currentClue.media}
-                clueTitle={clueEntry.categoryTitle}
-                activeLightboxIndex={activeMediaIndex}
-                canOpenLightbox
-                compact
-                shouldAutoplay={isRevealed}
-                onOpenLightbox={onOpenMedia}
-                onCloseLightbox={onCloseMedia}
-              />
-            ) : null}
-
-            <div className="panel-inset border-amber-300/20 bg-gradient-to-br from-slate-950 via-slate-900 to-sky-950 p-4">
-              <div className="flex items-center justify-between gap-3">
-                <div>
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-amber-100/80">
-                    Host Preview
+              {currentClue?.notes ? (
+                <div className="panel-inset p-4">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-slate-400">
+                    Host Notes
                   </p>
-                  <p className="mt-1 text-[11px] uppercase tracking-[0.26em] text-slate-400">
-                    {isRevealed ? 'Live On Board' : 'Private Until Reveal'}
-                  </p>
+                  <p className="mt-2 text-sm leading-6 text-slate-200">{currentClue.notes}</p>
                 </div>
-                {isRevealed ? (
-                  <span className="brand-tag">Live</span>
-                ) : (
-                  <Tooltip content="Reveal the correct response on every linked window in this session.">
-                    <button type="button" onClick={onReveal} className="control-button">
-                      Reveal To Board
-                    </button>
-                  </Tooltip>
-                )}
+              ) : null}
+
+              {currentClue?.media?.length ? (
+                <ClueMediaPanel
+                  media={currentClue.media}
+                  clueTitle={clueEntry.categoryTitle}
+                  activeLightboxIndex={activeMediaIndex}
+                  canOpenLightbox
+                  compact
+                  shouldAutoplay={isRevealed}
+                  onOpenLightbox={onOpenMedia}
+                  onCloseLightbox={onCloseMedia}
+                />
+              ) : null}
+
+              <div className="panel-inset border-amber-300/20 bg-gradient-to-br from-slate-950 via-slate-900 to-sky-950 p-4">
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-amber-100/80">
+                      Host Preview
+                    </p>
+                    <p className="mt-1 text-[11px] uppercase tracking-[0.26em] text-slate-400">
+                      {isRevealed ? 'Live On Board' : 'Private Until Reveal'}
+                    </p>
+                  </div>
+                  <span className="brand-tag">{isRevealed ? 'Live' : 'Private'}</span>
+                </div>
+
+                <p className="mt-3 text-xl font-bold leading-snug text-amber-50">
+                  {currentClue?.question}
+                </p>
               </div>
-
-              <p className="mt-3 text-xl font-bold leading-snug text-amber-50">
-                {currentClue?.question}
+            </div>
+          ) : (
+            <div className="panel-muted mt-5 px-4 py-10 text-center">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.34em]">
+                Select A Clue To Preview It Here
+              </p>
+              <p className="mt-3 text-sm font-normal normal-case tracking-normal text-slate-300">
+                Clue actions stay above the host board so scoring and reveal controls are always in
+                reach.
               </p>
             </div>
+          )}
+        </section>
+      ) : null}
 
-            <div className="grid gap-2 sm:grid-cols-2">
-              <Tooltip content="Award this clue to the active team and close it on every linked window.">
-                <button
-                  type="button"
-                  onClick={onMarkCorrect}
-                  disabled={!activeTeamId}
-                  className="control-button w-full disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  Mark Correct
-                </button>
-              </Tooltip>
-              <Tooltip
-                content={
-                  subtractOnIncorrect
-                    ? `Subtract ${formatCurrencyValue(currentClue?.value ?? 0)} from the active team and close the clue.`
-                    : 'Record an incorrect answer without a score penalty, then close the clue.'
-                }
-              >
-                <button
-                  type="button"
-                  onClick={onMarkIncorrect}
-                  disabled={!activeTeamId}
-                  className="secondary-button w-full disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  Mark Incorrect
-                </button>
-              </Tooltip>
-              <Tooltip content="Close the active clue on every linked window without scoring it.">
-                <button
-                  type="button"
-                  onClick={onCloseClue}
-                  className="secondary-button w-full"
-                >
-                  Close Clue
-                </button>
-              </Tooltip>
-              <Tooltip content="Return the current clue tile to the board as unused and close it everywhere.">
-                <button
-                  type="button"
-                  onClick={onRestoreClue}
-                  className="secondary-button w-full"
-                >
-                  Return Tile
-                </button>
-              </Tooltip>
+      {showSetupSection ? (
+        <section className="panel relative p-5">
+          {onHideSetupSection ? (
+            <div className="absolute right-4 top-4 z-10">
+              <PanelWindowButton label="Hide setup tools" onClick={onHideSetupSection} />
+            </div>
+          ) : null}
+
+          <div className="mb-4 flex items-center justify-between gap-3">
+            <div>
+              <h2 className="panel-heading">Setup & Config</h2>
             </div>
           </div>
-        ) : isFinalJeopardyReady && onStartFinalJeopardy ? (
-          <div className="panel-inset mt-5 space-y-4 border-amber-300/30 bg-amber-300/10 p-5">
-            <div className="text-center">
-              <p className="brand-overline text-[11px] font-semibold uppercase tracking-[0.35em]">
-                Final Jeopardy Ready
-              </p>
-              <p className="mt-3 text-sm leading-6 text-slate-100">
-                The main board is complete. Start Final Jeopardy from here or from the host
-                controls below.
-              </p>
-            </div>
-            <button type="button" onClick={onStartFinalJeopardy} className="control-button w-full">
-              Start Final Jeopardy
-            </button>
-          </div>
-        ) : (
-          <div className="panel-muted mt-5 px-4 py-10 text-center text-[11px] font-semibold uppercase tracking-[0.34em]">
-            Select A Clue To Control It Here
-          </div>
-        )}
-      </section>
 
-      <section className="panel p-5">
-        <div className="space-y-4">
-          <HostControlsSections
-            bundledGames={bundledGames}
-            selectedBundledGameId={selectedBundledGameId}
-            teams={teams}
-            activeTeamId={activeTeamId}
-            manualScoreDelta={manualScoreDelta}
-            isFinalJeopardyReady={isFinalJeopardyReady}
-            finalJeopardyEligibleTeamCount={finalJeopardyEligibleTeamCount}
-            isLocalStorageEnabled={isLocalStorageEnabled}
-            isUsingLocalConfig={isUsingLocalConfig}
-            isConfigSoundEnabled={isConfigSoundEnabled}
-            isSoundOutputEnabled={isSoundOutputEnabled}
-            activeCueIds={activeCueIds}
-            soundDefinitions={soundDefinitions}
-            activeLoopingCue={activeLoopingCue}
-            onSelectTeam={onSelectTeam}
-            onManualScoreDeltaChange={onManualScoreDeltaChange}
-            onAdjustTeamScore={onAdjustTeamScore}
-            onToggleSoundOutput={onToggleSoundOutput}
-            onPreviewCue={onPreviewCue}
-            onStopCue={onStopCue}
-            onStopAllSounds={onStopAllSounds}
-            onSelectBundledGame={onSelectBundledGame}
-            onExportGame={onExportGame}
-            onImportGame={onImportGame}
-            onOpenConfigEditor={onOpenConfigEditor}
-            onResetScores={onResetScores}
-            onResetGame={onResetGame}
-            onClearSavedState={onClearSavedState}
-            onResetLocalConfig={onResetLocalConfig}
-            onStartFinalJeopardy={onStartFinalJeopardy}
-          />
-        </div>
-      </section>
+          <div className="space-y-4">
+            <HostControlsSections
+              bundledGames={bundledGames}
+              selectedBundledGameId={selectedBundledGameId}
+              isLocalStorageEnabled={isLocalStorageEnabled}
+              isUsingLocalConfig={isUsingLocalConfig}
+              isConfigSoundEnabled={isConfigSoundEnabled}
+              isSoundOutputEnabled={isSoundOutputEnabled}
+              activeCueIds={activeCueIds}
+              soundDefinitions={soundDefinitions}
+              activeLoopingCue={activeLoopingCue}
+              showScoreUtilities={false}
+              showFinalJeopardyAction={false}
+              onToggleSoundOutput={onToggleSoundOutput}
+              onPreviewCue={onPreviewCue}
+              onStopCue={onStopCue}
+              onStopAllSounds={onStopAllSounds}
+              onSelectBundledGame={onSelectBundledGame}
+              onExportGame={onExportGame}
+              onImportGame={onImportGame}
+              onOpenConfigEditor={onOpenConfigEditor}
+              onResetScores={onResetScores}
+              onResetGame={onResetGame}
+              onClearSavedState={onClearSavedState}
+              onResetLocalConfig={onResetLocalConfig}
+            />
+          </div>
+        </section>
+      ) : null}
     </aside>
   );
 }
