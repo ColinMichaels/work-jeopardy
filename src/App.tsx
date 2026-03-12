@@ -317,6 +317,12 @@ function getFinalJeopardyPhaseNotification(
   }
 }
 
+function getBoardCompleteMessage(hasFinalJeopardyRound: boolean): string {
+  return hasFinalJeopardyRound
+    ? 'Main board complete. Final Jeopardy is ready.'
+    : 'Main board complete.';
+}
+
 interface BootstrapState {
   config: GameConfig;
   selectedBundledGameId: string;
@@ -461,6 +467,7 @@ export default function App() {
       ? 'top-20 sm:top-24'
       : 'top-24 sm:top-28'
     : 'top-4 sm:top-6';
+  const boardCompleteMessage = getBoardCompleteMessage(Boolean(finalJeopardyConfig));
 
   const sharedSnapshot: SharedSessionSnapshot = {
     config,
@@ -617,7 +624,8 @@ export default function App() {
     const viewLabel =
       viewMode === 'board' ? 'Board' : viewMode === 'host' ? 'Host' : 'Single View';
     const roundLabel = activeFinalJeopardy ? ' | Final Jeopardy' : '';
-    if(viewMode === 'board'){
+
+    if (viewMode === 'board') {
       document.title = `${config.title} | ${viewLabel}${roundLabel}`;
     } else {
       document.title = `${viewLabel}${roundLabel} | ${config.title}`;
@@ -750,9 +758,7 @@ export default function App() {
         title: answeredClues === totalClues ? 'Board Complete' : 'Next Clue',
         message:
           answeredClues === totalClues
-            ? finalJeopardyConfig
-              ? 'Main board complete. Final Jeopardy is ready.'
-              : 'Main board complete.'
+            ? boardCompleteMessage
             : 'Select the next clue on the board.',
         durationMs: answeredClues === totalClues ? 4200 : 2600,
       }),
@@ -800,15 +806,15 @@ export default function App() {
           ? {
               tone: 'success',
               title: `${activeTeam?.name ?? 'Team'} Correct`,
-              message: `${formatScore(activeClue.clue.value)} awarded.${isLastClue ? ` ${finalJeopardyConfig ? 'Main board complete. Final Jeopardy is ready.' : 'Main board complete.'}` : ''}`,
+              message: `${formatScore(activeClue.clue.value)} awarded.${isLastClue ? ` ${boardCompleteMessage}` : ''}`,
               durationMs: 4200,
             }
           : {
               tone: config.settings.subtractOnIncorrect ? 'error' : 'warning',
               title: `${activeTeam?.name ?? 'Team'} Incorrect`,
               message: config.settings.subtractOnIncorrect
-                ? `${formatScore(-activeClue.clue.value)} recorded.${isLastClue ? ` ${finalJeopardyConfig ? 'Main board complete. Final Jeopardy is ready.' : 'Main board complete.'}` : ''}`
-                : `Incorrect answer recorded with no score change.${isLastClue ? ` ${finalJeopardyConfig ? 'Main board complete. Final Jeopardy is ready.' : 'Main board complete.'}` : ''}`,
+                ? `${formatScore(-activeClue.clue.value)} recorded.${isLastClue ? ` ${boardCompleteMessage}` : ''}`
+                : `Incorrect answer recorded with no score change.${isLastClue ? ` ${boardCompleteMessage}` : ''}`,
               durationMs: 4200,
             },
       );
