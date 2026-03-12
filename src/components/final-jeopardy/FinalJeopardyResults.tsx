@@ -73,7 +73,14 @@ export function FinalJeopardyResults({
                   {isWinner ? <span className="brand-tag">Winner</span> : null}
                 </div>
 
-                <p className="score-value mt-4 text-4xl font-black">{formatScore(team.score)}</p>
+                <p
+                  className={[
+                    'score-value mt-4 text-4xl font-black',
+                    team.score < 0 ? 'score-value--negative' : '',
+                  ].join(' ')}
+                >
+                  {formatScore(team.score)}
+                </p>
               </div>
             );
           })}
@@ -89,7 +96,14 @@ export function FinalJeopardyResults({
                 <p className="score-name text-2xl font-bold uppercase tracking-[0.08em]">
                   {winner.name}
                 </p>
-                <p className="score-value mt-2 text-3xl font-black">{formatScore(winner.score)}</p>
+                <p
+                  className={[
+                    'score-value mt-2 text-3xl font-black',
+                    winner.score < 0 ? 'score-value--negative' : '',
+                  ].join(' ')}
+                >
+                  {formatScore(winner.score)}
+                </p>
               </div>
             ))}
           </div>

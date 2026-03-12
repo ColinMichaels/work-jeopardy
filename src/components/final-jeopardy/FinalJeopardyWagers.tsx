@@ -43,7 +43,14 @@ export function FinalJeopardyWagers({
                 <p className="brand-subtitle mt-1 text-sm uppercase tracking-[0.22em]">
                   Current Score
                 </p>
-                <p className="score-value mt-1 text-3xl font-black">{formatScore(team.score)}</p>
+                <p
+                  className={[
+                    'score-value mt-1 text-3xl font-black',
+                    team.score < 0 ? 'score-value--negative' : '',
+                  ].join(' ')}
+                >
+                  {formatScore(team.score)}
+                </p>
               </div>
               <span className="brand-tag">Max {formatCurrencyValue(team.maxWager)}</span>
             </div>

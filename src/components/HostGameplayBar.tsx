@@ -1,6 +1,7 @@
 import type { ResolvedClue } from '../models/game';
 import type { TeamState } from '../models/team';
 import { formatCurrencyValue } from '../lib/score-utils';
+import { HostCluePreview } from './HostCluePreview';
 import { PanelWindowButton } from './PanelWindowButton';
 import { ScoreBoard } from './ScoreBoard';
 import { Tooltip } from './Tooltip';
@@ -11,13 +12,10 @@ interface HostGameplayBarProps {
   activeMediaIndex: number | null;
   teams: TeamState[];
   activeTeamId: string | null;
-  manualScoreDelta: number;
   isFinalJeopardyReady?: boolean;
   finalJeopardyEligibleTeamCount?: number;
   subtractOnIncorrect: boolean;
   onSelectTeam: (teamId: string) => void;
-  onManualScoreDeltaChange: (value: number) => void;
-  onAdjustTeamScore: (teamId: string, delta: number) => void;
   onStartFinalJeopardy?: () => void;
   onReveal: () => void;
   onMarkCorrect: () => void;
@@ -26,6 +24,8 @@ interface HostGameplayBarProps {
   onRestoreClue: () => void;
   onOpenMedia: (index: number) => void;
   onCloseMedia: () => void;
+  showCluePreview?: boolean;
+  onHideCluePreview?: () => void;
   onHide?: () => void;
 }
 
@@ -35,13 +35,10 @@ export function HostGameplayBar({
   activeMediaIndex,
   teams,
   activeTeamId,
-  manualScoreDelta,
   isFinalJeopardyReady = false,
   finalJeopardyEligibleTeamCount = 0,
   subtractOnIncorrect,
   onSelectTeam,
-  onManualScoreDeltaChange,
-  onAdjustTeamScore,
   onStartFinalJeopardy,
   onReveal,
   onMarkCorrect,
@@ -50,6 +47,8 @@ export function HostGameplayBar({
   onRestoreClue,
   onOpenMedia,
   onCloseMedia,
+  showCluePreview = true,
+  onHideCluePreview,
   onHide,
 }: HostGameplayBarProps) {
   const activeTeam = teams.find((team) => team.id === activeTeamId) ?? null;
@@ -101,7 +100,7 @@ export function HostGameplayBar({
           onSelectTeam={onSelectTeam}
         />
 
-        <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_300px]">
+        <div className={showCluePreview ? 'grid gap-4 xl:grid-cols-[minmax(0,1fr)_360px]' : ''}>
           <section className="panel-inset p-4">
             <div className="flex items-center justify-between gap-3">
               <div>
@@ -111,75 +110,145 @@ export function HostGameplayBar({
             </div>
 
             {clueEntry && clue ? (
-              <div className="mt-4 grid gap-2 md:grid-cols-2 2xl:grid-cols-3">
-                {!isRevealed ? (
-                  <Tooltip content="Reveal the correct response to every linked window.">
-                    <button type="button" onClick={onReveal} className="control-button w-full">
-                      Reveal
-                    </button>
-                  </Tooltip>
-                ) : (
-                  <div className="status-pill flex items-center justify-center">Live On Board</div>
-                )}
-
-                <Tooltip content="Award this clue to the active team and close it.">
-                  <button
-                    type="button"
-                    onClick={onMarkCorrect}
-                    disabled={!activeTeamId}
-                    className="control-button w-full disabled:cursor-not-allowed disabled:opacity-50"
-                  >
-                    Correct
-                  </button>
-                </Tooltip>
-
-                <Tooltip
-                  content={
-                    subtractOnIncorrect
-                      ? `Subtract ${formatCurrencyValue(clue.value)} from the active team and close the clue.`
-                      : 'Record an incorrect answer without a score penalty.'
-                  }
+              <>
+                <div
+                  className={[
+                    'mt-4 rounded-[1.4rem] border px-4 py-4',
+                    isRevealed
+                      ? 'border-amber-300/35 bg-amber-300/12'
+                      : 'border-sky-300/20 bg-sky-300/10',
+                  ].join(' ')}
                 >
-                  <button
-                    type="button"
-                    onClick={onMarkIncorrect}
-                    disabled={!activeTeamId}
-                    className="secondary-button w-full disabled:cursor-not-allowed disabled:opacity-50"
-                  >
-                    Incorrect
-                  </button>
-                </Tooltip>
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                      <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-slate-200">
+                        {isRevealed ? 'Action Required' : 'Ready To Reveal'}
+                      </p>
+                      <p className="mt-2 text-sm leading-6 text-slate-100">
+                        {isRevealed
+                          ? 'The correct response is live on the board. Mark the active team correct or incorrect to finish this clue.'
+                          : 'Reveal when the room is ready. You can also click the host preview card to send the response to the board.'}
+                      </p>
+                    </div>
+                    <span className="brand-tag">{isRevealed ? 'Judging' : 'Private'}</span>
+                  </div>
+                </div>
 
-                <Tooltip content="Close this clue without changing scores.">
-                  <button type="button" onClick={onCloseClue} className="secondary-button w-full">
-                    Close
-                  </button>
-                </Tooltip>
+                <div className="mt-4 grid gap-2 md:grid-cols-2 xl:grid-cols-3">
+                  {!isRevealed ? (
+                    <Tooltip
+                      content="Reveal the correct response to every linked window."
+                      className="w-full"
+                    >
+                      <button
+                        type="button"
+                        onClick={onReveal}
+                        className="control-button w-full px-5 py-3 md:col-span-2 xl:col-span-3"
+                      >
+                        Reveal To Players
+                      </button>
+                    </Tooltip>
+                  ) : (
+                    <div className="status-pill flex items-center justify-center md:col-span-2 xl:col-span-3">
+                      Answer Live On Board
+                    </div>
+                  )}
 
-                <Tooltip content="Return this clue to the board as unused.">
-                  <button
-                    type="button"
-                    onClick={onRestoreClue}
-                    className="secondary-button w-full"
-                  >
-                    Return Tile
-                  </button>
-                </Tooltip>
-
-                {hasMedia ? (
-                  <Tooltip content="Open or close the clue media lightbox.">
+                  <Tooltip content="Close this clue without changing scores." className="w-full">
                     <button
                       type="button"
-                      onClick={() =>
-                        activeMediaIndex === null ? onOpenMedia(0) : onCloseMedia()
-                      }
-                      className="secondary-button w-full"
+                      onClick={onCloseClue}
+                      className="secondary-button w-full px-5 py-3"
                     >
-                      {activeMediaIndex === null ? 'Open Media' : 'Close Media'}
+                      Close Clue
                     </button>
                   </Tooltip>
-                ) : null}
-              </div>
+
+                  <Tooltip content="Return this clue to the board as unused." className="w-full">
+                    <button
+                      type="button"
+                      onClick={onRestoreClue}
+                      className="secondary-button w-full px-5 py-3"
+                    >
+                      Return Tile
+                    </button>
+                  </Tooltip>
+
+                  {hasMedia ? (
+                    <Tooltip content="Open or close the clue media lightbox." className="w-full">
+                      <button
+                        type="button"
+                        onClick={() =>
+                          activeMediaIndex === null ? onOpenMedia(0) : onCloseMedia()
+                        }
+                        className="secondary-button w-full px-5 py-3"
+                      >
+                        {activeMediaIndex === null ? 'Open Media' : 'Close Media'}
+                      </button>
+                    </Tooltip>
+                  ) : null}
+                </div>
+
+                <div
+                  className={[
+                    'mt-4 rounded-[1.45rem] border px-4 py-4',
+                    isRevealed
+                      ? 'border-amber-300/35 bg-[rgba(78,49,8,0.22)]'
+                      : 'border-white/10 bg-[rgba(2,8,33,0.62)]',
+                  ].join(' ')}
+                >
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                      <p className="panel-heading">Judge Response</p>
+                      <p className="mt-2 text-sm leading-6 text-slate-200">
+                        {isRevealed
+                          ? 'Score the active team now. Correct and incorrect are separated so the next action is obvious.'
+                          : 'Select the active team now so scoring is ready after reveal.'}
+                      </p>
+                    </div>
+                    <span className="brand-tag">
+                      {activeTeam ? activeTeam.name : 'Select Team'}
+                    </span>
+                  </div>
+
+                  <div className="mt-4 grid gap-3 md:grid-cols-2">
+                    <Tooltip
+                      content="Award this clue to the active team and close it."
+                      className="w-full"
+                    >
+                      <button
+                        type="button"
+                        onClick={onMarkCorrect}
+                        disabled={!activeTeamId}
+                        className="success-button w-full px-5 py-3 disabled:cursor-not-allowed disabled:opacity-50"
+                      >
+                        Mark Correct
+                      </button>
+                    </Tooltip>
+
+                    <Tooltip
+                      content={
+                        subtractOnIncorrect
+                          ? `Subtract ${formatCurrencyValue(clue.value)} from the active team and close the clue.`
+                          : 'Record an incorrect answer without a score penalty.'
+                      }
+                      className="w-full"
+                    >
+                      <button
+                        type="button"
+                        onClick={onMarkIncorrect}
+                        disabled={!activeTeamId}
+                        className="danger-button w-full px-5 py-3 disabled:cursor-not-allowed disabled:opacity-50"
+                      >
+                        Mark Incorrect{' '}
+                        {subtractOnIncorrect
+                          ? `(${formatCurrencyValue(clue.value)})`
+                          : '(no penalty)'}
+                      </button>
+                    </Tooltip>
+                  </div>
+                </div>
+              </>
             ) : isFinalJeopardyReady && onStartFinalJeopardy ? (
               <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-[1.35rem] border border-amber-300/30 bg-amber-300/10 px-4 py-4">
                 <p className="text-sm text-slate-100">
@@ -203,64 +272,17 @@ export function HostGameplayBar({
             )}
           </section>
 
-          <section className="panel-inset p-4">
-            <div className="flex items-center justify-between gap-3">
-              <div>
-                <p className="panel-heading">Manual Score</p>
-              </div>
-              <span className="brand-tag">{formatCurrencyValue(manualScoreDelta || 0)}</span>
-            </div>
-
-            <div className="mt-4 space-y-3">
-              <input
-                type="number"
-                min="0"
-                step="100"
-                value={manualScoreDelta}
-                onChange={(event) => {
-                  const nextValue = Number.parseInt(event.target.value, 10);
-                  onManualScoreDeltaChange(Number.isNaN(nextValue) ? 0 : Math.max(0, nextValue));
-                }}
-                className="field-input text-xl font-semibold"
-              />
-
-              <div className="rounded-[1.25rem] border border-white/10 bg-[rgba(2,8,33,0.62)] px-4 py-3">
-                <p className="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">
-                  Active Team
-                </p>
-                <p className="mt-2 text-lg font-bold text-slate-50">
-                  {activeTeam?.name ?? 'No Team Selected'}
-                </p>
-              </div>
-
-              <div className="grid gap-2 sm:grid-cols-2">
-                <Tooltip
-                  content={`Add ${formatCurrencyValue(manualScoreDelta || 0)} to the active team.`}
-                >
-                  <button
-                    type="button"
-                    onClick={() => activeTeamId && onAdjustTeamScore(activeTeamId, manualScoreDelta)}
-                    disabled={!activeTeamId || manualScoreDelta === 0}
-                    className="control-button w-full disabled:cursor-not-allowed disabled:opacity-50"
-                  >
-                    Add
-                  </button>
-                </Tooltip>
-                <Tooltip
-                  content={`Subtract ${formatCurrencyValue(manualScoreDelta || 0)} from the active team.`}
-                >
-                  <button
-                    type="button"
-                    onClick={() => activeTeamId && onAdjustTeamScore(activeTeamId, -manualScoreDelta)}
-                    disabled={!activeTeamId || manualScoreDelta === 0}
-                    className="secondary-button w-full disabled:cursor-not-allowed disabled:opacity-50"
-                  >
-                    Subtract
-                  </button>
-                </Tooltip>
-              </div>
-            </div>
-          </section>
+          {showCluePreview ? (
+            <HostCluePreview
+              clueEntry={clueEntry}
+              isRevealed={isRevealed}
+              activeMediaIndex={activeMediaIndex}
+              onReveal={onReveal}
+              onOpenMedia={onOpenMedia}
+              onCloseMedia={onCloseMedia}
+              onHide={onHideCluePreview}
+            />
+          ) : null}
         </div>
       </div>
     </section>
