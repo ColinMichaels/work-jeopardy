@@ -6,7 +6,10 @@ import { ErrorScreen } from './components/ErrorScreen';
 import { FinalJeopardyScreen } from './components/final-jeopardy/FinalJeopardyScreen';
 import { GameBoard } from './components/GameBoard';
 import { HostConsole } from './components/HostConsole';
+import { HostGameplayBar } from './components/HostGameplayBar';
+import { HostLayoutControls } from './components/HostLayoutControls';
 import { HostPanel } from './components/HostPanel';
+import { PanelWindowButton } from './components/PanelWindowButton';
 import { ScoreBoard } from './components/ScoreBoard';
 import {
   BUNDLED_GAME_SOURCES,
@@ -137,7 +140,14 @@ function buildBundledGameCatalog(): BundledGameCatalogParseResult {
 const bundledGameCatalogResult = buildBundledGameCatalog();
 
 function shouldIgnoreKeyboardShortcut(target: EventTarget | null): boolean {
-  return target instanceof HTMLElement && ['INPUT', 'TEXTAREA'].includes(target.tagName);
+  return (
+    target instanceof HTMLElement &&
+    (target.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName))
+  );
+}
+
+function hasKeyboardModifier(event: KeyboardEvent): boolean {
+  return event.metaKey || event.ctrlKey || event.altKey;
 }
 
 interface BootstrapState {
@@ -149,6 +159,13 @@ interface BootstrapState {
   isUsingLocalConfig: boolean;
   isSoundOutputEnabled: boolean;
   isPresenterMode: boolean;
+}
+
+interface HostVisiblePanels {
+  gameplay: boolean;
+  board: boolean;
+  clue: boolean;
+  setup: boolean;
 }
 
 function buildBootstrapState(bundledGameCatalog: BundledGameCatalog): BootstrapState {
@@ -233,6 +250,12 @@ export default function App() {
   const [isConfigEditorOpen, setIsConfigEditorOpen] = useState(false);
   const [isBoardHeaderForcedVisible, setIsBoardHeaderForcedVisible] = useState(false);
   const [boardEntranceCycle, setBoardEntranceCycle] = useState(0);
+  const [hostVisiblePanels, setHostVisiblePanels] = useState<HostVisiblePanels>({
+    gameplay: true,
+    board: true,
+    clue: true,
+    setup: true,
+  });
 
   const storageKey = getStorageKey(config.settings);
   const selectedBundledGame =
@@ -256,6 +279,9 @@ export default function App() {
       isOutputEnabled: isConfigSoundEnabled && isSoundOutputEnabled,
     });
   const shouldShowBoardHeader = !isBoardView || !isPresenterMode || isBoardHeaderForcedVisible;
+  const shouldShowHostSidebar = hostVisiblePanels.clue || hostVisiblePanels.setup;
+  const shouldShowControlBar =
+    shouldShowBoardHeader && (viewMode !== 'host' || Boolean(activeFinalJeopardy));
 
   const sharedSnapshot: SharedSessionSnapshot = {
     config,
@@ -661,41 +687,86 @@ export default function App() {
   };
 
   useEffect(() => {
-    if (!activeClue || viewMode === 'board' || gameState.activeClueMediaIndex !== null) {
+    if (
+      !activeClue ||
+      viewMode === 'board' ||
+      gameState.activeClueMediaIndex !== null ||
+      isConfigEditorOpen
+    ) {
       return;
     }
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (shouldIgnoreKeyboardShortcut(event.target)) {
+      if (hasKeyboardModifier(event) || shouldIgnoreKeyboardShortcut(event.target)) {
         return;
       }
 
-      if (event.key === 'Escape') {
+      const normalizedKey = event.key.toLowerCase();
+      const hasClueMedia = Boolean(activeClue.clue.media?.length);
+
+      if (event.key === 'Escape' || normalizedKey === 'x') {
         event.preventDefault();
         handleCloseClue();
+        return;
       }
 
-      if ((event.key === ' ' || event.key === 'Enter') && !gameState.isQuestionRevealed) {
+      if (
+        (event.key === ' ' || event.key === 'Enter' || normalizedKey === 'r') &&
+        !gameState.isQuestionRevealed
+      ) {
         event.preventDefault();
         handleReveal();
+        return;
+      }
+
+      if (normalizedKey === 'c' && activeTeamId) {
+        event.preventDefault();
+        handleMarkClue(true);
+        return;
+      }
+
+      if (normalizedKey === 'i' && activeTeamId) {
+        event.preventDefault();
+        handleMarkClue(false);
+        return;
+      }
+
+      if (normalizedKey === 'u') {
+        event.preventDefault();
+        handleRestoreClue();
+        return;
+      }
+
+      if (normalizedKey === 'm' && hasClueMedia) {
+        event.preventDefault();
+        handleOpenClueMedia(0);
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [activeClue, gameState.activeClueMediaIndex, gameState.isQuestionRevealed, viewMode]);
+  }, [
+    activeClue,
+    activeTeamId,
+    gameState.activeClueMediaIndex,
+    gameState.isQuestionRevealed,
+    isConfigEditorOpen,
+    viewMode,
+  ]);
 
   useEffect(() => {
-    if (viewMode === 'board' || gameState.activeClueMediaIndex === null) {
+    if (viewMode === 'board' || gameState.activeClueMediaIndex === null || isConfigEditorOpen) {
       return;
     }
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (shouldIgnoreKeyboardShortcut(event.target)) {
+      if (hasKeyboardModifier(event) || shouldIgnoreKeyboardShortcut(event.target)) {
         return;
       }
 
-      if (event.key === 'Escape') {
+      const normalizedKey = event.key.toLowerCase();
+
+      if (event.key === 'Escape' || normalizedKey === 'x' || normalizedKey === 'm') {
         event.preventDefault();
         handleCloseClueMedia();
       }
@@ -703,7 +774,48 @@ export default function App() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [gameState.activeClueMediaIndex, viewMode]);
+  }, [gameState.activeClueMediaIndex, isConfigEditorOpen, viewMode]);
+
+  useEffect(() => {
+    if (viewMode === 'board' || isConfigEditorOpen) {
+      return;
+    }
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (hasKeyboardModifier(event) || shouldIgnoreKeyboardShortcut(event.target)) {
+        return;
+      }
+
+      const normalizedKey = event.key.toLowerCase();
+
+      if (normalizedKey >= '1' && normalizedKey <= '9' && !activeFinalJeopardy) {
+        const teamIndex = Number.parseInt(normalizedKey, 10) - 1;
+        const nextTeam = gameState.teams[teamIndex];
+
+        if (!nextTeam) {
+          return;
+        }
+
+        event.preventDefault();
+        handleSelectTeam(nextTeam.id);
+        return;
+      }
+
+      if (normalizedKey === 'f' && isFinalJeopardyReady) {
+        event.preventDefault();
+        handleStartFinalJeopardy();
+        return;
+      }
+
+      if (normalizedKey === 'h' && viewMode === 'single' && !activeFinalJeopardy) {
+        event.preventDefault();
+        setIsHostPanelOpen((currentValue) => !currentValue);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [activeFinalJeopardy, gameState.teams, isConfigEditorOpen, isFinalJeopardyReady, viewMode]);
 
   useEffect(() => {
     if (!isBoardView || !isPresenterMode || shouldShowBoardHeader) {
@@ -711,7 +823,7 @@ export default function App() {
     }
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (shouldIgnoreKeyboardShortcut(event.target)) {
+      if (hasKeyboardModifier(event) || shouldIgnoreKeyboardShortcut(event.target)) {
         return;
       }
 
@@ -745,18 +857,27 @@ export default function App() {
     nextWindow?.focus();
   };
 
+  const toggleHostVisiblePanel = (panel: keyof HostVisiblePanels) => {
+    setHostVisiblePanels((currentPanels) => ({
+      ...currentPanels,
+      [panel]: !currentPanels[panel],
+    }));
+  };
+
   return (
     <div
       className={
         isBoardView
           ? 'h-screen overflow-hidden px-3 py-3 sm:px-4'
-          : 'min-h-screen px-4 py-4 sm:px-6 lg:px-8'
+          : viewMode === 'host' && !activeFinalJeopardy
+            ? 'min-h-screen px-4 py-4 pb-28 sm:px-6 lg:px-8'
+            : 'min-h-screen px-4 py-4 sm:px-6 lg:px-8'
       }
     >
       <div
         className={`mx-auto flex w-full flex-col ${isBoardView ? 'h-[calc(100vh-1.5rem)] max-w-[1920px] gap-3' : 'max-w-[1800px] gap-4'}`}
       >
-        {shouldShowBoardHeader ? (
+        {shouldShowControlBar ? (
           <ControlBar
             title={config.title}
             subtitle={config.subtitle}
@@ -784,7 +905,7 @@ export default function App() {
           />
         ) : null}
 
-        {!isBoardView && !activeFinalJeopardy ? (
+        {viewMode === 'single' && !activeFinalJeopardy ? (
           <ScoreBoard
             teams={gameState.teams}
             activeTeamId={activeTeamId}
@@ -809,61 +930,120 @@ export default function App() {
             />
           </div>
         ) : viewMode === 'host' ? (
-          <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_440px]">
-            <GameBoard
-              key={`host-board-${boardEntranceCycle}`}
-              categories={config.categories}
-              answeredClueIds={gameState.answeredClueIds}
-              selectedClueId={gameState.selectedClueId}
-              isInteractive
-              showDailyDoubleHint
-              showMediaHint
-              onSelectClue={handleSelectClue}
-            />
+          <div className="space-y-4">
+            <div
+              className={
+                shouldShowHostSidebar
+                  ? 'grid gap-4 xl:grid-cols-[minmax(0,1fr)_430px] 2xl:grid-cols-[minmax(0,1.08fr)_450px]'
+                  : ''
+              }
+            >
+              <div className="space-y-4">
+                {hostVisiblePanels.gameplay ? (
+                  <HostGameplayBar
+                    clueEntry={activeClue}
+                    isRevealed={gameState.isQuestionRevealed}
+                    activeMediaIndex={gameState.activeClueMediaIndex}
+                    teams={gameState.teams}
+                    activeTeamId={activeTeamId}
+                    manualScoreDelta={manualScoreDelta}
+                    isFinalJeopardyReady={isFinalJeopardyReady}
+                    finalJeopardyEligibleTeamCount={eligibleFinalJeopardyTeams.length}
+                    subtractOnIncorrect={config.settings.subtractOnIncorrect}
+                    onSelectTeam={handleSelectTeam}
+                    onManualScoreDeltaChange={(value) => setManualScoreDelta(Math.max(0, value))}
+                    onAdjustTeamScore={handleAdjustTeamScore}
+                    onStartFinalJeopardy={handleStartFinalJeopardy}
+                    onReveal={handleReveal}
+                    onMarkCorrect={() => handleMarkClue(true)}
+                    onMarkIncorrect={() => handleMarkClue(false)}
+                    onCloseClue={handleCloseClue}
+                    onRestoreClue={handleRestoreClue}
+                    onOpenMedia={handleOpenClueMedia}
+                    onCloseMedia={handleCloseClueMedia}
+                    onHide={() => toggleHostVisiblePanel('gameplay')}
+                  />
+                ) : null}
 
-            <HostConsole
-              bundledGames={bundledGameCatalog.games}
-              selectedBundledGameId={selectedBundledGameId}
-              clueEntry={activeClue}
-              isRevealed={gameState.isQuestionRevealed}
-              activeMediaIndex={gameState.activeClueMediaIndex}
-              teams={gameState.teams}
-              activeTeamId={activeTeamId}
-              manualScoreDelta={manualScoreDelta}
-              isFinalJeopardyReady={isFinalJeopardyReady}
-              finalJeopardyEligibleTeamCount={eligibleFinalJeopardyTeams.length}
-              subtractOnIncorrect={config.settings.subtractOnIncorrect}
-              isLocalStorageEnabled={config.settings.enableLocalStorage}
-              isUsingLocalConfig={isUsingLocalConfig}
-              isConfigSoundEnabled={isConfigSoundEnabled}
-              isSoundOutputEnabled={isSoundOutputEnabled}
-              activeCueIds={activeCueIds}
-              soundDefinitions={soundDefinitions}
-              activeLoopingCue={activeLoopingCue}
-              onSelectTeam={handleSelectTeam}
-              onManualScoreDeltaChange={(value) => setManualScoreDelta(Math.max(0, value))}
-              onAdjustTeamScore={handleAdjustTeamScore}
-              onToggleSoundOutput={setIsSoundOutputEnabled}
-              onPreviewCue={playCue}
-              onStopCue={stopCue}
-              onStopAllSounds={stopAll}
-              onSelectBundledGame={handleSelectBundledGame}
-              onExportGame={handleExportGame}
-              onImportGame={handleImportGame}
-              onOpenConfigEditor={() => setIsConfigEditorOpen(true)}
-              onResetScores={handleResetScores}
-              onResetGame={handleResetGame}
-              onClearSavedState={handleClearSavedState}
-              onResetLocalConfig={handleResetLocalConfig}
-              onStartFinalJeopardy={handleStartFinalJeopardy}
-              onReveal={handleReveal}
-              onMarkCorrect={() => handleMarkClue(true)}
-              onMarkIncorrect={() => handleMarkClue(false)}
-              onCloseClue={handleCloseClue}
-              onRestoreClue={handleRestoreClue}
-              onOpenMedia={handleOpenClueMedia}
-              onCloseMedia={handleCloseClueMedia}
-            />
+                {hostVisiblePanels.board ? (
+                  <section className="panel relative p-3 sm:p-4">
+                    <div className="absolute right-4 top-4 z-10">
+                      <PanelWindowButton
+                        label="Hide host board"
+                        onClick={() => toggleHostVisiblePanel('board')}
+                      />
+                    </div>
+
+                    <div className="mb-3 flex items-center justify-between gap-3 px-1">
+                      <div>
+                        <p className="panel-heading">Host Board</p>
+                      </div>
+                    </div>
+
+                    <div className="min-h-[340px]" style={{ height: 'min(58vh, 620px)' }}>
+                      <GameBoard
+                        key={`host-board-${boardEntranceCycle}`}
+                        categories={config.categories}
+                        answeredClueIds={gameState.answeredClueIds}
+                        selectedClueId={gameState.selectedClueId}
+                        isInteractive
+                        compact
+                        showDailyDoubleHint
+                        showMediaHint
+                        onSelectClue={handleSelectClue}
+                      />
+                    </div>
+                  </section>
+                ) : null}
+
+                {!hostVisiblePanels.gameplay && !hostVisiblePanels.board && !shouldShowHostSidebar ? (
+                  <section className="panel-muted px-4 py-12 text-center">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.34em]">
+                      Host Panels Hidden
+                    </p>
+                    <p className="mt-3 text-sm font-normal normal-case tracking-normal text-slate-300">
+                      Use the layout controls above to reopen the gameplay deck, host board, clue
+                      preview, or setup tools.
+                    </p>
+                  </section>
+                ) : null}
+              </div>
+
+              {shouldShowHostSidebar ? (
+                <HostConsole
+                  bundledGames={bundledGameCatalog.games}
+                  selectedBundledGameId={selectedBundledGameId}
+                  clueEntry={activeClue}
+                  isRevealed={gameState.isQuestionRevealed}
+                  activeMediaIndex={gameState.activeClueMediaIndex}
+                  isLocalStorageEnabled={config.settings.enableLocalStorage}
+                  isUsingLocalConfig={isUsingLocalConfig}
+                  isConfigSoundEnabled={isConfigSoundEnabled}
+                  isSoundOutputEnabled={isSoundOutputEnabled}
+                  activeCueIds={activeCueIds}
+                  soundDefinitions={soundDefinitions}
+                  activeLoopingCue={activeLoopingCue}
+                  onToggleSoundOutput={setIsSoundOutputEnabled}
+                  onPreviewCue={playCue}
+                  onStopCue={stopCue}
+                  onStopAllSounds={stopAll}
+                  onSelectBundledGame={handleSelectBundledGame}
+                  onExportGame={handleExportGame}
+                  onImportGame={handleImportGame}
+                  onOpenConfigEditor={() => setIsConfigEditorOpen(true)}
+                  onResetScores={handleResetScores}
+                  onResetGame={handleResetGame}
+                  onClearSavedState={handleClearSavedState}
+                  onResetLocalConfig={handleResetLocalConfig}
+                  onOpenMedia={handleOpenClueMedia}
+                  onCloseMedia={handleCloseClueMedia}
+                  showClueSection={hostVisiblePanels.clue}
+                  showSetupSection={hostVisiblePanels.setup}
+                  onHideClueSection={() => toggleHostVisiblePanel('clue')}
+                  onHideSetupSection={() => toggleHostVisiblePanel('setup')}
+                />
+              ) : null}
+            </div>
           </div>
         ) : isBoardView ? (
           <div className="flex min-h-0 flex-1 flex-col gap-3">
@@ -904,6 +1084,23 @@ export default function App() {
           </>
         )}
       </div>
+
+      {viewMode === 'host' && !activeFinalJeopardy ? (
+        <div className="pointer-events-none fixed inset-x-4 bottom-4 z-30 sm:inset-x-6 lg:inset-x-8">
+          <div className="mx-auto max-w-[1800px]">
+            <div className="pointer-events-auto">
+              <HostLayoutControls
+                compact
+                visiblePanels={hostVisiblePanels}
+                onTogglePanel={toggleHostVisiblePanel}
+                onOpenBoardWindow={() => openWindowForView('board')}
+                onOpenHostWindow={() => openWindowForView('host')}
+                onOpenSingleWindow={() => openWindowForView('single')}
+              />
+            </div>
+          </div>
+        </div>
+      ) : null}
 
       {viewMode === 'single' && !activeFinalJeopardy ? (
         <HostPanel

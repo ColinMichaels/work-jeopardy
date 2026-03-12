@@ -20,9 +20,9 @@ interface HostControlsSectionsProps {
     description: string;
   }>;
   selectedBundledGameId: string;
-  teams: TeamState[];
-  activeTeamId: string | null;
-  manualScoreDelta: number;
+  teams?: TeamState[];
+  activeTeamId?: string | null;
+  manualScoreDelta?: number;
   isFinalJeopardyReady?: boolean;
   finalJeopardyEligibleTeamCount?: number;
   isLocalStorageEnabled: boolean;
@@ -37,9 +37,11 @@ interface HostControlsSectionsProps {
     loop?: boolean;
   }>;
   activeLoopingCue: GameSoundCue | null;
-  onSelectTeam: (teamId: string) => void;
-  onManualScoreDeltaChange: (value: number) => void;
-  onAdjustTeamScore: (teamId: string, delta: number) => void;
+  showScoreUtilities?: boolean;
+  showFinalJeopardyAction?: boolean;
+  onSelectTeam?: (teamId: string) => void;
+  onManualScoreDeltaChange?: (value: number) => void;
+  onAdjustTeamScore?: (teamId: string, delta: number) => void;
   onToggleSoundOutput: (enabled: boolean) => void;
   onPreviewCue: (cue: GameSoundCue) => void;
   onStopCue: (cue: GameSoundCue) => void;
@@ -58,9 +60,9 @@ interface HostControlsSectionsProps {
 export function HostControlsSections({
   bundledGames,
   selectedBundledGameId,
-  teams,
-  activeTeamId,
-  manualScoreDelta,
+  teams = [],
+  activeTeamId = null,
+  manualScoreDelta = 0,
   isFinalJeopardyReady = false,
   finalJeopardyEligibleTeamCount = 0,
   isLocalStorageEnabled,
@@ -70,6 +72,8 @@ export function HostControlsSections({
   activeCueIds,
   soundDefinitions,
   activeLoopingCue,
+  showScoreUtilities = true,
+  showFinalJeopardyAction = true,
   onSelectTeam,
   onManualScoreDeltaChange,
   onAdjustTeamScore,
@@ -93,6 +97,7 @@ export function HostControlsSections({
     tone: 'success' | 'error';
     message: string;
   } | null>(null);
+  const activeTeam = teams.find((team) => team.id === activeTeamId) ?? null;
 
   const handleImportFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -142,17 +147,18 @@ export function HostControlsSections({
       <section className="panel-inset p-4">
         <div className="flex items-center justify-between gap-3">
           <div>
-            <p className="brand-overline text-[11px] font-semibold uppercase tracking-[0.35em]">
-              Bundled Games
-            </p>
-            <p className="mt-2 text-sm text-slate-300">
-              Load a built-in board for a fresh session.
-            </p>
+            <p className="panel-heading">Setup & Config</p>
           </div>
           {isUsingLocalConfig ? <span className="brand-tag">Local Edits Active</span> : null}
         </div>
 
-        <div className="mt-4 space-y-2">
+        <div className="mt-5">
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">
+            Bundled Games
+          </p>
+        </div>
+
+        <div className="mt-3 space-y-2">
           {bundledGames.map((bundledGame) => {
             const isSelected = bundledGame.id === selectedBundledGameId;
             const isActive = isSelected && !isUsingLocalConfig;
@@ -186,35 +192,14 @@ export function HostControlsSections({
             );
           })}
         </div>
-      </section>
 
-      {isFinalJeopardyReady && onStartFinalJeopardy ? (
-        <section className="panel-inset border-amber-300/30 bg-amber-300/10 p-4">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div>
-              <p className="brand-overline text-[11px] font-semibold uppercase tracking-[0.35em]">
-                Final Jeopardy
-              </p>
-              <p className="mt-2 text-sm text-slate-200">
-                {finalJeopardyEligibleTeamCount > 0
-                  ? `${finalJeopardyEligibleTeamCount} teams are eligible for the final round.`
-                  : 'No teams are currently eligible for the final round.'}
-              </p>
-            </div>
-            <button
-              type="button"
-              onClick={onStartFinalJeopardy}
-              disabled={finalJeopardyEligibleTeamCount === 0}
-              className="control-button disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              Start Final
-            </button>
-          </div>
-        </section>
-      ) : null}
+        <div className="mt-5">
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">
+            Session Actions
+          </p>
+        </div>
 
-      <section className="panel-inset p-4">
-        <div className="flex flex-wrap gap-2">
+        <div className="mt-3 flex flex-wrap gap-2">
           <Tooltip content="Open the local-only editor for title, teams, categories, clues, and settings.">
             <button type="button" onClick={onOpenConfigEditor} className="control-button">
               Edit Game
@@ -283,6 +268,126 @@ export function HostControlsSections({
         ) : null}
       </section>
 
+      {showFinalJeopardyAction && onStartFinalJeopardy && isFinalJeopardyReady ? (
+        <section className="panel-inset p-4">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="panel-heading">Final Jeopardy</p>
+            </div>
+            <span className="brand-tag">
+              {finalJeopardyEligibleTeamCount > 0
+                ? `${finalJeopardyEligibleTeamCount} Ready`
+                : 'No Teams'}
+            </span>
+          </div>
+
+          <div className="mt-4">
+            <Tooltip content="Start Final Jeopardy with the currently eligible teams.">
+              <button
+                type="button"
+                onClick={onStartFinalJeopardy}
+                disabled={finalJeopardyEligibleTeamCount === 0}
+                className="control-button w-full disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                Start Final Jeopardy
+              </button>
+            </Tooltip>
+          </div>
+        </section>
+      ) : null}
+
+      {showScoreUtilities && onManualScoreDeltaChange && onAdjustTeamScore ? (
+        <section className="panel-inset p-4">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="panel-heading">Manual Score</p>
+            </div>
+            <span className="brand-tag">{formatCurrencyValue(manualScoreDelta)}</span>
+          </div>
+
+          <div className="mt-4 space-y-3">
+            <input
+              type="number"
+              min="0"
+              step="100"
+              value={manualScoreDelta}
+              onChange={(event) => {
+                const nextValue = Number.parseInt(event.target.value, 10);
+                onManualScoreDeltaChange(Number.isNaN(nextValue) ? 0 : Math.max(0, nextValue));
+              }}
+              className="field-input text-xl font-semibold"
+            />
+
+            <div className="rounded-[1.25rem] border border-white/10 bg-[rgba(2,8,33,0.62)] px-4 py-3">
+              <p className="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">
+                Active Team
+              </p>
+              <p className="mt-2 text-lg font-bold text-slate-50">
+                {activeTeam?.name ?? 'No Team Selected'}
+              </p>
+            </div>
+
+            <div className="grid gap-2 sm:grid-cols-2">
+              <Tooltip
+                content={`Add ${formatCurrencyValue(manualScoreDelta)} to the active team.`}
+              >
+                <button
+                  type="button"
+                  onClick={() => activeTeamId && onAdjustTeamScore(activeTeamId, manualScoreDelta)}
+                  disabled={!activeTeamId || manualScoreDelta === 0}
+                  className="control-button w-full disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  Add
+                </button>
+              </Tooltip>
+              <Tooltip
+                content={`Subtract ${formatCurrencyValue(manualScoreDelta)} from the active team.`}
+              >
+                <button
+                  type="button"
+                  onClick={() =>
+                    activeTeamId && onAdjustTeamScore(activeTeamId, -manualScoreDelta)
+                  }
+                  disabled={!activeTeamId || manualScoreDelta === 0}
+                  className="secondary-button w-full disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  Subtract
+                </button>
+              </Tooltip>
+            </div>
+
+            {onSelectTeam && teams.length > 0 ? (
+              <div className="grid gap-2">
+                {teams.map((team, index) => {
+                  const isActive = team.id === activeTeamId;
+
+                  return (
+                    <button
+                      key={team.id}
+                      type="button"
+                      onClick={() => onSelectTeam(team.id)}
+                      className={[
+                        'flex items-center justify-between gap-3 rounded-[1.15rem] border px-4 py-3 text-left transition',
+                        isActive
+                          ? 'border-amber-300/35 bg-amber-300/10'
+                          : 'border-white/10 bg-[rgba(2,8,33,0.58)] hover:border-sky-300/35 hover:bg-sky-300/10',
+                      ].join(' ')}
+                    >
+                      <span className="text-sm font-bold uppercase tracking-[0.14em] text-slate-50">
+                        {team.name.trim() || 'Unnamed Team'}
+                      </span>
+                      <span className="brand-tag">
+                        {index < 9 ? `Key ${index + 1}` : isActive ? 'Active' : 'Team'}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            ) : null}
+          </div>
+        </section>
+      ) : null}
+
       <SoundControls
         soundDefinitions={soundDefinitions}
         isConfigSoundEnabled={isConfigSoundEnabled}
@@ -296,91 +401,28 @@ export function HostControlsSections({
       />
 
       <section className="panel-inset p-4">
-        <div className="flex items-center justify-between gap-3">
-          <p className="brand-overline text-[11px] font-semibold uppercase tracking-[0.35em]">
-            Manual Score
-          </p>
-          <span className="brand-tag">{formatCurrencyValue(manualScoreDelta || 0)}</span>
-        </div>
-
-        <input
-          type="number"
-          min="0"
-          step="100"
-          value={manualScoreDelta}
-          onChange={(event) => {
-            const nextValue = Number.parseInt(event.target.value, 10);
-            onManualScoreDeltaChange(Number.isNaN(nextValue) ? 0 : Math.max(0, nextValue));
-          }}
-          className="field-input mt-3 text-xl font-semibold"
-        />
-      </section>
-
-      <section className="space-y-3">
-        {teams.map((team) => {
-          const isActive = team.id === activeTeamId;
-
-          return (
+        <p className="panel-heading">Keyboard</p>
+        <div className="mt-4 grid gap-2">
+          {[
+            ['1-9', 'Select active team'],
+            ['R / Space / Enter', 'Reveal response'],
+            ['C', 'Mark correct'],
+            ['I', 'Mark incorrect'],
+            ['X / Esc', 'Close clue'],
+            ['U', 'Return tile'],
+            ['M', 'Open or close clue media'],
+            ['F', 'Start Final Jeopardy'],
+            ['H', 'Toggle host tools in single view'],
+          ].map(([keys, description]) => (
             <div
-              key={team.id}
-              className={[
-                'panel-inset p-4 transition',
-                isActive ? 'border-amber-300/45 bg-amber-300/10' : '',
-              ].join(' ')}
+              key={keys}
+              className="flex items-center justify-between gap-3 rounded-[1.15rem] border border-white/10 bg-[rgba(2,8,33,0.6)] px-4 py-3"
             >
-              <div className="flex items-center justify-between gap-3">
-                <div>
-                  <p className="score-name text-lg font-bold">
-                    {team.name.trim() || 'Unnamed Team'}
-                  </p>
-                  <p className="score-value mt-1 text-2xl font-black">
-                    {team.score >= 0 ? '$' : '-$'}
-                    {Math.abs(team.score).toLocaleString('en-US')}
-                  </p>
-                </div>
-
-                <Tooltip content="Mark this team as the active recipient for clue scoring.">
-                  <button
-                    type="button"
-                    onClick={() => onSelectTeam(team.id)}
-                    className={isActive ? 'control-button' : 'secondary-button'}
-                  >
-                    {isActive ? 'Active' : 'Make Active'}
-                  </button>
-                </Tooltip>
-              </div>
-
-              <div className="mt-3 flex gap-2">
-                <Tooltip
-                  content={`Add ${formatCurrencyValue(manualScoreDelta || 0)} to this team.`}
-                  className="flex-1"
-                >
-                  <button
-                    type="button"
-                    onClick={() => onAdjustTeamScore(team.id, manualScoreDelta)}
-                    disabled={manualScoreDelta === 0}
-                    className="control-button w-full disabled:cursor-not-allowed disabled:opacity-50"
-                  >
-                    Add
-                  </button>
-                </Tooltip>
-                <Tooltip
-                  content={`Subtract ${formatCurrencyValue(manualScoreDelta || 0)} from this team.`}
-                  className="flex-1"
-                >
-                  <button
-                    type="button"
-                    onClick={() => onAdjustTeamScore(team.id, -manualScoreDelta)}
-                    disabled={manualScoreDelta === 0}
-                    className="secondary-button w-full disabled:cursor-not-allowed disabled:opacity-50"
-                  >
-                    Subtract
-                  </button>
-                </Tooltip>
-              </div>
+              <span className="brand-tag">{keys}</span>
+              <span className="text-sm text-slate-200">{description}</span>
             </div>
-          );
-        })}
+          ))}
+        </div>
       </section>
     </>
   );

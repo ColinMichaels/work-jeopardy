@@ -16,6 +16,13 @@ Why:
 - The board window stays presentation-safe.
 - The host window shows controls, score tools, local config editing, and the private answer preview.
 
+Host window layout:
+
+- The top gameplay deck holds team selection, reveal, scoring, manual score adjustments, and Final Jeopardy launch.
+- The board is intentionally smaller in the host window so clue controls stay visible without excessive scrolling.
+- The right sidebar is for clue reference, notes, media preview, sound controls, config tools, import/export, and reset actions.
+- The `Host Layout` footer strip lets you hide or restore the gameplay deck, host board, clue preview, and setup tools at any time during live play without pushing the main controls down, and it also keeps the board/host/single window actions available.
+
 ## Pre-Meeting Checklist
 
 Before the meeting starts:
@@ -83,16 +90,20 @@ The host tools include:
 
 - bundled game selection
 - game JSON export and import
-- active team selection
-- reveal controls
-- clue media lightbox controls
-- clue scoring controls
-- manual score adjustment
 - reset scores
 - reset game
 - clear saved state
 - local config editing
 - sound previews and mute control
+
+The host gameplay deck includes:
+
+- active team selection
+- reveal controls
+- clue media lightbox toggle
+- clue scoring controls
+- manual score adjustment
+- Final Jeopardy launch when eligible
 
 ## Private Host Preview
 
@@ -135,8 +146,15 @@ If the game reopens with old state you did not want, use `Clear Saved State` and
 
 In host-capable views:
 
-- `Space` or `Enter`: reveal the current response
-- `Escape`: close the current clue
+- `1` through `9`: select the matching team by scoreboard order
+- `R`, `Space`, or `Enter`: reveal the current response
+- `C`: mark the current clue correct for the active team
+- `I`: mark the current clue incorrect for the active team
+- `Escape` or `X`: close the current clue
+- `U`: return the current clue tile to the board as unused
+- `M`: open or close the current clue media lightbox
+- `F`: start Final Jeopardy when the board is complete and the round is ready
+- `H`: open or close the host tools drawer in single-window mode
 
 These shortcuts are ignored while typing in form fields.
 
