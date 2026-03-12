@@ -38,6 +38,12 @@ Before the meeting starts:
 5. Reveal the response publicly when needed.
 6. Mark the clue correct or incorrect.
 
+If a clue includes image or video media:
+
+- The clue view now renders it directly.
+- Use `Expand` to open a larger synced media lightbox on linked windows.
+- YouTube links work when the host machine has internet access.
+
 ### Scoring
 
 - The active team is the team that receives clue scoring.
@@ -76,8 +82,10 @@ Important:
 The host tools include:
 
 - bundled game selection
+- game JSON export and import
 - active team selection
 - reveal controls
+- clue media lightbox controls
 - clue scoring controls
 - manual score adjustment
 - reset scores
@@ -107,6 +115,13 @@ Important:
 - If you want those edits in the next distributable build, copy them back into one of the source files in [`src/data/`](../src/data/) and rebuild.
 - Final Jeopardy content can also be edited from the local host editor.
 - If you want an AI to create a new full game set, start with [AI_GAMESET_AUTHORING.md](./AI_GAMESET_AUTHORING.md).
+
+## Exporting And Importing Games
+
+- Use `Export Game` in the host controls to download the current live config as a JSON file.
+- Edit that file locally if you want to make larger changes outside the browser.
+- Use `Import Game` to load a saved JSON file back into the app as a browser-local game override.
+- Importing starts a fresh board for that uploaded game and does not change the bundled source files in the repo.
 
 ## Resets And Persistence
 

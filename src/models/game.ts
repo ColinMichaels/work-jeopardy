@@ -25,6 +25,7 @@ export interface GameState {
   teams: TeamState[];
   answeredClueIds: AnsweredClueMap;
   selectedClueId: string | null;
+  activeClueMediaIndex: number | null;
   isQuestionRevealed: boolean;
   finalJeopardy: FinalJeopardyState | null;
 }

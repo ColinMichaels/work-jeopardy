@@ -36,6 +36,13 @@ interface HostPanelProps {
   onStopCue: (cue: GameSoundCue) => void;
   onStopAllSounds: () => void;
   onSelectBundledGame: (bundledGameId: string) => void;
+  onExportGame: () => { filename: string };
+  onImportGame: (file: File) => Promise<{
+    ok: boolean;
+    message?: string;
+    errors?: string[];
+    cancelled?: boolean;
+  }>;
   onOpenConfigEditor: () => void;
   onResetScores: () => void;
   onResetGame: () => void;
@@ -69,6 +76,8 @@ export function HostPanel({
   onStopCue,
   onStopAllSounds,
   onSelectBundledGame,
+  onExportGame,
+  onImportGame,
   onOpenConfigEditor,
   onResetScores,
   onResetGame,
@@ -138,6 +147,8 @@ export function HostPanel({
             onStopCue={onStopCue}
             onStopAllSounds={onStopAllSounds}
             onSelectBundledGame={onSelectBundledGame}
+            onExportGame={onExportGame}
+            onImportGame={onImportGame}
             onOpenConfigEditor={onOpenConfigEditor}
             onResetScores={onResetScores}
             onResetGame={onResetGame}

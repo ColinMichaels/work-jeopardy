@@ -9,6 +9,7 @@ interface ClueTileProps {
   isInteractive: boolean;
   compact: boolean;
   showDailyDoubleHint: boolean;
+  showMediaHint: boolean;
   entranceDelayMs?: number;
   onSelect: (clueId: string) => void;
 }
@@ -20,6 +21,7 @@ export function ClueTile({
   isInteractive,
   compact,
   showDailyDoubleHint,
+  showMediaHint,
   entranceDelayMs = 0,
   onSelect,
 }: ClueTileProps) {
@@ -57,12 +59,23 @@ export function ClueTile({
           {formatCurrencyValue(clue.value)}
         </span>
       ) : null}
-      {showDailyDoubleHint && clue.dailyDouble && !isAnswered ? (
-        <span
-          className={`board-tile-label mt-2 block font-semibold uppercase tracking-[0.34em] ${compact ? 'text-[9px]' : 'text-[11px]'}`}
-        >
-          Daily Double
-        </span>
+      {!isAnswered && ((showMediaHint && clue.media?.length) || (showDailyDoubleHint && clue.dailyDouble)) ? (
+        <div className={`mt-2 flex flex-wrap items-center justify-center gap-1.5 ${compact ? 'px-0.5' : ''}`}>
+          {showMediaHint && clue.media?.length ? (
+            <span
+              className={`board-tile-pill ${compact ? 'text-[9px]' : 'text-[11px]'}`}
+            >
+              {clue.media.length > 1 ? `Media ${clue.media.length}` : 'Media'}
+            </span>
+          ) : null}
+          {showDailyDoubleHint && clue.dailyDouble ? (
+            <span
+              className={`board-tile-pill ${compact ? 'text-[9px]' : 'text-[11px]'}`}
+            >
+              Daily Double
+            </span>
+          ) : null}
+        </div>
       ) : null}
     </>
   );

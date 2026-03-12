@@ -1,6 +1,7 @@
 import type { ResolvedClue } from '../models/game';
 import type { TeamState } from '../models/team';
 import { formatCurrencyValue } from '../lib/score-utils';
+import { ClueMediaPanel } from './ClueMediaPanel';
 import { Tooltip } from './Tooltip';
 
 interface ClueModalProps {
@@ -10,12 +11,15 @@ interface ClueModalProps {
   activeTeamId: string | null;
   subtractOnIncorrect: boolean;
   variant?: 'interactive' | 'presentation';
+  activeMediaIndex: number | null;
   onSelectTeam: (teamId: string) => void;
   onReveal: () => void;
   onMarkCorrect: () => void;
   onMarkIncorrect: () => void;
   onClose: () => void;
   onRestoreClue: () => void;
+  onOpenMedia: (index: number) => void;
+  onCloseMedia: () => void;
 }
 
 export function ClueModal({
@@ -25,12 +29,15 @@ export function ClueModal({
   activeTeamId,
   subtractOnIncorrect,
   variant = 'interactive',
+  activeMediaIndex,
   onSelectTeam,
   onReveal,
   onMarkCorrect,
   onMarkIncorrect,
   onClose,
   onRestoreClue,
+  onOpenMedia,
+  onCloseMedia,
 }: ClueModalProps) {
   if (!clueEntry) {
     return null;
@@ -85,19 +92,16 @@ export function ClueModal({
               </div>
             ) : null}
 
-            {!isPresentation && clue.media?.length ? (
-              <div className="panel-inset mt-6 p-4">
-                <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">
-                  Media References
-                </p>
-                <ul className="mt-2 space-y-2 text-sm text-slate-200">
-                  {clue.media.map((media) => (
-                    <li key={`${media.type}-${media.src}`}>
-                      {media.type}: {media.src}
-                    </li>
-                  ))}
-                </ul>
-              </div>
+            {clue.media?.length ? (
+              <ClueMediaPanel
+                media={clue.media}
+                clueTitle={categoryTitle}
+                activeLightboxIndex={activeMediaIndex}
+                canOpenLightbox={!isPresentation}
+                shouldAutoplay={isRevealed}
+                onOpenLightbox={onOpenMedia}
+                onCloseLightbox={onCloseMedia}
+              />
             ) : null}
 
             <div className="panel-inset mt-6 border-amber-300/20 bg-gradient-to-br from-slate-950 via-slate-900 to-sky-950 p-5">

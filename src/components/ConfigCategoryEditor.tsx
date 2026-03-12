@@ -1,5 +1,5 @@
 import { formatCurrencyValue } from '../lib/score-utils';
-import type { CategoryConfig, ClueConfig } from '../types/game-config';
+import type { CategoryConfig, ClueConfig, GameMediaReference } from '../types/game-config';
 
 interface ConfigCategoryEditorProps {
   categories: CategoryConfig[];
@@ -29,6 +29,14 @@ function buildClueSummary(clue: ClueConfig): string {
   return sourceText.length > 42 ? `${sourceText.slice(0, 42).trim()}...` : sourceText;
 }
 
+function createDefaultMediaReference(): GameMediaReference {
+  return {
+    type: 'image',
+    src: '',
+    alt: '',
+  };
+}
+
 export function ConfigCategoryEditor({
   categories,
   activeCategoryId,
@@ -48,6 +56,7 @@ export function ConfigCategoryEditor({
     activeCategory?.clues.find((clue) => clue.id === activeClueId) ??
     activeCategory?.clues[0] ??
     null;
+  const activeClueMedia = activeClue?.media ?? [];
 
   return (
     <section className="space-y-4">
@@ -278,6 +287,134 @@ export function ConfigCategoryEditor({
                             className="field-input min-h-[96px] resize-y text-base"
                           />
                         </label>
+
+                        <div className="panel-inset p-4">
+                          <div className="flex flex-wrap items-start justify-between gap-3">
+                            <div>
+                              <p className="mb-2 block text-sm font-semibold text-slate-200">
+                                Clue Media
+                              </p>
+                              <p className="text-xs leading-5 text-slate-400">
+                                Add image, audio, or video URLs. Use `video` for YouTube links.
+                              </p>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() =>
+                                onUpdateClue(activeCategory.id, activeClue.id, {
+                                  media: [...activeClueMedia, createDefaultMediaReference()],
+                                })
+                              }
+                              className="secondary-button"
+                            >
+                              Add Media
+                            </button>
+                          </div>
+
+                          {activeClueMedia.length > 0 ? (
+                            <div className="mt-4 space-y-4">
+                              {activeClueMedia.map((entry, index) => (
+                                <div
+                                  key={`${entry.type}-${entry.src}-${index}`}
+                                  className="rounded-[1.3rem] border border-white/10 bg-[rgba(2,8,33,0.66)] p-4"
+                                >
+                                  <div className="flex flex-wrap items-center justify-between gap-3">
+                                    <span className="brand-tag">{`Media ${index + 1}`}</span>
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        const nextMedia = activeClueMedia.filter(
+                                          (_, mediaIndex) => mediaIndex !== index,
+                                        );
+                                        onUpdateClue(activeCategory.id, activeClue.id, {
+                                          media: nextMedia.length > 0 ? nextMedia : undefined,
+                                        });
+                                      }}
+                                      className="secondary-button"
+                                    >
+                                      Remove
+                                    </button>
+                                  </div>
+
+                                  <div className="mt-4 grid gap-4 lg:grid-cols-[160px_minmax(0,1fr)]">
+                                    <label className="block">
+                                      <span className="mb-2 block text-sm font-semibold text-slate-200">
+                                        Type
+                                      </span>
+                                      <select
+                                        value={entry.type}
+                                        onChange={(event) => {
+                                          const nextMedia = activeClueMedia.map((mediaEntry, mediaIndex) =>
+                                            mediaIndex === index
+                                              ? {
+                                                  ...mediaEntry,
+                                                  type: event.target.value as GameMediaReference['type'],
+                                                }
+                                              : mediaEntry,
+                                          );
+                                          onUpdateClue(activeCategory.id, activeClue.id, {
+                                            media: nextMedia,
+                                          });
+                                        }}
+                                        className="field-input text-base"
+                                      >
+                                        <option value="image">Image</option>
+                                        <option value="video">Video</option>
+                                        <option value="audio">Audio</option>
+                                      </select>
+                                    </label>
+
+                                    <label className="block">
+                                      <span className="mb-2 block text-sm font-semibold text-slate-200">
+                                        Source URL
+                                      </span>
+                                      <input
+                                        type="text"
+                                        value={entry.src}
+                                        onChange={(event) => {
+                                          const nextMedia = activeClueMedia.map((mediaEntry, mediaIndex) =>
+                                            mediaIndex === index
+                                              ? { ...mediaEntry, src: event.target.value }
+                                              : mediaEntry,
+                                          );
+                                          onUpdateClue(activeCategory.id, activeClue.id, {
+                                            media: nextMedia,
+                                          });
+                                        }}
+                                        className="field-input text-base"
+                                      />
+                                    </label>
+                                  </div>
+
+                                  <label className="mt-4 block">
+                                    <span className="mb-2 block text-sm font-semibold text-slate-200">
+                                      Alt / Caption
+                                    </span>
+                                    <input
+                                      type="text"
+                                      value={entry.alt ?? ''}
+                                      onChange={(event) => {
+                                        const nextMedia = activeClueMedia.map((mediaEntry, mediaIndex) =>
+                                          mediaIndex === index
+                                            ? { ...mediaEntry, alt: event.target.value }
+                                            : mediaEntry,
+                                        );
+                                        onUpdateClue(activeCategory.id, activeClue.id, {
+                                          media: nextMedia,
+                                        });
+                                      }}
+                                      className="field-input text-base"
+                                    />
+                                  </label>
+                                </div>
+                              ))}
+                            </div>
+                          ) : (
+                            <div className="panel-muted mt-4 px-4 py-6 text-center text-[11px] font-semibold uppercase tracking-[0.3em]">
+                              No media attached to this clue
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </>
                   ) : (

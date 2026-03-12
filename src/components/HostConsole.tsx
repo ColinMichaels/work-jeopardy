@@ -2,6 +2,7 @@ import type { GameSoundCue } from '../types/game-audio';
 import type { ResolvedClue } from '../models/game';
 import type { TeamState } from '../models/team';
 import { formatCurrencyValue } from '../lib/score-utils';
+import { ClueMediaPanel } from './ClueMediaPanel';
 import { HostControlsSections } from './HostControlsSections';
 import { Tooltip } from './Tooltip';
 
@@ -14,6 +15,7 @@ interface HostConsoleProps {
   selectedBundledGameId: string;
   clueEntry: ResolvedClue | null;
   isRevealed: boolean;
+  activeMediaIndex: number | null;
   teams: TeamState[];
   activeTeamId: string | null;
   manualScoreDelta: number;
@@ -40,6 +42,13 @@ interface HostConsoleProps {
   onStopCue: (cue: GameSoundCue) => void;
   onStopAllSounds: () => void;
   onSelectBundledGame: (bundledGameId: string) => void;
+  onExportGame: () => { filename: string };
+  onImportGame: (file: File) => Promise<{
+    ok: boolean;
+    message?: string;
+    errors?: string[];
+    cancelled?: boolean;
+  }>;
   onOpenConfigEditor: () => void;
   onResetScores: () => void;
   onResetGame: () => void;
@@ -51,6 +60,8 @@ interface HostConsoleProps {
   onMarkIncorrect: () => void;
   onCloseClue: () => void;
   onRestoreClue: () => void;
+  onOpenMedia: (index: number) => void;
+  onCloseMedia: () => void;
 }
 
 export function HostConsole({
@@ -58,6 +69,7 @@ export function HostConsole({
   selectedBundledGameId,
   clueEntry,
   isRevealed,
+  activeMediaIndex,
   teams,
   activeTeamId,
   manualScoreDelta,
@@ -79,6 +91,8 @@ export function HostConsole({
   onStopCue,
   onStopAllSounds,
   onSelectBundledGame,
+  onExportGame,
+  onImportGame,
   onOpenConfigEditor,
   onResetScores,
   onResetGame,
@@ -90,6 +104,8 @@ export function HostConsole({
   onMarkIncorrect,
   onCloseClue,
   onRestoreClue,
+  onOpenMedia,
+  onCloseMedia,
 }: HostConsoleProps) {
   const clue = clueEntry?.clue ?? null;
   const currentClue = clueEntry?.clue;
@@ -133,18 +149,16 @@ export function HostConsole({
             ) : null}
 
             {currentClue?.media?.length ? (
-              <div className="panel-inset p-4">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-slate-400">
-                  Media References
-                </p>
-                <ul className="mt-2 space-y-2 text-sm text-slate-200">
-                  {currentClue.media.map((media) => (
-                    <li key={`${media.type}-${media.src}`}>
-                      {media.type}: {media.src}
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              <ClueMediaPanel
+                media={currentClue.media}
+                clueTitle={clueEntry.categoryTitle}
+                activeLightboxIndex={activeMediaIndex}
+                canOpenLightbox
+                compact
+                shouldAutoplay={isRevealed}
+                onOpenLightbox={onOpenMedia}
+                onCloseLightbox={onCloseMedia}
+              />
             ) : null}
 
             <div className="panel-inset border-amber-300/20 bg-gradient-to-br from-slate-950 via-slate-900 to-sky-950 p-4">
@@ -267,6 +281,8 @@ export function HostConsole({
             onStopCue={onStopCue}
             onStopAllSounds={onStopAllSounds}
             onSelectBundledGame={onSelectBundledGame}
+            onExportGame={onExportGame}
+            onImportGame={onImportGame}
             onOpenConfigEditor={onOpenConfigEditor}
             onResetScores={onResetScores}
             onResetGame={onResetGame}

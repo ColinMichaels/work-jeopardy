@@ -17,8 +17,10 @@ import {
   applyFinalJeopardyResults,
   applyClueOutcome,
   adjustTeamScore,
+  closeClueMedia,
   closeClue,
   hydrateGameState,
+  openClueMedia,
   reconcileGameStateWithConfig,
   resetGame,
   resetScores,
@@ -33,6 +35,7 @@ import {
   toPersistedGameState,
 } from './lib/game-engine';
 import { findClueById, getMinimumClueValue, loadGameConfig } from './lib/config-loader';
+import { downloadGameConfigJson } from './lib/config-transfer';
 import { getEligibleFinalJeopardyTeams, getFinalJeopardyConfig } from './lib/final-jeopardy';
 import {
   buildWindowTargetName,
@@ -353,6 +356,14 @@ export default function App() {
     setGameState((currentState) => revealQuestion(currentState));
   };
 
+  const handleOpenClueMedia = (mediaIndex: number) => {
+    setGameState((currentState) => openClueMedia(currentState, mediaIndex));
+  };
+
+  const handleCloseClueMedia = () => {
+    setGameState((currentState) => closeClueMedia(currentState));
+  };
+
   const playClueCloseSound = (wasScored: boolean) => {
     stopCue('thinkMusic');
 
@@ -538,6 +549,59 @@ export default function App() {
     return { ok: true };
   };
 
+  const handleExportGame = () => ({
+    filename: downloadGameConfigJson(config),
+  });
+
+  const handleImportGame = async (file: File) => {
+    let rawConfig = '';
+
+    try {
+      rawConfig = await file.text();
+    } catch {
+      return {
+        ok: false,
+        errors: ['The selected file could not be read.'],
+      };
+    }
+
+    const parseResult = loadGameConfig(rawConfig);
+
+    if (!parseResult.ok) {
+      return {
+        ok: false,
+        errors: parseResult.errors,
+      };
+    }
+
+    const importedConfig = parseResult.value;
+    const confirmMessage =
+      isUsingLocalConfig || answeredClues > 0 || Boolean(activeFinalJeopardy)
+        ? `Load "${importedConfig.title}" from ${file.name} and replace the current session with a fresh board?`
+        : `Load "${importedConfig.title}" from ${file.name} as the current game?`;
+
+    if (!window.confirm(confirmMessage)) {
+      return {
+        ok: false,
+        cancelled: true,
+      };
+    }
+
+    applyRuntimeConfig(importedConfig, {
+      rawConfig,
+      isLocalOverride: true,
+      selectedBundledGameId,
+      resetGameState: true,
+      clearTargetSavedState: true,
+    });
+    setIsConfigEditorOpen(false);
+
+    return {
+      ok: true,
+      message: `Loaded "${importedConfig.title}" from ${file.name}.`,
+    };
+  };
+
   const handleResetLocalConfig = () => {
     if (!window.confirm('Discard the local host config and return to the selected bundled game?')) {
       return;
@@ -597,7 +661,7 @@ export default function App() {
   };
 
   useEffect(() => {
-    if (!activeClue || viewMode === 'board') {
+    if (!activeClue || viewMode === 'board' || gameState.activeClueMediaIndex !== null) {
       return;
     }
 
@@ -619,7 +683,27 @@ export default function App() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [activeClue, gameState.isQuestionRevealed, viewMode]);
+  }, [activeClue, gameState.activeClueMediaIndex, gameState.isQuestionRevealed, viewMode]);
+
+  useEffect(() => {
+    if (viewMode === 'board' || gameState.activeClueMediaIndex === null) {
+      return;
+    }
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (shouldIgnoreKeyboardShortcut(event.target)) {
+        return;
+      }
+
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        handleCloseClueMedia();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [gameState.activeClueMediaIndex, viewMode]);
 
   useEffect(() => {
     if (!isBoardView || !isPresenterMode || shouldShowBoardHeader) {
@@ -733,6 +817,7 @@ export default function App() {
               selectedClueId={gameState.selectedClueId}
               isInteractive
               showDailyDoubleHint
+              showMediaHint
               onSelectClue={handleSelectClue}
             />
 
@@ -741,6 +826,7 @@ export default function App() {
               selectedBundledGameId={selectedBundledGameId}
               clueEntry={activeClue}
               isRevealed={gameState.isQuestionRevealed}
+              activeMediaIndex={gameState.activeClueMediaIndex}
               teams={gameState.teams}
               activeTeamId={activeTeamId}
               manualScoreDelta={manualScoreDelta}
@@ -762,6 +848,8 @@ export default function App() {
               onStopCue={stopCue}
               onStopAllSounds={stopAll}
               onSelectBundledGame={handleSelectBundledGame}
+              onExportGame={handleExportGame}
+              onImportGame={handleImportGame}
               onOpenConfigEditor={() => setIsConfigEditorOpen(true)}
               onResetScores={handleResetScores}
               onResetGame={handleResetGame}
@@ -773,6 +861,8 @@ export default function App() {
               onMarkIncorrect={() => handleMarkClue(false)}
               onCloseClue={handleCloseClue}
               onRestoreClue={handleRestoreClue}
+              onOpenMedia={handleOpenClueMedia}
+              onCloseMedia={handleCloseClueMedia}
             />
           </div>
         ) : isBoardView ? (
@@ -808,6 +898,7 @@ export default function App() {
               selectedClueId={gameState.selectedClueId}
               isInteractive
               showDailyDoubleHint={false}
+              showMediaHint
               onSelectClue={handleSelectClue}
             />
           </>
@@ -840,6 +931,8 @@ export default function App() {
           onStopCue={stopCue}
           onStopAllSounds={stopAll}
           onSelectBundledGame={handleSelectBundledGame}
+          onExportGame={handleExportGame}
+          onImportGame={handleImportGame}
           onOpenConfigEditor={() => {
             setIsHostPanelOpen(false);
             setIsConfigEditorOpen(true);
@@ -869,12 +962,15 @@ export default function App() {
           activeTeamId={activeTeamId}
           subtractOnIncorrect={config.settings.subtractOnIncorrect}
           variant={viewMode === 'board' ? 'presentation' : 'interactive'}
+          activeMediaIndex={gameState.activeClueMediaIndex}
           onSelectTeam={handleSelectTeam}
           onReveal={handleReveal}
           onMarkCorrect={() => handleMarkClue(true)}
           onMarkIncorrect={() => handleMarkClue(false)}
           onClose={handleCloseClue}
           onRestoreClue={handleRestoreClue}
+          onOpenMedia={handleOpenClueMedia}
+          onCloseMedia={handleCloseClueMedia}
         />
       ) : null}
     </div>
