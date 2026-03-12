@@ -3,6 +3,7 @@
 This project is designed to build into static files that can be copied to another machine and opened locally during a meeting.
 
 For the actual meeting run flow after the build is ready, see the [host manual](./HOST_MANUAL.md).
+For a hosted static demo, see the [GitHub Pages deployment guide](./GITHUB_PAGES.md).
 
 ## Prerequisites
 
