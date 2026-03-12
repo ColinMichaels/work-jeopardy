@@ -3,12 +3,14 @@ import { ClueModal } from './components/ClueModal';
 import { ConfigEditorModal } from './components/ConfigEditorModal';
 import { ControlBar } from './components/ControlBar';
 import { ErrorScreen } from './components/ErrorScreen';
+import { FinalJeopardyScreen } from './components/final-jeopardy/FinalJeopardyScreen';
 import { GameBoard } from './components/GameBoard';
 import { HostConsole } from './components/HostConsole';
 import { HostPanel } from './components/HostPanel';
 import { ScoreBoard } from './components/ScoreBoard';
 import sampleGameRaw from './data/sample-game.json?raw';
 import {
+  applyFinalJeopardyResults,
   applyClueOutcome,
   adjustTeamScore,
   closeClue,
@@ -17,10 +19,17 @@ import {
   resetGame,
   resetScores,
   revealQuestion,
+  restoreSelectedClue,
+  setFinalJeopardyJudgment,
+  setFinalJeopardyPhase,
+  setFinalJeopardyResponse,
+  setFinalJeopardyWagers,
   selectClue,
+  startFinalJeopardy,
   toPersistedGameState,
 } from './lib/game-engine';
 import { findClueById, getMinimumClueValue, loadGameConfig } from './lib/config-loader';
+import { getEligibleFinalJeopardyTeams, getFinalJeopardyConfig } from './lib/final-jeopardy';
 import {
   buildWindowTargetName,
   buildWindowUrl,
@@ -101,6 +110,7 @@ export default function App() {
 
   const bundledConfig = bundledConfigResult.value;
   const bootstrapRef = useRef<BootstrapState | null>(null);
+  const hasPlayedInitialIntroRef = useRef(false);
   const sessionIdRef = useRef<string>(ensureSessionIdInUrl());
   const viewModeRef = useRef(getViewModeFromLocation());
 
@@ -127,18 +137,29 @@ export default function App() {
   const [isPresenterMode, setIsPresenterMode] = useState<boolean>(bootstrapState.isPresenterMode);
   const [isHostPanelOpen, setIsHostPanelOpen] = useState(false);
   const [isConfigEditorOpen, setIsConfigEditorOpen] = useState(false);
+  const [isBoardHeaderForcedVisible, setIsBoardHeaderForcedVisible] = useState(false);
+  const [boardEntranceCycle, setBoardEntranceCycle] = useState(0);
 
   const storageKey = getStorageKey(config.settings);
   const activeClue = findClueById(config, gameState.selectedClueId);
   const totalClues = config.categories.reduce((sum, category) => sum + category.clues.length, 0);
   const answeredClues = Object.keys(gameState.answeredClueIds).length;
+  const isMainBoardComplete = answeredClues === totalClues;
   const isConfigSoundEnabled = config.settings.sounds.enabled;
   const isBoardView = viewMode === 'board';
+  const finalJeopardyConfig = getFinalJeopardyConfig(config);
+  const activeFinalJeopardy = finalJeopardyConfig ? gameState.finalJeopardy : null;
+  const eligibleFinalJeopardyTeams = finalJeopardyConfig
+    ? getEligibleFinalJeopardyTeams(gameState.teams, finalJeopardyConfig)
+    : [];
+  const isFinalJeopardyReady = Boolean(finalJeopardyConfig) && isMainBoardComplete && !activeFinalJeopardy;
 
-  const { activeLoopingCue, soundDefinitions, playCue, stopCue, stopAll } = useSoundboard({
-    settings: config.settings.sounds,
-    isOutputEnabled: isConfigSoundEnabled && isSoundOutputEnabled,
-  });
+  const { activeCueIds, activeLoopingCue, soundDefinitions, playCue, stopCue, stopAll } =
+    useSoundboard({
+      settings: config.settings.sounds,
+      isOutputEnabled: isConfigSoundEnabled && isSoundOutputEnabled,
+    });
+  const shouldShowBoardHeader = !isBoardView || !isPresenterMode || isBoardHeaderForcedVisible;
 
   const sharedSnapshot: SharedSessionSnapshot = {
     config,
@@ -170,8 +191,46 @@ export default function App() {
   useEffect(() => {
     const viewLabel =
       viewMode === 'board' ? 'Board View' : viewMode === 'host' ? 'Host View' : 'Single View';
-    document.title = `${config.title} | ${viewLabel}`;
-  }, [config.title, viewMode]);
+    const roundLabel = activeFinalJeopardy ? ' | Final Jeopardy' : '';
+    document.title = `${config.title} | ${viewLabel}${roundLabel}`;
+  }, [activeFinalJeopardy, config.title, viewMode]);
+
+  useEffect(() => {
+    if (!isBoardView || !isPresenterMode) {
+      setIsBoardHeaderForcedVisible(false);
+    }
+  }, [isBoardView, isPresenterMode]);
+
+  useEffect(() => {
+    const shouldPlayInitialIntro = viewMode === 'single' && !hasPlayedInitialIntroRef.current;
+    const shouldPlayBoardIntro =
+      viewMode !== 'board' &&
+      !activeFinalJeopardy &&
+      (boardEntranceCycle > 0 || shouldPlayInitialIntro);
+
+    if (!shouldPlayBoardIntro) {
+      return;
+    }
+
+    hasPlayedInitialIntroRef.current = true;
+    stopCue('thinkMusic');
+    void playCue('introJeopardy');
+  }, [activeFinalJeopardy, boardEntranceCycle, viewMode]);
+
+  useEffect(() => {
+    const shouldPlayFinalThinkMusic =
+      viewMode !== 'board' &&
+      activeFinalJeopardy?.phase === 'clue' &&
+      Boolean(finalJeopardyConfig?.timerSeconds);
+
+    if (shouldPlayFinalThinkMusic) {
+      stopCue('introJeopardy');
+      void playCue('thinkMusic');
+      return;
+    }
+
+    stopCue('thinkMusic');
+  }, [activeFinalJeopardy?.phase, finalJeopardyConfig?.timerSeconds, viewMode]);
 
   const handleSelectTeam = (teamId: string) => {
     if (teamId !== activeTeamId) {
@@ -185,6 +244,7 @@ export default function App() {
     const clueEntry = findClueById(config, clueId);
 
     stopCue('thinkMusic');
+    stopCue('introJeopardy');
     setIsHostPanelOpen(false);
 
     if (clueEntry?.clue.dailyDouble) {
@@ -221,6 +281,11 @@ export default function App() {
     setGameState((currentState) => closeClue(currentState));
   };
 
+  const handleRestoreClue = () => {
+    stopCue('thinkMusic');
+    setGameState((currentState) => restoreSelectedClue(currentState));
+  };
+
   const handleMarkClue = (isCorrect: boolean) => {
     if (!activeTeamId || !activeClue) {
       return;
@@ -248,6 +313,40 @@ export default function App() {
     setGameState((currentState) => adjustTeamScore(currentState, teamId, delta));
   };
 
+  const handleStartFinalJeopardy = () => {
+    if (!finalJeopardyConfig || activeFinalJeopardy || !isMainBoardComplete) {
+      return;
+    }
+
+    stopAll();
+    setIsHostPanelOpen(false);
+    setIsConfigEditorOpen(false);
+    setGameState((currentState) => startFinalJeopardy(currentState, config));
+  };
+
+  const handleSetFinalJeopardyPhase = (
+    phase: Parameters<typeof setFinalJeopardyPhase>[1],
+  ) => {
+    setGameState((currentState) => setFinalJeopardyPhase(currentState, phase));
+  };
+
+  const handleSetFinalJeopardyWagers = (wagersByTeamId: Record<string, number>) => {
+    setGameState((currentState) => setFinalJeopardyWagers(currentState, wagersByTeamId));
+  };
+
+  const handleSetFinalJeopardyResponse = (teamId: string, response: string) => {
+    setGameState((currentState) => setFinalJeopardyResponse(currentState, teamId, response));
+  };
+
+  const handleSetFinalJeopardyJudgment = (teamId: string, isCorrect: boolean) => {
+    setGameState((currentState) => setFinalJeopardyJudgment(currentState, teamId, isCorrect));
+  };
+
+  const handleApplyFinalJeopardyResults = () => {
+    stopCue('thinkMusic');
+    setGameState((currentState) => applyFinalJeopardyResults(currentState));
+  };
+
   const handleResetScores = () => {
     if (!window.confirm('Reset all team scores to zero?')) {
       return;
@@ -269,7 +368,7 @@ export default function App() {
     setGameState(resetGame(config));
     setActiveTeamId(config.teams[0]?.id ?? null);
     setIsHostPanelOpen(false);
-    void playCue('boardFill');
+    setBoardEntranceCycle((currentCycle) => currentCycle + 1);
   };
 
   const handleClearSavedState = () => {
@@ -300,6 +399,7 @@ export default function App() {
         : nextConfig.teams[0]?.id ?? null,
     );
     setManualScoreDelta(getMinimumClueValue(nextConfig));
+    setBoardEntranceCycle((currentCycle) => currentCycle + 1);
   };
 
   const handleApplyConfig = (nextConfigDraft: GameConfig) => {
@@ -369,6 +469,26 @@ export default function App() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [activeClue, gameState.isQuestionRevealed, viewMode]);
 
+  useEffect(() => {
+    if (!isBoardView || !isPresenterMode || shouldShowBoardHeader) {
+      return;
+    }
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (shouldIgnoreKeyboardShortcut(event.target)) {
+        return;
+      }
+
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        setIsBoardHeaderForcedVisible(true);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isBoardView, isPresenterMode, shouldShowBoardHeader]);
+
   const { transport } = useSessionSync({
     sessionId,
     snapshot: sharedSnapshot,
@@ -400,7 +520,7 @@ export default function App() {
       <div
         className={`mx-auto flex w-full flex-col ${isBoardView ? 'h-[calc(100vh-1.5rem)] max-w-[1920px] gap-3' : 'max-w-[1800px] gap-4'}`}
       >
-        {!isBoardView || !isPresenterMode ? (
+        {shouldShowBoardHeader ? (
           <ControlBar
             title={config.title}
             subtitle={config.subtitle}
@@ -412,14 +532,23 @@ export default function App() {
             viewMode={viewMode}
             syncTransport={transport}
             compact={isBoardView}
-            onOpenHostPanel={viewMode === 'single' ? () => setIsHostPanelOpen(true) : undefined}
+            onOpenHostPanel={
+              viewMode === 'single' && !activeFinalJeopardy
+                ? () => setIsHostPanelOpen(true)
+                : undefined
+            }
+            onHideCompactHeader={
+              isBoardView && isPresenterMode && isBoardHeaderForcedVisible
+                ? () => setIsBoardHeaderForcedVisible(false)
+                : undefined
+            }
             onOpenBoardWindow={() => openWindowForView('board')}
             onOpenHostWindow={() => openWindowForView('host')}
             onOpenSingleWindow={() => openWindowForView('single')}
           />
         ) : null}
 
-        {!isBoardView ? (
+        {!isBoardView && !activeFinalJeopardy ? (
           <ScoreBoard
             teams={gameState.teams}
             activeTeamId={activeTeamId}
@@ -428,9 +557,25 @@ export default function App() {
           />
         ) : null}
 
-        {viewMode === 'host' ? (
+        {activeFinalJeopardy && finalJeopardyConfig ? (
+          <div className={isBoardView ? 'min-h-0 flex-1 overflow-y-auto' : ''}>
+            <FinalJeopardyScreen
+              config={finalJeopardyConfig}
+              state={activeFinalJeopardy}
+              teams={gameState.teams}
+              viewMode={viewMode}
+              onSetPhase={handleSetFinalJeopardyPhase}
+              onSetWagers={handleSetFinalJeopardyWagers}
+              onSetResponse={handleSetFinalJeopardyResponse}
+              onSetJudgment={handleSetFinalJeopardyJudgment}
+              onApplyResults={handleApplyFinalJeopardyResults}
+              onResetGame={handleResetGame}
+            />
+          </div>
+        ) : viewMode === 'host' ? (
           <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_440px]">
             <GameBoard
+              key={`host-board-${boardEntranceCycle}`}
               categories={config.categories}
               answeredClueIds={gameState.answeredClueIds}
               selectedClueId={gameState.selectedClueId}
@@ -445,11 +590,14 @@ export default function App() {
               teams={gameState.teams}
               activeTeamId={activeTeamId}
               manualScoreDelta={manualScoreDelta}
+              isFinalJeopardyReady={isFinalJeopardyReady}
+              finalJeopardyEligibleTeamCount={eligibleFinalJeopardyTeams.length}
               subtractOnIncorrect={config.settings.subtractOnIncorrect}
               isLocalStorageEnabled={config.settings.enableLocalStorage}
               isUsingLocalConfig={isUsingLocalConfig}
               isConfigSoundEnabled={isConfigSoundEnabled}
               isSoundOutputEnabled={isSoundOutputEnabled}
+              activeCueIds={activeCueIds}
               soundDefinitions={soundDefinitions}
               activeLoopingCue={activeLoopingCue}
               onSelectTeam={handleSelectTeam}
@@ -464,24 +612,27 @@ export default function App() {
               onResetGame={handleResetGame}
               onClearSavedState={handleClearSavedState}
               onResetLocalConfig={handleResetLocalConfig}
+              onStartFinalJeopardy={handleStartFinalJeopardy}
               onReveal={handleReveal}
               onMarkCorrect={() => handleMarkClue(true)}
               onMarkIncorrect={() => handleMarkClue(false)}
               onCloseClue={handleCloseClue}
+              onRestoreClue={handleRestoreClue}
             />
           </div>
         ) : isBoardView ? (
           <div className="flex min-h-0 flex-1 flex-col gap-3">
             <div className="min-h-0 flex-1">
               <GameBoard
+                key={`board-view-${boardEntranceCycle}`}
                 categories={config.categories}
                 answeredClueIds={gameState.answeredClueIds}
-              selectedClueId={gameState.selectedClueId}
-              isInteractive={false}
-              compact
-              showDailyDoubleHint={false}
-              onSelectClue={handleSelectClue}
-            />
+                selectedClueId={gameState.selectedClueId}
+                isInteractive={false}
+                compact
+                showDailyDoubleHint={false}
+                onSelectClue={handleSelectClue}
+              />
             </div>
             <div className="shrink-0">
               <ScoreBoard
@@ -496,6 +647,7 @@ export default function App() {
         ) : (
           <>
             <GameBoard
+              key={`single-board-${boardEntranceCycle}`}
               categories={config.categories}
               answeredClueIds={gameState.answeredClueIds}
               selectedClueId={gameState.selectedClueId}
@@ -507,16 +659,19 @@ export default function App() {
         )}
       </div>
 
-      {viewMode === 'single' ? (
+      {viewMode === 'single' && !activeFinalJeopardy ? (
         <HostPanel
           isOpen={isHostPanelOpen}
           teams={gameState.teams}
           activeTeamId={activeTeamId}
           manualScoreDelta={manualScoreDelta}
+          isFinalJeopardyReady={isFinalJeopardyReady}
+          finalJeopardyEligibleTeamCount={eligibleFinalJeopardyTeams.length}
           isLocalStorageEnabled={config.settings.enableLocalStorage}
           isUsingLocalConfig={isUsingLocalConfig}
           isConfigSoundEnabled={isConfigSoundEnabled}
           isSoundOutputEnabled={isSoundOutputEnabled}
+          activeCueIds={activeCueIds}
           soundDefinitions={soundDefinitions}
           activeLoopingCue={activeLoopingCue}
           onClose={() => setIsHostPanelOpen(false)}
@@ -535,6 +690,7 @@ export default function App() {
           onResetGame={handleResetGame}
           onClearSavedState={handleClearSavedState}
           onResetLocalConfig={handleResetLocalConfig}
+          onStartFinalJeopardy={handleStartFinalJeopardy}
         />
       ) : null}
 
@@ -547,7 +703,7 @@ export default function App() {
         />
       ) : null}
 
-      {viewMode !== 'host' ? (
+      {viewMode !== 'host' && !activeFinalJeopardy ? (
         <ClueModal
           clueEntry={activeClue}
           isRevealed={gameState.isQuestionRevealed}
@@ -560,6 +716,7 @@ export default function App() {
           onMarkCorrect={() => handleMarkClue(true)}
           onMarkIncorrect={() => handleMarkClue(false)}
           onClose={handleCloseClue}
+          onRestoreClue={handleRestoreClue}
         />
       ) : null}
     </div>

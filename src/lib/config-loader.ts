@@ -1,6 +1,12 @@
 import { GAME_SOUND_CUES } from '../types/game-audio';
 import type { GameSoundCueOverrides } from '../types/game-audio';
-import type { ConfigParseResult, GameConfig, GameMediaReference, GameSettings } from '../types/game-config';
+import type {
+  ConfigParseResult,
+  FinalJeopardyConfig,
+  GameConfig,
+  GameMediaReference,
+  GameSettings,
+} from '../types/game-config';
 import type { ResolvedClue } from '../models/game';
 
 const DEFAULT_SETTINGS: GameSettings = {
@@ -96,6 +102,26 @@ function readOptionalNumber(
   if (typeof value !== 'number' || !Number.isFinite(value)) {
     errors.push(`${path}.${key} must be a finite number.`);
     return fallback;
+  }
+
+  return value;
+}
+
+function readOptionalPositiveNumber(
+  source: Record<string, unknown>,
+  key: string,
+  path: string,
+  errors: string[],
+): number | undefined {
+  const value = readOptionalNumber(source, key, path, errors);
+
+  if (value === undefined) {
+    return undefined;
+  }
+
+  if (value <= 0) {
+    errors.push(`${path}.${key} must be greater than zero.`);
+    return undefined;
   }
 
   return value;
@@ -212,6 +238,57 @@ function assertUniqueIds(label: string, ids: string[], errors: string[]): void {
   });
 }
 
+function parseFinalJeopardy(
+  value: unknown,
+  path: string,
+  errors: string[],
+): FinalJeopardyConfig | undefined {
+  if (value === undefined) {
+    return undefined;
+  }
+
+  if (!isRecord(value)) {
+    errors.push(`${path} must be an object when provided.`);
+    return undefined;
+  }
+
+  const enabled = readOptionalBoolean(value, 'enabled', path, errors, false);
+  const category = readOptionalString(value, 'category') ?? '';
+  const clue = readOptionalString(value, 'clue') ?? '';
+  const correctResponse = readOptionalString(value, 'correctResponse') ?? '';
+  const timerSeconds = readOptionalPositiveNumber(value, 'timerSeconds', path, errors);
+  const allowNonPositiveScores = readOptionalBoolean(
+    value,
+    'allowNonPositiveScores',
+    path,
+    errors,
+    false,
+  );
+
+  if (enabled && category.length === 0) {
+    errors.push(`${path}.category must be a non-empty string when Final Jeopardy is enabled.`);
+  }
+
+  if (enabled && clue.length === 0) {
+    errors.push(`${path}.clue must be a non-empty string when Final Jeopardy is enabled.`);
+  }
+
+  if (enabled && correctResponse.length === 0) {
+    errors.push(
+      `${path}.correctResponse must be a non-empty string when Final Jeopardy is enabled.`,
+    );
+  }
+
+  return {
+    enabled,
+    category,
+    clue,
+    correctResponse,
+    timerSeconds,
+    allowNonPositiveScores,
+  };
+}
+
 export function loadGameConfig(rawConfig: string): ConfigParseResult {
   let parsedValue: unknown;
 
@@ -239,6 +316,7 @@ export function loadGameConfig(rawConfig: string): ConfigParseResult {
   const teamsInput = parsedValue.teams;
   const categoriesInput = parsedValue.categories;
   const settingsInput = parsedValue.settings;
+  const finalJeopardyInput = parsedValue.finalJeopardy;
 
   const teams = Array.isArray(teamsInput)
     ? teamsInput.flatMap((entry, index) => {
@@ -372,6 +450,7 @@ export function loadGameConfig(rawConfig: string): ConfigParseResult {
   };
 
   const soundsInput = settingsSource.sounds;
+  const finalJeopardy = parseFinalJeopardy(finalJeopardyInput, 'config.finalJeopardy', errors);
 
   if (soundsInput !== undefined) {
     if (!isRecord(soundsInput)) {
@@ -422,6 +501,7 @@ export function loadGameConfig(rawConfig: string): ConfigParseResult {
       teams,
       categories,
       settings,
+      finalJeopardy,
     },
   };
 }

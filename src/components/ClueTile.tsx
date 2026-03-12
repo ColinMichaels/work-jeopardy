@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'react';
 import type { ClueConfig } from '../types/game-config';
 import { formatCurrencyValue } from '../lib/score-utils';
 
@@ -8,6 +9,7 @@ interface ClueTileProps {
   isInteractive: boolean;
   compact: boolean;
   showDailyDoubleHint: boolean;
+  entranceDelayMs?: number;
   onSelect: (clueId: string) => void;
 }
 
@@ -18,21 +20,27 @@ export function ClueTile({
   isInteractive,
   compact,
   showDailyDoubleHint,
+  entranceDelayMs = 0,
   onSelect,
 }: ClueTileProps) {
+  const entranceStyle = {
+    '--board-entrance-delay': `${entranceDelayMs}ms`,
+  } as CSSProperties;
+
   if (!clue) {
     return (
       <div
-        className={`board-empty border ${compact ? 'h-full min-h-0 rounded-[1.2rem]' : 'min-h-32 rounded-[1.75rem]'}`}
+        className={`board-empty board-entrance-card border ${compact ? 'h-full min-h-0 ' : 'min-h-32 '}`}
+        style={entranceStyle}
       />
     );
   }
 
   const tileClassName = [
-    'flex flex-col items-center justify-center border text-center transition duration-150',
+    'board-entrance-card flex flex-col items-center justify-center border text-center transition duration-150',
     'focus:outline-none focus:ring-4 focus:ring-[rgba(255,223,133,0.25)]',
     'board-tile',
-    compact ? 'h-full min-h-0 rounded-[1.2rem] px-2 py-2' : 'min-h-32 rounded-[1.75rem] px-3 py-4',
+    compact ? 'h-full min-h-0  px-1 py-1' : 'min-h-32  px-2 py-3',
     isAnswered ? 'board-tile--used' : '',
     isActive ? 'board-tile--active' : '',
     isInteractive && !isAnswered ? 'hover:-translate-y-0.5' : 'cursor-default',
@@ -60,11 +68,20 @@ export function ClueTile({
   );
 
   if (!isInteractive || isAnswered) {
-    return <div className={tileClassName}>{content}</div>;
+    return (
+      <div className={tileClassName} style={entranceStyle}>
+        {content}
+      </div>
+    );
   }
 
   return (
-    <button type="button" onClick={() => onSelect(clue.id)} className={tileClassName}>
+    <button
+      type="button"
+      onClick={() => onSelect(clue.id)}
+      className={tileClassName}
+      style={entranceStyle}
+    >
       {content}
     </button>
   );

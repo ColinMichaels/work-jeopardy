@@ -59,6 +59,14 @@ If you use the in-app editor instead, those edits apply only to the current brow
         "dailyDouble": "sounds/daily-double.mp3"
       }
     }
+  },
+  "finalJeopardy": {
+    "enabled": true,
+    "category": "Programming History",
+    "clue": "This language's original slogan was often paraphrased as 'write once, run anywhere.'",
+    "correctResponse": "What is Java?",
+    "timerSeconds": 30,
+    "allowNonPositiveScores": false
   }
 }
 ```
@@ -237,6 +245,40 @@ Fields:
 - `enabled`: master switch for game sounds
 - `volume`: optional number from `0` to `1`
 - `cues`: optional map of cue ids to audio file paths
+
+### `finalJeopardy`
+
+- Type: `FinalJeopardyConfig`
+- Required: no
+- Enables the optional Final Jeopardy round after the main board is complete
+
+Final Jeopardy object:
+
+```json
+{
+  "enabled": true,
+  "category": "Programming History",
+  "clue": "This language's original slogan was often paraphrased as 'write once, run anywhere.'",
+  "correctResponse": "What is Java?",
+  "timerSeconds": 30,
+  "allowNonPositiveScores": false
+}
+```
+
+Fields:
+
+- `enabled`: turns the round on or off
+- `category`: category revealed before wagers
+- `clue`: final clue shown after wagers lock
+- `correctResponse`: host-only review answer, later shown on results
+- `timerSeconds`: optional countdown for the clue phase
+- `allowNonPositiveScores`: when `true`, teams at `0` or below may still participate
+
+Eligibility notes:
+
+- By default, only teams with scores greater than `0` are eligible.
+- If `allowNonPositiveScores` is `true`, every team is eligible.
+- Teams with negative scores can still only wager `0`.
 
 Supported cue ids:
 

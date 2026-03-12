@@ -236,19 +236,63 @@ function playFallbackCue(
   return playBoardFillFallback(context, volume);
 }
 
-function createAudioHandle(audio: HTMLAudioElement): PlaybackHandle {
-  return {
-    stop: () => {
-      audio.pause();
-      audio.currentTime = 0;
-    },
+function createAudioHandle(audio: HTMLAudioElement, onFinish: () => void): PlaybackHandle {
+  let isDisposed = false;
+  const handleEnded = () => {
+    if (isDisposed) {
+      return;
+    }
+
+    isDisposed = true;
+    audio.removeEventListener('ended', handleEnded);
+    onFinish();
   };
+
+  const dispose = () => {
+    if (isDisposed) {
+      return;
+    }
+
+    isDisposed = true;
+    audio.removeEventListener('ended', handleEnded);
+    audio.pause();
+    audio.currentTime = 0;
+    onFinish();
+  };
+
+  audio.addEventListener('ended', handleEnded);
+
+  return {
+    stop: dispose,
+  };
+}
+
+function getFallbackCueDurationMs(cue: GameSoundCue): number | null {
+  switch (cue) {
+    case 'boardFill':
+      return 500;
+    case 'dailyDouble':
+      return 650;
+    case 'tripleStumper':
+      return 700;
+    case 'endRound':
+      return 500;
+    case 'contestantBuzzer':
+      return 200;
+    case 'correctAnswer':
+      return 250;
+    case 'introJeopardy':
+      return 1200;
+    case 'thinkMusic':
+      return null;
+  }
 }
 
 function playAssetCue(
   src: string,
   volume: number,
   loop: boolean,
+  onFinish: () => void,
 ): Promise<PlaybackHandle | null> {
   if (typeof Audio === 'undefined') {
     return Promise.resolve(null);
@@ -282,7 +326,7 @@ function playAssetCue(
     audio
       .play()
       .then(() => {
-        finish(createAudioHandle(audio));
+        finish(createAudioHandle(audio, onFinish));
       })
       .catch(() => {
         finish(null);
@@ -305,28 +349,66 @@ interface UseSoundboardOptions {
 
 export function useSoundboard({ settings, isOutputEnabled }: UseSoundboardOptions) {
   const audioContextRef = useRef<AudioContext | null>(null);
-  const loopingHandlesRef = useRef<Partial<Record<GameSoundCue, PlaybackHandle>>>({});
+  const activeHandlesRef = useRef<Partial<Record<GameSoundCue, PlaybackHandle>>>({});
+  const cleanupTimerIdsRef = useRef<Partial<Record<GameSoundCue, number>>>({});
   const [activeLoopingCue, setActiveLoopingCue] = useState<GameSoundCue | null>(null);
+  const [activeCueIds, setActiveCueIds] = useState<GameSoundCue[]>([]);
+
+  const clearCueState = (cue: GameSoundCue) => {
+    delete activeHandlesRef.current[cue];
+
+    const cleanupTimerId = cleanupTimerIdsRef.current[cue];
+
+    if (cleanupTimerId !== undefined) {
+      window.clearTimeout(cleanupTimerId);
+      delete cleanupTimerIdsRef.current[cue];
+    }
+
+    setActiveCueIds((currentCues) => currentCues.filter((currentCue) => currentCue !== cue));
+
+    setActiveLoopingCue((currentCue) => (currentCue === cue ? null : currentCue));
+  };
 
   const stopCue = (cue: GameSoundCue) => {
-    const handle = loopingHandlesRef.current[cue];
+    const handle = activeHandlesRef.current[cue];
 
     if (!handle) {
       return;
     }
 
     handle.stop();
-    delete loopingHandlesRef.current[cue];
-
-    if (activeLoopingCue === cue) {
-      setActiveLoopingCue(null);
-    }
+    clearCueState(cue);
   };
 
   const stopAll = () => {
-    (Object.keys(loopingHandlesRef.current) as GameSoundCue[]).forEach((cue) => {
+    (Object.keys(activeHandlesRef.current) as GameSoundCue[]).forEach((cue) => {
       stopCue(cue);
     });
+  };
+
+  const registerActiveCue = (
+    cue: GameSoundCue,
+    handle: PlaybackHandle,
+    options: { loop: boolean; cleanupAfterMs?: number | null },
+  ) => {
+    stopCue(cue);
+    activeHandlesRef.current[cue] = handle;
+    setActiveCueIds((currentCues) =>
+      currentCues.includes(cue) ? currentCues : [...currentCues, cue],
+    );
+
+    if (options.loop) {
+      setActiveLoopingCue(cue);
+      return;
+    }
+
+    setActiveLoopingCue((currentCue) => (currentCue === cue ? null : currentCue));
+
+    if (options.cleanupAfterMs && options.cleanupAfterMs > 0) {
+      cleanupTimerIdsRef.current[cue] = window.setTimeout(() => {
+        clearCueState(cue);
+      }, options.cleanupAfterMs);
+    }
   };
 
   const playCue = async (cue: GameSoundCue) => {
@@ -342,7 +424,9 @@ export function useSoundboard({ settings, isOutputEnabled }: UseSoundboardOption
 
     const volume = clampVolume(settings.volume);
     const cueSrc = resolveSoundAssetPath(cue, settings.cues?.[cue] ?? definition.defaultPath);
-    let handle = await playAssetCue(cueSrc, volume, Boolean(definition.loop));
+    let handle = await playAssetCue(cueSrc, volume, Boolean(definition.loop), () => {
+      clearCueState(cue);
+    });
 
     if (!handle) {
       const context = getAudioContext(audioContextRef);
@@ -356,11 +440,15 @@ export function useSoundboard({ settings, isOutputEnabled }: UseSoundboardOption
       }
 
       handle = playFallbackCue(cue, context, volume);
-    }
-
-    if (definition.loop) {
-      loopingHandlesRef.current[cue] = handle;
-      setActiveLoopingCue(cue);
+      registerActiveCue(cue, handle, {
+        loop: Boolean(definition.loop),
+        cleanupAfterMs: definition.loop ? null : getFallbackCueDurationMs(cue),
+      });
+    } else {
+      registerActiveCue(cue, handle, {
+        loop: Boolean(definition.loop),
+        cleanupAfterMs: null,
+      });
     }
 
     return true;
@@ -381,6 +469,7 @@ export function useSoundboard({ settings, isOutputEnabled }: UseSoundboardOption
   );
 
   return {
+    activeCueIds,
     activeLoopingCue,
     soundDefinitions: GAME_SOUND_DEFINITIONS,
     playCue,

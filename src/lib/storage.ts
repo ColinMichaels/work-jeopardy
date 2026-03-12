@@ -18,12 +18,50 @@ function isPersistedGameState(value: unknown): value is PersistedGameState {
     return false;
   }
 
+  if (
+    value.finalJeopardy !== undefined &&
+    value.finalJeopardy !== null &&
+    !isPersistedFinalJeopardyState(value.finalJeopardy)
+  ) {
+    return false;
+  }
+
   return value.teams.every(
     (team) =>
       isRecord(team) &&
       typeof team.id === 'string' &&
       typeof team.name === 'string' &&
       typeof team.score === 'number',
+  );
+}
+
+function isNumberRecord(value: unknown): value is Record<string, number> {
+  return (
+    isRecord(value) &&
+    Object.values(value).every((entry) => typeof entry === 'number' && Number.isFinite(entry))
+  );
+}
+
+function isStringRecord(value: unknown): value is Record<string, string> {
+  return isRecord(value) && Object.values(value).every((entry) => typeof entry === 'string');
+}
+
+function isBooleanRecord(value: unknown): value is Record<string, boolean> {
+  return isRecord(value) && Object.values(value).every((entry) => typeof entry === 'boolean');
+}
+
+function isPersistedFinalJeopardyState(value: unknown): boolean {
+  return (
+    isRecord(value) &&
+    typeof value.phase === 'string' &&
+    Array.isArray(value.eligibleTeamIds) &&
+    value.eligibleTeamIds.every((teamId) => typeof teamId === 'string') &&
+    isNumberRecord(value.startingScores) &&
+    isNumberRecord(value.wagers) &&
+    isStringRecord(value.responses) &&
+    isBooleanRecord(value.judgments) &&
+    typeof value.scoresApplied === 'boolean' &&
+    (value.phaseStartedAt === null || typeof value.phaseStartedAt === 'number')
   );
 }
 
@@ -55,6 +93,20 @@ export function loadStoredGameState(storageKey: string): PersistedGameState | nu
       answeredClueIds: parsedValue.answeredClueIds.filter(
         (value): value is string => typeof value === 'string',
       ),
+      finalJeopardy: parsedValue.finalJeopardy
+        ? {
+            phase: parsedValue.finalJeopardy.phase,
+            eligibleTeamIds: parsedValue.finalJeopardy.eligibleTeamIds.filter(
+              (value): value is string => typeof value === 'string',
+            ),
+            startingScores: { ...parsedValue.finalJeopardy.startingScores },
+            wagers: { ...parsedValue.finalJeopardy.wagers },
+            responses: { ...parsedValue.finalJeopardy.responses },
+            judgments: { ...parsedValue.finalJeopardy.judgments },
+            scoresApplied: parsedValue.finalJeopardy.scoresApplied,
+            phaseStartedAt: parsedValue.finalJeopardy.phaseStartedAt,
+          }
+        : null,
     };
   } catch {
     return null;

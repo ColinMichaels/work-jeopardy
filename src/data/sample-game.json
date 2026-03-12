@@ -243,5 +243,13 @@
         "correctAnswer": "sounds/correct-answer.mp3"
       }
     }
+  },
+  "finalJeopardy": {
+    "enabled": true,
+    "category": "Programming History",
+    "clue": "This language's original slogan was often paraphrased as 'write once, run anywhere.'",
+    "correctResponse": "What is Java?",
+    "timerSeconds": 30,
+    "allowNonPositiveScores": false
   }
 }

@@ -29,6 +29,15 @@ export interface CategoryConfig {
   clues: ClueConfig[];
 }
 
+export interface FinalJeopardyConfig {
+  enabled: boolean;
+  category: string;
+  clue: string;
+  correctResponse: string;
+  timerSeconds?: number;
+  allowNonPositiveScores?: boolean;
+}
+
 export interface GameSettings {
   subtractOnIncorrect: boolean;
   enableLocalStorage: boolean;
@@ -42,6 +51,7 @@ export interface GameConfig {
   teams: TeamConfig[];
   categories: CategoryConfig[];
   settings: GameSettings;
+  finalJeopardy?: FinalJeopardyConfig;
 }
 
 export interface ConfigParseSuccess {

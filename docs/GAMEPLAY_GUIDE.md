@@ -34,6 +34,20 @@ Example:
 - An incorrect response may subtract the clue value if that rule is enabled for the game.
 - The scoreboard updates live during play.
 
+## Final Jeopardy
+
+Some games may end with a Final Jeopardy round.
+
+The flow is:
+
+1. The final category is revealed.
+2. Teams decide their wagers before seeing the clue.
+3. The final clue appears.
+4. Teams give one final response.
+5. The host judges the responses and applies the wagers.
+
+The host manages wagers and judging. Players only need to provide their final response.
+
 ## Board Rules
 
 - Once a tile is played, it cannot be selected again unless the host resets the game.

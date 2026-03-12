@@ -12,6 +12,7 @@ interface SoundControlsProps {
   soundDefinitions: readonly SoundDefinitionSummary[];
   isConfigSoundEnabled: boolean;
   isSoundOutputEnabled: boolean;
+  activeCueIds: GameSoundCue[];
   activeLoopingCue: GameSoundCue | null;
   onToggleSoundOutput: (enabled: boolean) => void;
   onPreviewCue: (cue: GameSoundCue) => void;
@@ -23,6 +24,7 @@ export function SoundControls({
   soundDefinitions,
   isConfigSoundEnabled,
   isSoundOutputEnabled,
+  activeCueIds,
   activeLoopingCue,
   onToggleSoundOutput,
   onPreviewCue,
@@ -59,36 +61,37 @@ export function SoundControls({
             {isSoundOutputEnabled ? 'Mute Audio' : 'Unmute Audio'}
           </button>
         </Tooltip>
-        <Tooltip content="Stop any looping cue, including the placeholder thinking bed.">
+        <Tooltip content="Stop any currently playing cue in this browser window.">
           <button
             type="button"
             onClick={onStopAll}
-            disabled={!activeLoopingCue}
+            disabled={activeCueIds.length === 0}
             className="secondary-button disabled:cursor-not-allowed disabled:opacity-50"
           >
-            Stop Loop
+            Stop Audio
           </button>
         </Tooltip>
       </div>
 
       <div className="mt-4 grid gap-2 sm:grid-cols-2">
         {soundDefinitions.map((definition) => {
+          const isActive = activeCueIds.includes(definition.cue);
           const isLooping = definition.loop && activeLoopingCue === definition.cue;
 
           return (
             <Tooltip key={definition.cue} content={definition.description} className="w-full">
               <button
                 type="button"
-                onClick={() =>
-                  isLooping ? onStopCue(definition.cue) : onPreviewCue(definition.cue)
-                }
+                onClick={() => (isActive ? onStopCue(definition.cue) : onPreviewCue(definition.cue))}
                 disabled={!canPlaySound}
                 className={[
                   'w-full disabled:cursor-not-allowed disabled:opacity-50',
-                  isLooping ? 'control-button' : 'secondary-button',
+                  isActive ? 'control-button' : 'secondary-button',
                 ].join(' ')}
               >
-                {isLooping ? `Stop ${definition.label}` : definition.label}
+                {isActive
+                  ? `Stop ${definition.label}${isLooping ? ' Loop' : ''}`
+                  : definition.label}
               </button>
             </Tooltip>
           );

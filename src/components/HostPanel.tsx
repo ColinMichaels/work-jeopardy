@@ -7,10 +7,13 @@ interface HostPanelProps {
   teams: TeamState[];
   activeTeamId: string | null;
   manualScoreDelta: number;
+  isFinalJeopardyReady?: boolean;
+  finalJeopardyEligibleTeamCount?: number;
   isLocalStorageEnabled: boolean;
   isUsingLocalConfig: boolean;
   isConfigSoundEnabled: boolean;
   isSoundOutputEnabled: boolean;
+  activeCueIds: GameSoundCue[];
   soundDefinitions: ReadonlyArray<{
     cue: GameSoundCue;
     label: string;
@@ -31,6 +34,7 @@ interface HostPanelProps {
   onResetGame: () => void;
   onClearSavedState: () => void;
   onResetLocalConfig: () => void;
+  onStartFinalJeopardy?: () => void;
 }
 
 export function HostPanel({
@@ -38,10 +42,13 @@ export function HostPanel({
   teams,
   activeTeamId,
   manualScoreDelta,
+  isFinalJeopardyReady = false,
+  finalJeopardyEligibleTeamCount = 0,
   isLocalStorageEnabled,
   isUsingLocalConfig,
   isConfigSoundEnabled,
   isSoundOutputEnabled,
+  activeCueIds,
   soundDefinitions,
   activeLoopingCue,
   onClose,
@@ -57,6 +64,7 @@ export function HostPanel({
   onResetGame,
   onClearSavedState,
   onResetLocalConfig,
+  onStartFinalJeopardy,
 }: HostPanelProps) {
   return (
     <div
@@ -101,10 +109,13 @@ export function HostPanel({
             teams={teams}
             activeTeamId={activeTeamId}
             manualScoreDelta={manualScoreDelta}
+            isFinalJeopardyReady={isFinalJeopardyReady}
+            finalJeopardyEligibleTeamCount={finalJeopardyEligibleTeamCount}
             isLocalStorageEnabled={isLocalStorageEnabled}
             isUsingLocalConfig={isUsingLocalConfig}
             isConfigSoundEnabled={isConfigSoundEnabled}
             isSoundOutputEnabled={isSoundOutputEnabled}
+            activeCueIds={activeCueIds}
             soundDefinitions={soundDefinitions}
             activeLoopingCue={activeLoopingCue}
             onSelectTeam={onSelectTeam}
@@ -119,6 +130,7 @@ export function HostPanel({
             onResetGame={onResetGame}
             onClearSavedState={onClearSavedState}
             onResetLocalConfig={onResetLocalConfig}
+            onStartFinalJeopardy={onStartFinalJeopardy}
           />
         </div>
       </aside>

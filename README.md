@@ -10,6 +10,7 @@ Work Jeopardy is a browser-only Jeopardy-style trivia board for internal team me
 - Keeps clue content editable through JSON
 - Includes a host-only local config editor for browser-local tweaks during a meeting
 - Supports linked `board` and `host` windows for dual-screen control
+- Includes an optional Final Jeopardy round with wagers, response entry, review, and results
 - Supports optional local sound cues with browser-safe synth fallbacks
 - Designed for one host controlling the board during a meeting
 

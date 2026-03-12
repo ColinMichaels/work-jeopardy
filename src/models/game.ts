@@ -2,17 +2,37 @@ import type { ClueConfig, GameConfig } from '../types/game-config';
 import type { TeamState } from './team';
 
 export type AnsweredClueMap = Record<string, true>;
+export type FinalJeopardyPhase =
+  | 'category'
+  | 'wager'
+  | 'clue'
+  | 'responses'
+  | 'review'
+  | 'results';
+
+export interface FinalJeopardyState {
+  phase: FinalJeopardyPhase;
+  eligibleTeamIds: string[];
+  startingScores: Record<string, number>;
+  wagers: Record<string, number>;
+  responses: Record<string, string>;
+  judgments: Record<string, boolean>;
+  scoresApplied: boolean;
+  phaseStartedAt: number | null;
+}
 
 export interface GameState {
   teams: TeamState[];
   answeredClueIds: AnsweredClueMap;
   selectedClueId: string | null;
   isQuestionRevealed: boolean;
+  finalJeopardy: FinalJeopardyState | null;
 }
 
 export interface PersistedGameState {
   teams: TeamState[];
   answeredClueIds: string[];
+  finalJeopardy?: FinalJeopardyState | null;
 }
 
 export interface ResolvedClue {
