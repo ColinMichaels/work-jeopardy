@@ -46,6 +46,12 @@ export const GAME_SOUND_DEFINITIONS: readonly GameSoundDefinition[] = [
     description: 'Short cue for selecting the active team.',
     defaultPath: 'sounds/contestant-buzzer.mp3',
   },
+  {
+    cue: 'correctAnswer',
+    label: 'Correct Answer',
+    description: 'Short cue for a correct answer.',
+    defaultPath: 'sounds/correct-answer.mp3',
+  },
 ] as const;
 
 const SOUND_DEFINITION_MAP = new Map(GAME_SOUND_DEFINITIONS.map((definition) => [definition.cue, definition]));
@@ -206,6 +212,8 @@ function playFallbackCue(
     case 'contestantBuzzer':
       return playContestantBuzzerFallback(context, volume);
   }
+
+  return playBoardFillFallback(context, volume);
 }
 
 function createAudioHandle(audio: HTMLAudioElement): PlaybackHandle {

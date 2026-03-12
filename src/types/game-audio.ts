@@ -5,6 +5,7 @@ export const GAME_SOUND_CUES = [
   'tripleStumper',
   'endRound',
   'contestantBuzzer',
+  'correctAnswer',
 ] as const;
 
 export type GameSoundCue = (typeof GAME_SOUND_CUES)[number];

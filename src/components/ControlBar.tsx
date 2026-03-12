@@ -11,8 +11,11 @@ interface ControlBarProps {
   sessionId: string;
   viewMode: AppViewMode;
   syncTransport: 'broadcast' | 'broadcast+storage' | 'storage' | 'none';
-  onOpenSessionLauncher?: () => void;
+  compact?: boolean;
   onOpenHostPanel?: () => void;
+  onOpenBoardWindow: () => void;
+  onOpenHostWindow: () => void;
+  onOpenSingleWindow: () => void;
 }
 
 export function ControlBar({
@@ -25,22 +28,29 @@ export function ControlBar({
   sessionId,
   viewMode,
   syncTransport,
-  onOpenSessionLauncher,
+  compact = false,
   onOpenHostPanel,
+  onOpenBoardWindow,
+  onOpenHostWindow,
+  onOpenSingleWindow,
 }: ControlBarProps) {
   const sessionLabel = sessionId.slice(-6).toUpperCase();
 
   return (
-    <header className="panel px-5 py-4 sm:px-6">
-      <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+    <header className={`panel ${compact ? 'px-4 py-3 sm:px-5' : 'px-5 py-4 sm:px-6'}`}>
+      <div
+        className={`flex ${compact ? 'items-center justify-between gap-3' : 'flex-col gap-4 xl:flex-row xl:items-center xl:justify-between'}`}
+      >
         <div>
           <p className="brand-overline text-[11px] font-semibold uppercase tracking-[0.45em]">
             Local Meeting Board
           </p>
-          <h1 className="brand-title mt-2 text-3xl font-black uppercase tracking-[0.12em] sm:text-4xl">
+          <h1
+            className={`brand-title mt-2 font-black uppercase tracking-[0.12em] ${compact ? 'text-2xl sm:text-3xl' : 'text-3xl sm:text-4xl'}`}
+          >
             {title}
           </h1>
-          {subtitle ? <p className="brand-subtitle mt-2 text-sm">{subtitle}</p> : null}
+          {!compact && subtitle ? <p className="brand-subtitle mt-2 text-sm">{subtitle}</p> : null}
         </div>
 
         <div className="flex flex-wrap items-center gap-2 xl:justify-end">
@@ -49,29 +59,43 @@ export function ControlBar({
               {answeredClues}/{totalClues}
             </div>
           </Tooltip>
-          <Tooltip
-            content={
-              isLocalStorageEnabled
-                ? 'Scores and answered clues persist in this browser.'
-                : 'Browser persistence is disabled for this game.'
-            }
-          >
-            <div className="status-pill">{isLocalStorageEnabled ? 'Save On' : 'Save Off'}</div>
-          </Tooltip>
-          <Tooltip
-            content={`Shared session ${sessionId}. Sync transport: ${syncTransport}.`}
-          >
-            <div className="status-pill">Session {sessionLabel}</div>
-          </Tooltip>
+          {!compact ? (
+            <Tooltip
+              content={
+                isLocalStorageEnabled
+                  ? 'Scores and answered clues persist in this browser.'
+                  : 'Browser persistence is disabled for this game.'
+              }
+            >
+              <div className="status-pill">{isLocalStorageEnabled ? 'Save On' : 'Save Off'}</div>
+            </Tooltip>
+          ) : null}
+          {!compact ? (
+            <Tooltip
+              content={`Shared session ${sessionId}. Sync transport: ${syncTransport}.`}
+            >
+              <div className="status-pill">Session {sessionLabel}</div>
+            </Tooltip>
+          ) : null}
           {isUsingLocalConfig ? (
             <Tooltip content="This browser is using a host-edited local config override.">
               <div className="status-pill">Local Config</div>
             </Tooltip>
           ) : null}
-          {viewMode !== 'board' && onOpenSessionLauncher ? (
-            <Tooltip content="Open the session tools modal for linked windows and sync details.">
-              <button type="button" onClick={onOpenSessionLauncher} className="secondary-button">
-                Session
+          <Tooltip content="Open or focus the presentation-safe board window for this session.">
+            <button type="button" onClick={onOpenBoardWindow} className="secondary-button">
+              Board
+            </button>
+          </Tooltip>
+          <Tooltip content="Open or focus the private host-control window for this session.">
+            <button type="button" onClick={onOpenHostWindow} className="secondary-button">
+              Host
+            </button>
+          </Tooltip>
+          {!compact ? (
+            <Tooltip content="Open or focus the combined single-window layout for this session.">
+              <button type="button" onClick={onOpenSingleWindow} className="secondary-button">
+                Single
               </button>
             </Tooltip>
           ) : null}

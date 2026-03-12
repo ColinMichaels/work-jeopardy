@@ -7,7 +7,6 @@ import { GameBoard } from './components/GameBoard';
 import { HostConsole } from './components/HostConsole';
 import { HostPanel } from './components/HostPanel';
 import { ScoreBoard } from './components/ScoreBoard';
-import { SessionLauncherModal } from './components/SessionLauncherModal';
 import sampleGameRaw from './data/sample-game.json?raw';
 import {
   applyClueOutcome,
@@ -23,6 +22,7 @@ import {
 } from './lib/game-engine';
 import { findClueById, getMinimumClueValue, loadGameConfig } from './lib/config-loader';
 import {
+  buildWindowTargetName,
   buildWindowUrl,
   ensureSessionIdInUrl,
   getViewModeFromLocation,
@@ -124,13 +124,13 @@ export default function App() {
   );
   const [isHostPanelOpen, setIsHostPanelOpen] = useState(false);
   const [isConfigEditorOpen, setIsConfigEditorOpen] = useState(false);
-  const [isSessionLauncherOpen, setIsSessionLauncherOpen] = useState(false);
 
   const storageKey = getStorageKey(config.settings);
   const activeClue = findClueById(config, gameState.selectedClueId);
   const totalClues = config.categories.reduce((sum, category) => sum + category.clues.length, 0);
   const answeredClues = Object.keys(gameState.answeredClueIds).length;
   const isConfigSoundEnabled = config.settings.sounds.enabled;
+  const isBoardView = viewMode === 'board';
 
   const { activeLoopingCue, soundDefinitions, playCue, stopCue, stopAll } = useSoundboard({
     settings: config.settings.sounds,
@@ -163,6 +163,12 @@ export default function App() {
     saveStoredBoolean(SOUND_ENABLED_STORAGE_KEY, isSoundOutputEnabled);
   }, [isSoundOutputEnabled]);
 
+  useEffect(() => {
+    const viewLabel =
+      viewMode === 'board' ? 'Board View' : viewMode === 'host' ? 'Host View' : 'Single View';
+    document.title = `${config.title} | ${viewLabel}`;
+  }, [config.title, viewMode]);
+
   const handleSelectTeam = (teamId: string) => {
     if (teamId !== activeTeamId) {
       void playCue('contestantBuzzer');
@@ -176,7 +182,6 @@ export default function App() {
 
     stopCue('thinkMusic');
     setIsHostPanelOpen(false);
-    setIsSessionLauncherOpen(false);
 
     if (clueEntry?.clue.dailyDouble) {
       void playCue('dailyDouble');
@@ -363,13 +368,22 @@ export default function App() {
 
   const openWindowForView = (nextView: 'single' | 'board' | 'host') => {
     const targetUrl = buildWindowUrl(nextView, sessionId);
-    setIsSessionLauncherOpen(false);
-    window.open(targetUrl, '_blank');
+    const windowTargetName = buildWindowTargetName(nextView, sessionId);
+    const nextWindow = window.open(targetUrl, windowTargetName);
+    nextWindow?.focus();
   };
 
   return (
-    <div className="min-h-screen px-4 py-4 sm:px-6 lg:px-8">
-      <div className="mx-auto flex w-full max-w-[1800px] flex-col gap-4">
+    <div
+      className={
+        isBoardView
+          ? 'h-screen overflow-hidden px-3 py-3 sm:px-4'
+          : 'min-h-screen px-4 py-4 sm:px-6 lg:px-8'
+      }
+    >
+      <div
+        className={`mx-auto flex w-full flex-col ${isBoardView ? 'h-[calc(100vh-1.5rem)] max-w-[1920px] gap-3' : 'max-w-[1800px] gap-4'}`}
+      >
         <ControlBar
           title={config.title}
           subtitle={config.subtitle}
@@ -380,16 +394,21 @@ export default function App() {
           sessionId={sessionId}
           viewMode={viewMode}
           syncTransport={transport}
-          onOpenSessionLauncher={viewMode !== 'board' ? () => setIsSessionLauncherOpen(true) : undefined}
+          compact={isBoardView}
           onOpenHostPanel={viewMode === 'single' ? () => setIsHostPanelOpen(true) : undefined}
+          onOpenBoardWindow={() => openWindowForView('board')}
+          onOpenHostWindow={() => openWindowForView('host')}
+          onOpenSingleWindow={() => openWindowForView('single')}
         />
 
-        <ScoreBoard
-          teams={gameState.teams}
-          activeTeamId={activeTeamId}
-          isInteractive={viewMode !== 'board'}
-          onSelectTeam={handleSelectTeam}
-        />
+        {!isBoardView ? (
+          <ScoreBoard
+            teams={gameState.teams}
+            activeTeamId={activeTeamId}
+            isInteractive
+            onSelectTeam={handleSelectTeam}
+          />
+        ) : null}
 
         {viewMode === 'host' ? (
           <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_440px]">
@@ -432,14 +451,38 @@ export default function App() {
               onCloseClue={handleCloseClue}
             />
           </div>
+        ) : isBoardView ? (
+          <div className="flex min-h-0 flex-1 flex-col gap-3">
+            <div className="min-h-0 flex-1">
+              <GameBoard
+                categories={config.categories}
+                answeredClueIds={gameState.answeredClueIds}
+                selectedClueId={gameState.selectedClueId}
+                isInteractive={false}
+                compact
+                onSelectClue={handleSelectClue}
+              />
+            </div>
+            <div className="shrink-0">
+              <ScoreBoard
+                teams={gameState.teams}
+                activeTeamId={activeTeamId}
+                isInteractive={false}
+                compact
+                onSelectTeam={handleSelectTeam}
+              />
+            </div>
+          </div>
         ) : (
-          <GameBoard
-            categories={config.categories}
-            answeredClueIds={gameState.answeredClueIds}
-            selectedClueId={gameState.selectedClueId}
-            isInteractive={viewMode !== 'board'}
-            onSelectClue={handleSelectClue}
-          />
+          <>
+            <GameBoard
+              categories={config.categories}
+              answeredClueIds={gameState.answeredClueIds}
+              selectedClueId={gameState.selectedClueId}
+              isInteractive
+              onSelectClue={handleSelectClue}
+            />
+          </>
         )}
       </div>
 
@@ -471,21 +514,6 @@ export default function App() {
           onResetGame={handleResetGame}
           onClearSavedState={handleClearSavedState}
           onResetLocalConfig={handleResetLocalConfig}
-        />
-      ) : null}
-
-      {viewMode !== 'board' ? (
-        <SessionLauncherModal
-          isOpen={isSessionLauncherOpen}
-          sessionId={sessionId}
-          viewMode={viewMode}
-          syncTransport={transport}
-          isLocalStorageEnabled={config.settings.enableLocalStorage}
-          isUsingLocalConfig={isUsingLocalConfig}
-          onClose={() => setIsSessionLauncherOpen(false)}
-          onOpenBoardWindow={() => openWindowForView('board')}
-          onOpenHostWindow={() => openWindowForView('host')}
-          onOpenSingleWindow={() => openWindowForView('single')}
         />
       ) : null}
 

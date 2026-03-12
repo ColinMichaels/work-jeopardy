@@ -6,6 +6,7 @@ interface ScoreBoardProps {
   teams: TeamState[];
   activeTeamId: string | null;
   isInteractive?: boolean;
+  compact?: boolean;
   onSelectTeam: (teamId: string) => void;
 }
 
@@ -13,16 +14,18 @@ export function ScoreBoard({
   teams,
   activeTeamId,
   isInteractive = true,
+  compact = false,
   onSelectTeam,
 }: ScoreBoardProps) {
   return (
-    <section className="score-ribbon px-3 py-3 sm:px-4">
+    <section className={`score-ribbon ${compact ? 'px-2 py-2 sm:px-3' : 'px-3 py-3 sm:px-4'}`}>
       <div className="flex gap-3 overflow-x-auto pb-1">
         {teams.map((team) => {
           const isActive = team.id === activeTeamId;
           const cardClassName = [
-            'score-card min-w-[210px] flex-1 rounded-[1.55rem] border px-4 py-3 text-left transition',
+            'score-card flex-1 rounded-[1.55rem] border text-left transition',
             'focus:outline-none focus:ring-4 focus:ring-[rgba(255,223,133,0.22)]',
+            compact ? 'min-w-[150px] px-3 py-2' : 'min-w-[210px] px-4 py-3',
             isActive ? 'score-card--active' : '',
           ]
             .filter(Boolean)
@@ -31,7 +34,7 @@ export function ScoreBoard({
           const content = (
             <div className="flex items-center justify-between gap-4">
               <div>
-                <div className="score-name text-lg font-bold uppercase sm:text-xl">
+                <div className={`score-name font-bold uppercase ${compact ? 'text-sm sm:text-base' : 'text-lg sm:text-xl'}`}>
                   {team.name.trim() || 'Unnamed Team'}
                 </div>
                 {isActive ? (
@@ -40,7 +43,7 @@ export function ScoreBoard({
                   <div className="mt-2 h-1.5 w-10 rounded-full bg-white/10" />
                 )}
               </div>
-              <div className="score-value text-2xl font-black sm:text-3xl">
+              <div className={`score-value font-black ${compact ? 'text-xl sm:text-2xl' : 'text-2xl sm:text-3xl'}`}>
                 {formatScore(team.score)}
               </div>
             </div>

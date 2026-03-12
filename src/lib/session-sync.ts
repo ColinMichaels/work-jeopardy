@@ -89,6 +89,10 @@ export function buildWindowUrl(
   return url.toString();
 }
 
+export function buildWindowTargetName(viewMode: AppViewMode, sessionId: string): string {
+  return `work-jeopardy:${sessionId}:${viewMode}`;
+}
+
 function isSessionRequestMessage(value: unknown): value is SessionRequestMessage {
   return (
     isRecord(value) &&

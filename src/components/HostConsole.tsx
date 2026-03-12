@@ -126,27 +126,28 @@ export function HostConsole({
 
             <div className="panel-inset border-amber-300/20 bg-gradient-to-br from-slate-950 via-slate-900 to-sky-950 p-4">
               <div className="flex items-center justify-between gap-3">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-amber-100/80">
-                  Correct Response
-                </p>
-                {!isRevealed ? (
+                <div>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-amber-100/80">
+                    Host Preview
+                  </p>
+                  <p className="mt-1 text-[11px] uppercase tracking-[0.26em] text-slate-400">
+                    {isRevealed ? 'Live On Board' : 'Private Until Reveal'}
+                  </p>
+                </div>
+                {isRevealed ? (
+                  <span className="brand-tag">Live</span>
+                ) : (
                   <Tooltip content="Reveal the correct response on every linked window in this session.">
                     <button type="button" onClick={onReveal} className="control-button">
-                      Reveal
+                      Reveal To Board
                     </button>
                   </Tooltip>
-                ) : null}
+                )}
               </div>
 
-              {isRevealed ? (
-                <p className="mt-3 text-xl font-bold leading-snug text-amber-50">
-                  {currentClue?.question}
-                </p>
-              ) : (
-                <div className="panel-muted mt-3 px-4 py-5 text-center text-[11px] font-semibold uppercase tracking-[0.32em]">
-                  Hidden Until Reveal
-                </div>
-              )}
+              <p className="mt-3 text-xl font-bold leading-snug text-amber-50">
+                {currentClue?.question}
+              </p>
             </div>
 
             <div className="grid gap-2 sm:grid-cols-2">

@@ -8,6 +8,7 @@ interface GameBoardProps {
   answeredClueIds: AnsweredClueMap;
   selectedClueId: string | null;
   isInteractive?: boolean;
+  compact?: boolean;
   onSelectClue: (clueId: string) => void;
 }
 
@@ -16,19 +17,28 @@ export function GameBoard({
   answeredClueIds,
   selectedClueId,
   isInteractive = true,
+  compact = false,
   onSelectClue,
 }: GameBoardProps) {
   const rowCount = Math.max(...categories.map((category) => category.clues.length));
+  const boardGridStyle = compact
+    ? {
+        gridTemplateColumns: `repeat(${categories.length}, minmax(0, 1fr))`,
+        gridTemplateRows: `repeat(${rowCount + 1}, minmax(0, 1fr))`,
+      }
+    : {
+        gridTemplateColumns: `repeat(${categories.length}, minmax(0, 1fr))`,
+      };
 
   return (
-    <section className="panel board-shell overflow-hidden">
-      <div className="overflow-x-auto p-3 sm:p-4">
+    <section className={`panel board-shell overflow-hidden ${compact ? 'h-full' : ''}`}>
+      <div className={`${compact ? 'h-full p-2 sm:p-3' : 'overflow-x-auto p-3 sm:p-4'}`}>
         <div
-          className="grid min-w-[980px] gap-2 sm:gap-3"
-          style={{ gridTemplateColumns: `repeat(${categories.length}, minmax(0, 1fr))` }}
+          className={`grid ${compact ? 'h-full gap-2' : 'min-w-[980px] gap-2 sm:gap-3'}`}
+          style={boardGridStyle}
         >
           {categories.map((category) => (
-            <CategoryHeader key={category.id} title={category.title} />
+            <CategoryHeader key={category.id} title={category.title} compact={compact} />
           ))}
 
           {Array.from({ length: rowCount }, (_, rowIndex) =>
@@ -42,6 +52,7 @@ export function GameBoard({
                   isAnswered={clue ? Boolean(answeredClueIds[clue.id]) : false}
                   isActive={clue?.id === selectedClueId}
                   isInteractive={isInteractive}
+                  compact={compact}
                   onSelect={onSelectClue}
                 />
               );
