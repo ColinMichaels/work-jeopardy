@@ -11,6 +11,7 @@ interface ClueMediaPanelProps {
   canOpenLightbox: boolean;
   compact?: boolean;
   shouldAutoplay?: boolean;
+  playbackEnabled?: boolean;
   onOpenLightbox: (index: number) => void;
   onCloseLightbox: () => void;
 }
@@ -117,6 +118,7 @@ export function ClueMediaPanel({
   canOpenLightbox,
   compact = false,
   shouldAutoplay = false,
+  playbackEnabled = true,
   onOpenLightbox,
   onCloseLightbox,
 }: ClueMediaPanelProps) {
@@ -147,8 +149,10 @@ export function ClueMediaPanel({
     return null;
   }
 
-  const shouldAutoplayPreview = shouldAutoplay && activeLightboxIndex === null;
-  const shouldAutoplayLightbox = shouldAutoplay && activeLightboxIndex !== null;
+  const shouldAutoplayPreview =
+    playbackEnabled && shouldAutoplay && activeLightboxIndex === null;
+  const shouldAutoplayLightbox =
+    playbackEnabled && shouldAutoplay && activeLightboxIndex !== null;
 
   return (
     <>
@@ -158,19 +162,32 @@ export function ClueMediaPanel({
             <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">
               Clue Media
             </p>
-            <p className="mt-1 text-[11px] uppercase tracking-[0.24em] text-slate-500">
-              {media.length} item{media.length === 1 ? '' : 's'}
-            </p>
+            <div className="mt-1 space-y-1">
+              <p className="text-[11px] uppercase tracking-[0.24em] text-slate-500">
+                {media.length} item{media.length === 1 ? '' : 's'}
+              </p>
+              {!playbackEnabled ? (
+                <p className="text-[11px] uppercase tracking-[0.24em] text-slate-500">
+                  Playback On Gameboard
+                </p>
+              ) : null}
+            </div>
           </div>
 
           {canOpenLightbox ? (
-            <Tooltip content="Open this clue media in a larger synced lightbox view.">
+            <Tooltip
+              content={
+                playbackEnabled
+                  ? 'Open this clue media in a larger synced lightbox view.'
+                  : 'Show this clue media on the shared gameboard window.'
+              }
+            >
               <button
                 type="button"
                 onClick={() => onOpenLightbox(previewIndex)}
                 className="secondary-button"
               >
-                Expand
+                {playbackEnabled ? 'Expand' : 'Show On Board'}
               </button>
             </Tooltip>
           ) : null}
@@ -182,6 +199,7 @@ export function ClueMediaPanel({
             title={`${clueTitle} media`}
             compact={compact}
             autoplay={shouldAutoplayPreview}
+            playbackEnabled={playbackEnabled}
           />
         </div>
 
@@ -214,7 +232,7 @@ export function ClueMediaPanel({
         ) : null}
       </div>
 
-      {activeLightboxIndex !== null ? (
+      {playbackEnabled && activeLightboxIndex !== null ? (
         <ClueMediaLightbox
           media={media}
           clueTitle={clueTitle}

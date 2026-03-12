@@ -7,6 +7,30 @@ interface MediaViewerProps {
   mode?: 'inline' | 'lightbox';
   compact?: boolean;
   autoplay?: boolean;
+  playbackEnabled?: boolean;
+}
+
+function PlaybackPlaceholder({
+  label,
+  frameHeightClass,
+}: {
+  label: string;
+  frameHeightClass: string;
+}) {
+  return (
+    <div
+      className={`flex items-center justify-center bg-slate-950/70 px-6 py-8 ${frameHeightClass || 'min-h-[140px]'}`}
+    >
+      <div className="max-w-xl text-center">
+        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">
+          {label}
+        </p>
+        <p className="mt-3 text-sm leading-6 text-slate-200">
+          Playback is routed to the shared gameboard window.
+        </p>
+      </div>
+    </div>
+  );
 }
 
 export function MediaViewer({
@@ -15,6 +39,7 @@ export function MediaViewer({
   mode = 'inline',
   compact = false,
   autoplay = false,
+  playbackEnabled = true,
 }: MediaViewerProps) {
   const resolvedType = getResolvedMediaType(media);
   const isLightbox = mode === 'lightbox';
@@ -41,6 +66,10 @@ export function MediaViewer({
   }
 
   if (resolvedType === 'youtube') {
+    if (!playbackEnabled) {
+      return <PlaybackPlaceholder label="YouTube" frameHeightClass={frameHeightClass} />;
+    }
+
     const embedUrl = getYouTubeEmbedUrl(media.src, { autoplay });
 
     return (
@@ -60,6 +89,10 @@ export function MediaViewer({
   }
 
   if (resolvedType === 'video') {
+    if (!playbackEnabled) {
+      return <PlaybackPlaceholder label="Video" frameHeightClass={frameHeightClass} />;
+    }
+
     return (
       <div className={`bg-slate-950/70 ${frameHeightClass}`}>
         <video
@@ -77,13 +110,23 @@ export function MediaViewer({
     );
   }
 
+  if (!playbackEnabled) {
+    return <PlaybackPlaceholder label="Audio" frameHeightClass="" />;
+  }
+
   return (
     <div className="flex min-h-[140px] items-center justify-center bg-slate-950/70 px-6 py-8">
       <div className="w-full max-w-2xl space-y-4">
         <p className="text-center text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">
           Audio
         </p>
-        <audio controls preload="metadata" className="w-full">
+        <audio
+          key={`${media.src}-${autoplay ? 'autoplay' : 'manual'}`}
+          controls
+          autoPlay={autoplay}
+          preload="metadata"
+          className="w-full"
+        >
           <source src={media.src} />
           Your browser could not play this audio source.
         </audio>

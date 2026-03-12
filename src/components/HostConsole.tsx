@@ -133,6 +133,7 @@ export function HostConsole({
                   canOpenLightbox
                   compact
                   shouldAutoplay={isRevealed}
+                  playbackEnabled={false}
                   onOpenLightbox={onOpenMedia}
                   onCloseLightbox={onCloseMedia}
                 />
