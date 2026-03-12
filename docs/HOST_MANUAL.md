@@ -20,7 +20,7 @@ Why:
 
 Before the meeting starts:
 
-1. Confirm the correct game content in [`src/data/sample-game.json`](../src/data/sample-game.json), or load your local browser override if you are using one.
+1. Confirm the correct bundled game in [`src/data/`](../src/data/), or plan to switch to it from the host controls before the meeting starts.
 2. Verify team names.
 3. Check the scoring rule for incorrect answers.
 4. Test the board and host windows once.
@@ -75,6 +75,7 @@ Important:
 
 The host tools include:
 
+- bundled game selection
 - active team selection
 - reveal controls
 - clue scoring controls
@@ -103,7 +104,7 @@ Important:
 
 - Those edits are browser-local only.
 - They do not change the source JSON in the repo.
-- If you want those edits in the next distributable build, copy them back into [`src/data/sample-game.json`](../src/data/sample-game.json) and rebuild.
+- If you want those edits in the next distributable build, copy them back into one of the source files in [`src/data/`](../src/data/) and rebuild.
 - Final Jeopardy content can also be edited from the local host editor.
 - If you want an AI to create a new full game set, start with [AI_GAMESET_AUTHORING.md](./AI_GAMESET_AUTHORING.md).
 
@@ -154,7 +155,7 @@ These shortcuts are ignored while typing in form fields.
 
 ### The meeting build is wrong
 
-- Edit [`src/data/sample-game.json`](../src/data/sample-game.json).
+- Edit the relevant bundled game file in [`src/data/`](../src/data/).
 - Rebuild with `npm run build`.
 - Hand off the full `dist/` folder again.
 

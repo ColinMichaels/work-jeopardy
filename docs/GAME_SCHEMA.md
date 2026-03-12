@@ -1,6 +1,6 @@
 # Game Schema
 
-This project reads all trivia content from [`src/data/sample-game.json`](../src/data/sample-game.json). The file is intended to stay hand-editable so a new game can be prepared without touching application code.
+This project reads bundled trivia content from the JSON files under [`src/data/`](../src/data/). Those files are intended to stay hand-editable so a new game can be prepared without touching application code.
 
 The app also includes a host-side local editor. Those edits are stored in the browser only and do not change the source JSON file in the repo.
 
@@ -8,13 +8,13 @@ If you want an AI agent to research and generate a full new game set, use [AI_GA
 
 ## Editing Workflow
 
-1. Open `src/data/sample-game.json`.
+1. Open the bundled game file you want to edit in `src/data/`.
 2. Update the title, teams, categories, and clues.
 3. Save the file.
 4. Run `npm run build` to produce a fresh distributable bundle.
 5. If the JSON is malformed, the app shows a readable config error screen when opened.
 
-If you use the in-app editor instead, those edits apply only to the current browser unless you manually copy them back into `src/data/sample-game.json`.
+If you use the in-app editor instead, those edits apply only to the current browser unless you manually copy them back into the matching file under `src/data/`.
 
 ## Top-Level Shape
 
@@ -322,7 +322,7 @@ The app validates the JSON at runtime before rendering the board. The config fai
 - Keep answers concise so they are readable when screen sharing.
 - Use `notes` only for host context, not required clue text.
 - Stick to simple IDs like `react-200` or `history-400`.
-- Treat `src/data/sample-game.json` as the source of truth for each game build.
+- Treat the selected source file in `src/data/` as the source of truth for each bundled game build.
 
 ## Current TypeScript Model
 

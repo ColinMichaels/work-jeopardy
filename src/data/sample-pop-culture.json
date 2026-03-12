@@ -1,0 +1,255 @@
+{
+  "title": "Pop Culture Showdown",
+  "subtitle": "A lighter board built around movies, music, and television.",
+  "teams": [
+    { "id": "team-1", "name": "Team Neon" },
+    { "id": "team-2", "name": "Team Sunset" },
+    { "id": "team-3", "name": "Team Stereo" }
+  ],
+  "categories": [
+    {
+      "id": "cat-movies",
+      "title": "Hit Movies",
+      "clues": [
+        {
+          "id": "movies-100",
+          "value": 100,
+          "answer": "This 1993 dinosaur blockbuster takes place at Isla Nublar.",
+          "question": "What is Jurassic Park?"
+        },
+        {
+          "id": "movies-200",
+          "value": 200,
+          "answer": "This 1939 film follows Dorothy to the land of Oz.",
+          "question": "What is The Wizard of Oz?"
+        },
+        {
+          "id": "movies-300",
+          "value": 300,
+          "answer": "This film franchise features Ethan Hunt and the IMF.",
+          "question": "What is Mission: Impossible?"
+        },
+        {
+          "id": "movies-400",
+          "value": 400,
+          "answer": "In this Pixar film, emotions like Joy and Sadness live inside Riley's mind.",
+          "question": "What is Inside Out?"
+        },
+        {
+          "id": "movies-500",
+          "value": 500,
+          "answer": "This 1985 adventure film sends Marty McFly into the past in a DeLorean.",
+          "question": "What is Back to the Future?",
+          "dailyDouble": true
+        }
+      ]
+    },
+    {
+      "id": "cat-tv",
+      "title": "TV Favorites",
+      "clues": [
+        {
+          "id": "tv-100",
+          "value": 100,
+          "answer": "This sitcom coffee shop hangout was called Central Perk.",
+          "question": "What is Friends?"
+        },
+        {
+          "id": "tv-200",
+          "value": 200,
+          "answer": "This mockumentary workplace comedy is set at Dunder Mifflin's Scranton branch.",
+          "question": "What is The Office?"
+        },
+        {
+          "id": "tv-300",
+          "value": 300,
+          "answer": "This fantasy series is set largely on the continents of Westeros and Essos.",
+          "question": "What is Game of Thrones?"
+        },
+        {
+          "id": "tv-400",
+          "value": 400,
+          "answer": "This animated family lives at 742 Evergreen Terrace.",
+          "question": "What is The Simpsons?"
+        },
+        {
+          "id": "tv-500",
+          "value": 500,
+          "answer": "This cooking competition asks contestants to pack their knives and go.",
+          "question": "What is Top Chef?"
+        }
+      ]
+    },
+    {
+      "id": "cat-music",
+      "title": "Music Icons",
+      "clues": [
+        {
+          "id": "music-100",
+          "value": 100,
+          "answer": "This singer is known as the 'Queen of Pop.'",
+          "question": "Who is Madonna?"
+        },
+        {
+          "id": "music-200",
+          "value": 200,
+          "answer": "This band released the album Abbey Road in 1969.",
+          "question": "Who are The Beatles?"
+        },
+        {
+          "id": "music-300",
+          "value": 300,
+          "answer": "This artist's 1982 album Thriller became one of the best-selling albums ever.",
+          "question": "Who is Michael Jackson?"
+        },
+        {
+          "id": "music-400",
+          "value": 400,
+          "answer": "This singer's fans are often nicknamed the BeyHive.",
+          "question": "Who is Beyonce?"
+        },
+        {
+          "id": "music-500",
+          "value": 500,
+          "answer": "This New Jersey-born rock artist is nicknamed 'The Boss.'",
+          "question": "Who is Bruce Springsteen?"
+        }
+      ]
+    },
+    {
+      "id": "cat-cartoons",
+      "title": "Animated Stars",
+      "clues": [
+        {
+          "id": "cartoons-100",
+          "value": 100,
+          "answer": "This sponge lives in a pineapple under the sea.",
+          "question": "Who is SpongeBob SquarePants?"
+        },
+        {
+          "id": "cartoons-200",
+          "value": 200,
+          "answer": "This Disney deer befriends Thumper and Flower.",
+          "question": "Who is Bambi?"
+        },
+        {
+          "id": "cartoons-300",
+          "value": 300,
+          "answer": "This blue hedgehog speeds through Sega video games and films.",
+          "question": "Who is Sonic?"
+        },
+        {
+          "id": "cartoons-400",
+          "value": 400,
+          "answer": "This stubborn duck often appears opposite Bugs Bunny.",
+          "question": "Who is Daffy Duck?"
+        },
+        {
+          "id": "cartoons-500",
+          "value": 500,
+          "answer": "This Pixar robot spends much of his film compacting trash on Earth.",
+          "question": "Who is WALL-E?"
+        }
+      ]
+    },
+    {
+      "id": "cat-phrases",
+      "title": "Famous Phrases",
+      "clues": [
+        {
+          "id": "phrases-100",
+          "value": 100,
+          "answer": "This movie phrase begins, 'May the Force...' ",
+          "question": "What is 'May the Force be with you'?"
+        },
+        {
+          "id": "phrases-200",
+          "value": 200,
+          "answer": "This toy cowboy from Toy Story often says, 'There's a snake in my...' ",
+          "question": "What is 'boot'?"
+        },
+        {
+          "id": "phrases-300",
+          "value": 300,
+          "answer": "This line from The Terminator promises, 'I'll...' ",
+          "question": "What is 'be back'?"
+        },
+        {
+          "id": "phrases-400",
+          "value": 400,
+          "answer": "This line from Jerry Maguire begins, 'Show me the...' ",
+          "question": "What is 'money'?"
+        },
+        {
+          "id": "phrases-500",
+          "value": 500,
+          "answer": "In Finding Nemo, Dory encourages everyone to 'Just keep...' ",
+          "question": "What is 'swimming'?"
+        }
+      ]
+    },
+    {
+      "id": "cat-awards",
+      "title": "Award Winners",
+      "clues": [
+        {
+          "id": "awards-100",
+          "value": 100,
+          "answer": "This gold statuette is awarded by the Academy of Motion Picture Arts and Sciences.",
+          "question": "What is an Oscar?"
+        },
+        {
+          "id": "awards-200",
+          "value": 200,
+          "answer": "This award celebrates excellence in television and is named for an imaging tube.",
+          "question": "What is an Emmy?"
+        },
+        {
+          "id": "awards-300",
+          "value": 300,
+          "answer": "This award recognizes achievements in music and shares its name with a gramophone.",
+          "question": "What is a Grammy?"
+        },
+        {
+          "id": "awards-400",
+          "value": 400,
+          "answer": "This theater award is named for Antoinette Perry.",
+          "question": "What is a Tony?"
+        },
+        {
+          "id": "awards-500",
+          "value": 500,
+          "answer": "This EGOT letter refers to the awards handed out for daytime and prime-time television.",
+          "question": "What is the E for Emmy?"
+        }
+      ]
+    }
+  ],
+  "settings": {
+    "subtractOnIncorrect": true,
+    "enableLocalStorage": true,
+    "storageKey": "work-jeopardy-pop-culture",
+    "sounds": {
+      "enabled": true,
+      "volume": 0.85,
+      "cues": {
+        "thinkMusic": "sounds/think-music.mp3",
+        "boardFill": "sounds/jeopardy-ding.mp3",
+        "dailyDouble": "sounds/daily-double.mp3",
+        "tripleStumper": "sounds/jeopardy-incorrect-answer.mp3",
+        "endRound": "sounds/end-round.mp3",
+        "contestantBuzzer": "sounds/jeopardy-ding.mp3",
+        "correctAnswer": "sounds/correct-answer.mp3",
+        "introJeopardy": "sounds/intro-jeopardy.mp3"
+      }
+    }
+  },
+  "finalJeopardy": {
+    "enabled": true,
+    "category": "Movie Quotes",
+    "clue": "This 1997 blockbuster includes the line, 'I'm the king of the world!'",
+    "correctResponse": "What is Titanic?",
+    "timerSeconds": 30,
+    "allowNonPositiveScores": false
+  }
+}

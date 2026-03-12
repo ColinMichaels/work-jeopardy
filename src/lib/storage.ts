@@ -3,6 +3,7 @@ import type { GameSettings } from '../types/game-config';
 
 const DEFAULT_STORAGE_KEY = 'team-jeopardy-state';
 export const CONFIG_OVERRIDE_STORAGE_KEY = 'work-jeopardy-config-override';
+export const BUNDLED_GAME_SELECTION_STORAGE_KEY = 'work-jeopardy-bundled-game';
 export const SOUND_ENABLED_STORAGE_KEY = 'work-jeopardy-sound-enabled';
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -188,6 +189,26 @@ export function saveStoredConfigOverride(
 
 export function clearStoredConfigOverride(
   storageKey = CONFIG_OVERRIDE_STORAGE_KEY,
+): void {
+  clearStoredString(storageKey);
+}
+
+export function loadStoredBundledGameSelection(
+  storageKey = BUNDLED_GAME_SELECTION_STORAGE_KEY,
+): string | null {
+  const storedValue = loadStoredString(storageKey);
+  return storedValue && storedValue.trim().length > 0 ? storedValue.trim() : null;
+}
+
+export function saveStoredBundledGameSelection(
+  bundledGameId: string,
+  storageKey = BUNDLED_GAME_SELECTION_STORAGE_KEY,
+): void {
+  saveStoredString(storageKey, bundledGameId);
+}
+
+export function clearStoredBundledGameSelection(
+  storageKey = BUNDLED_GAME_SELECTION_STORAGE_KEY,
 ): void {
   clearStoredString(storageKey);
 }

@@ -1,0 +1,255 @@
+{
+  "title": "AI & Technology",
+  "subtitle": "A board spanning machine learning, computing history, hardware, and the web.",
+  "teams": [
+    { "id": "team-1", "name": "Model Team" },
+    { "id": "team-2", "name": "Vector Team" },
+    { "id": "team-3", "name": "Circuit Team" }
+  ],
+  "categories": [
+    {
+      "id": "cat-ai-basics",
+      "title": "AI Basics",
+      "clues": [
+        {
+          "id": "ai-basics-100",
+          "value": 100,
+          "answer": "This field builds systems that perform tasks associated with human intelligence.",
+          "question": "What is artificial intelligence?"
+        },
+        {
+          "id": "ai-basics-200",
+          "value": 200,
+          "answer": "These examples are used to teach a machine learning model.",
+          "question": "What is training data?"
+        },
+        {
+          "id": "ai-basics-300",
+          "value": 300,
+          "answer": "Large language models repeatedly predict the next unit of text, often called this.",
+          "question": "What is a token?"
+        },
+        {
+          "id": "ai-basics-400",
+          "value": 400,
+          "answer": "In AI, this term describes made-up details presented confidently as facts.",
+          "question": "What is a hallucination?"
+        },
+        {
+          "id": "ai-basics-500",
+          "value": 500,
+          "answer": "This branch of AI uses multi-layer neural networks and large data sets.",
+          "question": "What is deep learning?",
+          "dailyDouble": true
+        }
+      ]
+    },
+    {
+      "id": "cat-ml",
+      "title": "Machine Learning",
+      "clues": [
+        {
+          "id": "ml-100",
+          "value": 100,
+          "answer": "This task predicts one of several labels, such as spam or not spam.",
+          "question": "What is classification?"
+        },
+        {
+          "id": "ml-200",
+          "value": 200,
+          "answer": "This task predicts a number, such as sales or temperature.",
+          "question": "What is regression?"
+        },
+        {
+          "id": "ml-300",
+          "value": 300,
+          "answer": "A model that memorizes training data too closely suffers from this.",
+          "question": "What is overfitting?"
+        },
+        {
+          "id": "ml-400",
+          "value": 400,
+          "answer": "This dataset split is used during tuning, before the final test set.",
+          "question": "What is the validation set?"
+        },
+        {
+          "id": "ml-500",
+          "value": 500,
+          "answer": "This ensemble method combines many decision trees.",
+          "question": "What is a random forest?"
+        }
+      ]
+    },
+    {
+      "id": "cat-history",
+      "title": "Computing History",
+      "clues": [
+        {
+          "id": "history-100",
+          "value": 100,
+          "answer": "This company launched the Macintosh in 1984.",
+          "question": "What is Apple?"
+        },
+        {
+          "id": "history-200",
+          "value": 200,
+          "answer": "This British mathematician lends his name to a famous test of machine intelligence.",
+          "question": "Who is Alan Turing?"
+        },
+        {
+          "id": "history-300",
+          "value": 300,
+          "answer": "This early PC operating system was commonly called DOS.",
+          "question": "What is MS-DOS?"
+        },
+        {
+          "id": "history-400",
+          "value": 400,
+          "answer": "Dennis Ritchie created this programming language at Bell Labs.",
+          "question": "What is C?"
+        },
+        {
+          "id": "history-500",
+          "value": 500,
+          "answer": "This U.S. research network is widely considered a precursor to the modern internet.",
+          "question": "What is ARPANET?"
+        }
+      ]
+    },
+    {
+      "id": "cat-web",
+      "title": "Web & Internet",
+      "clues": [
+        {
+          "id": "web-100",
+          "value": 100,
+          "answer": "These four letters stand for the secure form of HTTP.",
+          "question": "What is HTTPS?"
+        },
+        {
+          "id": "web-200",
+          "value": 200,
+          "answer": "This system translates domain names into IP addresses.",
+          "question": "What is DNS?"
+        },
+        {
+          "id": "web-300",
+          "value": 300,
+          "answer": "This markup language structures most webpages.",
+          "question": "What is HTML?"
+        },
+        {
+          "id": "web-400",
+          "value": 400,
+          "answer": "This stylesheet language controls layout and presentation on the web.",
+          "question": "What is CSS?"
+        },
+        {
+          "id": "web-500",
+          "value": 500,
+          "answer": "This browser scripting language powers interactivity on most modern sites.",
+          "question": "What is JavaScript?"
+        }
+      ]
+    },
+    {
+      "id": "cat-hardware",
+      "title": "Hardware & Chips",
+      "clues": [
+        {
+          "id": "hardware-100",
+          "value": 100,
+          "answer": "CPU stands for this.",
+          "question": "What is central processing unit?"
+        },
+        {
+          "id": "hardware-200",
+          "value": 200,
+          "answer": "GPU stands for this.",
+          "question": "What is graphics processing unit?"
+        },
+        {
+          "id": "hardware-300",
+          "value": 300,
+          "answer": "This volatile memory stores active programs while power is on.",
+          "question": "What is RAM?"
+        },
+        {
+          "id": "hardware-400",
+          "value": 400,
+          "answer": "This storage device has no moving parts and is often abbreviated SSD.",
+          "question": "What is a solid-state drive?"
+        },
+        {
+          "id": "hardware-500",
+          "value": 500,
+          "answer": "This law observed that transistor counts on chips tended to roughly double over time.",
+          "question": "What is Moore's Law?"
+        }
+      ]
+    },
+    {
+      "id": "cat-code-data",
+      "title": "Code & Data",
+      "clues": [
+        {
+          "id": "code-data-100",
+          "value": 100,
+          "answer": "This key-value format with braces is common for APIs and config files.",
+          "question": "What is JSON?"
+        },
+        {
+          "id": "code-data-200",
+          "value": 200,
+          "answer": "SQL is used to query this kind of structured data system.",
+          "question": "What is a relational database?"
+        },
+        {
+          "id": "code-data-300",
+          "value": 300,
+          "answer": "This version control tool manages commits, branches, and merges.",
+          "question": "What is Git?"
+        },
+        {
+          "id": "code-data-400",
+          "value": 400,
+          "answer": "This open-source kernel powers many servers and Android devices.",
+          "question": "What is Linux?"
+        },
+        {
+          "id": "code-data-500",
+          "value": 500,
+          "answer": "API stands for this phrase.",
+          "question": "What is application programming interface?"
+        }
+      ]
+    }
+  ],
+  "settings": {
+    "subtractOnIncorrect": true,
+    "enableLocalStorage": true,
+    "storageKey": "work-jeopardy-ai-technology",
+    "sounds": {
+      "enabled": true,
+      "volume": 0.85,
+      "cues": {
+        "thinkMusic": "sounds/think-music.mp3",
+        "introJeopardy": "sounds/intro-jeopardy.mp3",
+        "boardFill": "sounds/jeopardy-ding.mp3",
+        "dailyDouble": "sounds/daily-double.mp3",
+        "tripleStumper": "sounds/jeopardy-incorrect-answer.mp3",
+        "endRound": "sounds/end-round.mp3",
+        "contestantBuzzer": "sounds/jeopardy-ding.mp3",
+        "correctAnswer": "sounds/correct-answer.mp3"
+      }
+    }
+  },
+  "finalJeopardy": {
+    "enabled": true,
+    "category": "Web History",
+    "clue": "Tim Berners-Lee is credited with inventing this information system of linked documents on the internet.",
+    "correctResponse": "What is the World Wide Web?",
+    "timerSeconds": 30,
+    "allowNonPositiveScores": false
+  }
+}
