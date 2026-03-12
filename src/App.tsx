@@ -65,6 +65,7 @@ import {
   SOUND_ENABLED_STORAGE_KEY,
 } from './lib/storage';
 import type { GameState, SharedSessionSnapshot } from './models/game';
+import { GAME_SOUND_CUES, type GameSoundCue } from './types/game-audio';
 import type { GameConfig } from './types/game-config';
 
 interface BundledGameDefinition extends BundledGameSource {
@@ -88,6 +89,33 @@ interface BundledGameCatalogFailure {
 }
 
 type BundledGameCatalogParseResult = BundledGameCatalogResult | BundledGameCatalogFailure;
+
+type RemoteAudioCommand =
+  | {
+      type: 'play';
+      cue: GameSoundCue;
+    }
+  | {
+      type: 'stop';
+      cue: GameSoundCue;
+    }
+  | {
+      type: 'stopAll';
+    }
+  | {
+      type: 'setEnabled';
+      enabled: boolean;
+    };
+
+interface RemoteAudioCommandMessage {
+  type: 'remote-audio-command';
+  sessionId: string;
+  commandId: number;
+  command: RemoteAudioCommand;
+}
+
+const REMOTE_AUDIO_CHANNEL_PREFIX = 'work-jeopardy-audio';
+const GAME_SOUND_CUE_SET = new Set<string>(GAME_SOUND_CUES);
 
 function buildBundledGameCatalog(): BundledGameCatalogParseResult {
   const errors: string[] = [];
@@ -138,6 +166,54 @@ function buildBundledGameCatalog(): BundledGameCatalogParseResult {
 
 // Import bundled JSON files as raw text so malformed edits fail inside the app instead of crashing the build.
 const bundledGameCatalogResult = buildBundledGameCatalog();
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function isGameSoundCue(value: unknown): value is GameSoundCue {
+  return typeof value === 'string' && GAME_SOUND_CUE_SET.has(value);
+}
+
+function isRemoteAudioCommandMessage(value: unknown): value is RemoteAudioCommandMessage {
+  if (!isRecord(value) || value.type !== 'remote-audio-command') {
+    return false;
+  }
+
+  if (typeof value.sessionId !== 'string' || typeof value.commandId !== 'number') {
+    return false;
+  }
+
+  const { command } = value;
+
+  if (!isRecord(command) || typeof command.type !== 'string') {
+    return false;
+  }
+
+  switch (command.type) {
+    case 'play':
+    case 'stop':
+      return isGameSoundCue(command.cue);
+    case 'stopAll':
+      return true;
+    case 'setEnabled':
+      return typeof command.enabled === 'boolean';
+    default:
+      return false;
+  }
+}
+
+function getRemoteAudioChannelName(sessionId: string): string {
+  return `${REMOTE_AUDIO_CHANNEL_PREFIX}:${sessionId}`;
+}
+
+function createRemoteAudioCommandId(previousCommandId: number): number {
+  return Math.max(Date.now(), previousCommandId + 1);
+}
+
+function isLoopingGameCue(cue: GameSoundCue): boolean {
+  return cue === 'thinkMusic';
+}
 
 function shouldIgnoreKeyboardShortcut(target: EventTarget | null): boolean {
   return (
@@ -219,6 +295,8 @@ export default function App() {
   const bundledGameCatalog = bundledGameCatalogResult.value;
   const bootstrapRef = useRef<BootstrapState | null>(null);
   const hasPlayedInitialIntroRef = useRef(false);
+  const remoteAudioCommandIdRef = useRef(0);
+  const lastHandledRemoteAudioCommandIdRef = useRef(0);
   const sessionIdRef = useRef<string>(ensureSessionIdInUrl());
   const viewModeRef = useRef(getViewModeFromLocation());
 
@@ -250,6 +328,7 @@ export default function App() {
   const [isConfigEditorOpen, setIsConfigEditorOpen] = useState(false);
   const [isBoardHeaderForcedVisible, setIsBoardHeaderForcedVisible] = useState(false);
   const [boardEntranceCycle, setBoardEntranceCycle] = useState(0);
+  const [routedLoopingCue, setRoutedLoopingCue] = useState<GameSoundCue | null>(null);
   const [hostVisiblePanels, setHostVisiblePanels] = useState<HostVisiblePanels>({
     gameplay: true,
     board: true,
@@ -278,6 +357,10 @@ export default function App() {
       settings: config.settings.sounds,
       isOutputEnabled: isConfigSoundEnabled && isSoundOutputEnabled,
     });
+  const shouldRouteAudioToBoard = viewMode === 'host' && isPresenterMode;
+  const displayedActiveCueIds =
+    shouldRouteAudioToBoard && routedLoopingCue ? [routedLoopingCue] : activeCueIds;
+  const displayedActiveLoopingCue = shouldRouteAudioToBoard ? routedLoopingCue : activeLoopingCue;
   const shouldShowBoardHeader = !isBoardView || !isPresenterMode || isBoardHeaderForcedVisible;
   const shouldShowHostSidebar = hostVisiblePanels.clue || hostVisiblePanels.setup;
   const shouldShowControlBar =
@@ -291,6 +374,77 @@ export default function App() {
     activeTeamId,
     manualScoreDelta,
     isPresenterMode,
+  };
+
+  const broadcastRemoteAudioCommand = (command: RemoteAudioCommand): boolean => {
+    if (typeof BroadcastChannel === 'undefined') {
+      return false;
+    }
+
+    remoteAudioCommandIdRef.current = createRemoteAudioCommandId(remoteAudioCommandIdRef.current);
+
+    const message = {
+      type: 'remote-audio-command',
+      sessionId,
+      commandId: remoteAudioCommandIdRef.current,
+      command,
+    } satisfies RemoteAudioCommandMessage;
+
+    const channel = new BroadcastChannel(getRemoteAudioChannelName(sessionId));
+    channel.postMessage(message);
+    channel.close();
+    return true;
+  };
+
+  const trackRoutedAudioCommand = (command: RemoteAudioCommand) => {
+    setRoutedLoopingCue((currentCue) => {
+      switch (command.type) {
+        case 'play':
+          return isLoopingGameCue(command.cue) ? command.cue : currentCue;
+        case 'stop':
+          return currentCue === command.cue ? null : currentCue;
+        case 'stopAll':
+          return null;
+        case 'setEnabled':
+          return command.enabled ? currentCue : null;
+      }
+    });
+  };
+
+  const playSessionCue = (cue: GameSoundCue) => {
+    if (shouldRouteAudioToBoard && broadcastRemoteAudioCommand({ type: 'play', cue })) {
+      trackRoutedAudioCommand({ type: 'play', cue });
+      return Promise.resolve(true);
+    }
+
+    return playCue(cue);
+  };
+
+  const stopSessionCue = (cue: GameSoundCue) => {
+    if (shouldRouteAudioToBoard && broadcastRemoteAudioCommand({ type: 'stop', cue })) {
+      trackRoutedAudioCommand({ type: 'stop', cue });
+      return;
+    }
+
+    stopCue(cue);
+  };
+
+  const stopAllSessionAudio = () => {
+    if (shouldRouteAudioToBoard && broadcastRemoteAudioCommand({ type: 'stopAll' })) {
+      trackRoutedAudioCommand({ type: 'stopAll' });
+      return;
+    }
+
+    stopAll();
+  };
+
+  const setSessionSoundOutputEnabled = (enabled: boolean) => {
+    setIsSoundOutputEnabled(enabled);
+    trackRoutedAudioCommand({ type: 'setEnabled', enabled });
+
+    if (shouldRouteAudioToBoard) {
+      void broadcastRemoteAudioCommand({ type: 'setEnabled', enabled });
+    }
   };
 
   useEffect(() => {
@@ -310,6 +464,58 @@ export default function App() {
   useEffect(() => {
     saveStoredBoolean(SOUND_ENABLED_STORAGE_KEY, isSoundOutputEnabled);
   }, [isSoundOutputEnabled]);
+
+  useEffect(() => {
+    if (shouldRouteAudioToBoard) {
+      return;
+    }
+
+    setRoutedLoopingCue(null);
+  }, [shouldRouteAudioToBoard]);
+
+  useEffect(() => {
+    if (viewMode !== 'board' || typeof BroadcastChannel === 'undefined') {
+      return;
+    }
+
+    const channel = new BroadcastChannel(getRemoteAudioChannelName(sessionId));
+
+    const handleMessage = (event: MessageEvent<unknown>) => {
+      const message = event.data;
+
+      if (!isRemoteAudioCommandMessage(message) || message.sessionId !== sessionId) {
+        return;
+      }
+
+      if (message.commandId <= lastHandledRemoteAudioCommandIdRef.current) {
+        return;
+      }
+
+      lastHandledRemoteAudioCommandIdRef.current = message.commandId;
+
+      switch (message.command.type) {
+        case 'play':
+          void playCue(message.command.cue);
+          break;
+        case 'stop':
+          stopCue(message.command.cue);
+          break;
+        case 'stopAll':
+          stopAll();
+          break;
+        case 'setEnabled':
+          setIsSoundOutputEnabled(message.command.enabled);
+          break;
+      }
+    };
+
+    channel.addEventListener('message', handleMessage as EventListener);
+
+    return () => {
+      channel.removeEventListener('message', handleMessage as EventListener);
+      channel.close();
+    };
+  }, [playCue, sessionId, stopAll, stopCue, viewMode]);
 
   useEffect(() => {
     const viewLabel =
@@ -336,8 +542,8 @@ export default function App() {
     }
 
     hasPlayedInitialIntroRef.current = true;
-    stopCue('thinkMusic');
-    void playCue('introJeopardy');
+    stopSessionCue('thinkMusic');
+    void playSessionCue('introJeopardy');
   }, [activeFinalJeopardy, boardEntranceCycle, viewMode]);
 
   useEffect(() => {
@@ -347,17 +553,17 @@ export default function App() {
       Boolean(finalJeopardyConfig?.timerSeconds);
 
     if (shouldPlayFinalThinkMusic) {
-      stopCue('introJeopardy');
-      void playCue('thinkMusic');
+      stopSessionCue('introJeopardy');
+      void playSessionCue('thinkMusic');
       return;
     }
 
-    stopCue('thinkMusic');
+    stopSessionCue('thinkMusic');
   }, [activeFinalJeopardy?.phase, finalJeopardyConfig?.timerSeconds, viewMode]);
 
   const handleSelectTeam = (teamId: string) => {
     if (teamId !== activeTeamId) {
-      void playCue('contestantBuzzer');
+      void playSessionCue('contestantBuzzer');
     }
 
     setActiveTeamId(teamId);
@@ -366,19 +572,19 @@ export default function App() {
   const handleSelectClue = (clueId: string) => {
     const clueEntry = findClueById(config, clueId);
 
-    stopCue('thinkMusic');
-    stopCue('introJeopardy');
+    stopSessionCue('thinkMusic');
+    stopSessionCue('introJeopardy');
     setIsHostPanelOpen(false);
 
     if (clueEntry?.clue.dailyDouble) {
-      void playCue('dailyDouble');
+      void playSessionCue('dailyDouble');
     }
 
     setGameState((currentState) => selectClue(currentState, clueId));
   };
 
   const handleReveal = () => {
-    stopCue('thinkMusic');
+    stopSessionCue('thinkMusic');
     setGameState((currentState) => revealQuestion(currentState));
   };
 
@@ -391,19 +597,19 @@ export default function App() {
   };
 
   const playClueCloseSound = (wasScored: boolean) => {
-    stopCue('thinkMusic');
+    stopSessionCue('thinkMusic');
 
     if (!activeClue) {
       return;
     }
 
     if (answeredClues === totalClues) {
-      void playCue('endRound');
+      void playSessionCue('endRound');
       return;
     }
 
     if (!wasScored && gameState.isQuestionRevealed) {
-      void playCue('tripleStumper');
+      void playSessionCue('tripleStumper');
     }
   };
 
@@ -413,7 +619,7 @@ export default function App() {
   };
 
   const handleRestoreClue = () => {
-    stopCue('thinkMusic');
+    stopSessionCue('thinkMusic');
     setGameState((currentState) => restoreSelectedClue(currentState));
   };
 
@@ -426,7 +632,7 @@ export default function App() {
     playClueCloseSound(true);
 
     if (!isLastClue) {
-      void playCue(isCorrect ? 'correctAnswer' : 'tripleStumper');
+      void playSessionCue(isCorrect ? 'correctAnswer' : 'tripleStumper');
     }
 
     setGameState((currentState) =>
@@ -449,7 +655,7 @@ export default function App() {
       return;
     }
 
-    stopAll();
+    stopAllSessionAudio();
     setIsHostPanelOpen(false);
     setIsConfigEditorOpen(false);
     setGameState((currentState) => startFinalJeopardy(currentState, config));
@@ -474,7 +680,7 @@ export default function App() {
   };
 
   const handleApplyFinalJeopardyResults = () => {
-    stopCue('thinkMusic');
+    stopSessionCue('thinkMusic');
     setGameState((currentState) => applyFinalJeopardyResults(currentState));
   };
 
@@ -495,7 +701,7 @@ export default function App() {
       clearStoredGameState(storageKey);
     }
 
-    stopAll();
+    stopAllSessionAudio();
     setGameState(resetGame(config));
     setActiveTeamId(config.teams[0]?.id ?? null);
     setIsHostPanelOpen(false);
@@ -534,7 +740,7 @@ export default function App() {
       clearStoredGameState(getStorageKey(nextConfig.settings));
     }
 
-    stopAll();
+    stopAllSessionAudio();
     setConfig(nextConfig);
     setSelectedBundledGameId(nextBundledGameId);
     setIsUsingLocalConfig(options.isLocalOverride);
@@ -1020,13 +1226,13 @@ export default function App() {
                   isUsingLocalConfig={isUsingLocalConfig}
                   isConfigSoundEnabled={isConfigSoundEnabled}
                   isSoundOutputEnabled={isSoundOutputEnabled}
-                  activeCueIds={activeCueIds}
+                  activeCueIds={displayedActiveCueIds}
                   soundDefinitions={soundDefinitions}
-                  activeLoopingCue={activeLoopingCue}
-                  onToggleSoundOutput={setIsSoundOutputEnabled}
-                  onPreviewCue={playCue}
-                  onStopCue={stopCue}
-                  onStopAllSounds={stopAll}
+                  activeLoopingCue={displayedActiveLoopingCue}
+                  onToggleSoundOutput={setSessionSoundOutputEnabled}
+                  onPreviewCue={playSessionCue}
+                  onStopCue={stopSessionCue}
+                  onStopAllSounds={stopAllSessionAudio}
                   onSelectBundledGame={handleSelectBundledGame}
                   onExportGame={handleExportGame}
                   onImportGame={handleImportGame}
@@ -1116,17 +1322,17 @@ export default function App() {
           isUsingLocalConfig={isUsingLocalConfig}
           isConfigSoundEnabled={isConfigSoundEnabled}
           isSoundOutputEnabled={isSoundOutputEnabled}
-          activeCueIds={activeCueIds}
+          activeCueIds={displayedActiveCueIds}
           soundDefinitions={soundDefinitions}
-          activeLoopingCue={activeLoopingCue}
+          activeLoopingCue={displayedActiveLoopingCue}
           onClose={() => setIsHostPanelOpen(false)}
           onSelectTeam={handleSelectTeam}
           onManualScoreDeltaChange={(value) => setManualScoreDelta(Math.max(0, value))}
           onAdjustTeamScore={handleAdjustTeamScore}
-          onToggleSoundOutput={setIsSoundOutputEnabled}
-          onPreviewCue={playCue}
-          onStopCue={stopCue}
-          onStopAllSounds={stopAll}
+          onToggleSoundOutput={setSessionSoundOutputEnabled}
+          onPreviewCue={playSessionCue}
+          onStopCue={stopSessionCue}
+          onStopAllSounds={stopAllSessionAudio}
           onSelectBundledGame={handleSelectBundledGame}
           onExportGame={handleExportGame}
           onImportGame={handleImportGame}

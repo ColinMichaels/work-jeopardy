@@ -98,7 +98,7 @@ export function ClueModal({
                 clueTitle={categoryTitle}
                 activeLightboxIndex={activeMediaIndex}
                 canOpenLightbox={!isPresentation}
-                shouldAutoplay={isRevealed}
+                shouldAutoplay={isRevealed || activeMediaIndex !== null}
                 onOpenLightbox={onOpenMedia}
                 onCloseLightbox={onCloseMedia}
               />
