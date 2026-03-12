@@ -4,6 +4,8 @@ This project reads all trivia content from [`src/data/sample-game.json`](../src/
 
 The app also includes a host-side local editor. Those edits are stored in the browser only and do not change the source JSON file in the repo.
 
+If you want an AI agent to research and generate a full new game set, use [AI_GAMESET_AUTHORING.md](./AI_GAMESET_AUTHORING.md) alongside this schema reference.
+
 ## Editing Workflow
 
 1. Open `src/data/sample-game.json`.

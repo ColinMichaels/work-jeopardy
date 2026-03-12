@@ -105,6 +105,7 @@ Important:
 - They do not change the source JSON in the repo.
 - If you want those edits in the next distributable build, copy them back into [`src/data/sample-game.json`](../src/data/sample-game.json) and rebuild.
 - Final Jeopardy content can also be edited from the local host editor.
+- If you want an AI to create a new full game set, start with [AI_GAMESET_AUTHORING.md](./AI_GAMESET_AUTHORING.md).
 
 ## Resets And Persistence
 
