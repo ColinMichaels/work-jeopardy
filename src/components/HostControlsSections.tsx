@@ -1,8 +1,17 @@
+import { useRef, useState } from 'react';
+import type { ChangeEvent } from 'react';
 import type { GameSoundCue } from '../types/game-audio';
 import type { TeamState } from '../models/team';
 import { formatCurrencyValue } from '../lib/score-utils';
 import { SoundControls } from './SoundControls';
 import { Tooltip } from './Tooltip';
+
+interface HostGameImportResult {
+  ok: boolean;
+  message?: string;
+  errors?: string[];
+  cancelled?: boolean;
+}
 
 interface HostControlsSectionsProps {
   bundledGames: ReadonlyArray<{
@@ -36,6 +45,8 @@ interface HostControlsSectionsProps {
   onStopCue: (cue: GameSoundCue) => void;
   onStopAllSounds: () => void;
   onSelectBundledGame: (bundledGameId: string) => void;
+  onExportGame: () => { filename: string };
+  onImportGame: (file: File) => Promise<HostGameImportResult>;
   onOpenConfigEditor: () => void;
   onResetScores: () => void;
   onResetGame: () => void;
@@ -67,6 +78,8 @@ export function HostControlsSections({
   onStopCue,
   onStopAllSounds,
   onSelectBundledGame,
+  onExportGame,
+  onImportGame,
   onOpenConfigEditor,
   onResetScores,
   onResetGame,
@@ -74,6 +87,56 @@ export function HostControlsSections({
   onResetLocalConfig,
   onStartFinalJeopardy,
 }: HostControlsSectionsProps) {
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [isImportingGame, setIsImportingGame] = useState(false);
+  const [transferStatus, setTransferStatus] = useState<{
+    tone: 'success' | 'error';
+    message: string;
+  } | null>(null);
+
+  const handleImportFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+
+    if (!file) {
+      return;
+    }
+
+    setIsImportingGame(true);
+    setTransferStatus(null);
+
+    try {
+      const result = await onImportGame(file);
+
+      if (result.cancelled) {
+        return;
+      }
+
+      if (result.ok) {
+        setTransferStatus({
+          tone: 'success',
+          message: result.message ?? `Loaded "${file.name}" as the current local game.`,
+        });
+        return;
+      }
+
+      setTransferStatus({
+        tone: 'error',
+        message: result.errors?.[0] ?? 'Could not import the selected game file.',
+      });
+    } finally {
+      setIsImportingGame(false);
+      event.target.value = '';
+    }
+  };
+
+  const handleExportClick = () => {
+    const { filename } = onExportGame();
+    setTransferStatus({
+      tone: 'success',
+      message: `Downloaded ${filename}.`,
+    });
+  };
+
   return (
     <>
       <section className="panel-inset p-4">
@@ -157,6 +220,21 @@ export function HostControlsSections({
               Edit Game
             </button>
           </Tooltip>
+          <Tooltip content="Download the current live game config as JSON for backup, editing, or reuse.">
+            <button type="button" onClick={handleExportClick} className="secondary-button">
+              Export Game
+            </button>
+          </Tooltip>
+          <Tooltip content="Load a JSON game file from disk as the current browser-local game.">
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={isImportingGame}
+              className="secondary-button disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {isImportingGame ? 'Importing...' : 'Import Game'}
+            </button>
+          </Tooltip>
           <Tooltip content="Reset all team scores while keeping used clues on the board.">
             <button type="button" onClick={onResetScores} className="secondary-button">
               Reset Scores
@@ -182,6 +260,27 @@ export function HostControlsSections({
             </Tooltip>
           ) : null}
         </div>
+
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept=".json,application/json"
+          onChange={handleImportFileChange}
+          className="hidden"
+        />
+
+        {transferStatus ? (
+          <div
+            className={[
+              'mt-3 rounded-[1.25rem] border px-4 py-3 text-sm',
+              transferStatus.tone === 'success'
+                ? 'border-emerald-300/25 bg-emerald-300/10 text-emerald-50'
+                : 'border-rose-300/25 bg-rose-300/10 text-rose-50',
+            ].join(' ')}
+          >
+            {transferStatus.message}
+          </div>
+        ) : null}
       </section>
 
       <SoundControls

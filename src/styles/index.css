@@ -319,6 +319,14 @@ input {
     color: var(--brand-gold-soft);
   }
 
+  .board-tile-pill {
+    background: rgba(255, 224, 138, 0.12);
+    border: 1px solid rgba(255, 224, 138, 0.22);
+    color: var(--brand-gold-soft);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    @apply rounded-full px-2 py-1 font-semibold uppercase tracking-[0.28em];
+  }
+
   .board-empty {
     background: linear-gradient(180deg, rgba(4, 9, 32, 0.35), rgba(2, 6, 20, 0.22));
     border-color: rgba(255, 255, 255, 0.03);

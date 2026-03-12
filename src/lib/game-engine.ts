@@ -128,6 +128,7 @@ function updateFinalJeopardyState(
   return {
     ...state,
     selectedClueId: null,
+    activeClueMediaIndex: null,
     isQuestionRevealed: false,
     finalJeopardy: updater(state.finalJeopardy),
   };
@@ -138,6 +139,7 @@ export function createInitialGameState(config: GameConfig): GameState {
     teams: buildInitialTeams(config),
     answeredClueIds: {},
     selectedClueId: null,
+    activeClueMediaIndex: null,
     isQuestionRevealed: false,
     finalJeopardy: null,
   };
@@ -198,6 +200,7 @@ export function selectClue(state: GameState, clueId: string): GameState {
   return {
     ...state,
     selectedClueId: clueId,
+    activeClueMediaIndex: null,
     isQuestionRevealed: false,
     answeredClueIds: {
       ...state.answeredClueIds,
@@ -210,6 +213,7 @@ export function closeClue(state: GameState): GameState {
   return {
     ...state,
     selectedClueId: null,
+    activeClueMediaIndex: null,
     isQuestionRevealed: false,
   };
 }
@@ -226,7 +230,30 @@ export function restoreSelectedClue(state: GameState): GameState {
     ...state,
     answeredClueIds: nextAnsweredClueIds,
     selectedClueId: null,
+    activeClueMediaIndex: null,
     isQuestionRevealed: false,
+  };
+}
+
+export function openClueMedia(state: GameState, mediaIndex: number): GameState {
+  if (!state.selectedClueId || state.finalJeopardy || mediaIndex < 0) {
+    return state;
+  }
+
+  return {
+    ...state,
+    activeClueMediaIndex: mediaIndex,
+  };
+}
+
+export function closeClueMedia(state: GameState): GameState {
+  if (state.activeClueMediaIndex === null) {
+    return state;
+  }
+
+  return {
+    ...state,
+    activeClueMediaIndex: null,
   };
 }
 
@@ -289,6 +316,7 @@ export function resetScores(state: GameState): GameState {
       score: 0,
     })),
     selectedClueId: null,
+    activeClueMediaIndex: null,
     isQuestionRevealed: false,
     finalJeopardy: null,
   };
@@ -326,6 +354,7 @@ export function reconcileGameStateWithConfig(
     teams,
     answeredClueIds,
     selectedClueId: null,
+    activeClueMediaIndex: null,
     isQuestionRevealed: false,
     finalJeopardy: normalizeFinalJeopardyState(config, teams, previousState.finalJeopardy),
   };

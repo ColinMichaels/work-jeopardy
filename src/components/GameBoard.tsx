@@ -11,6 +11,7 @@ interface GameBoardProps {
   isInteractive?: boolean;
   compact?: boolean;
   showDailyDoubleHint?: boolean;
+  showMediaHint?: boolean;
   onSelectClue: (clueId: string) => void;
 }
 
@@ -21,6 +22,7 @@ export function GameBoard({
   isInteractive = true,
   compact = false,
   showDailyDoubleHint = false,
+  showMediaHint = false,
   onSelectClue,
 }: GameBoardProps) {
   const rowCount = Math.max(...categories.map((category) => category.clues.length));
@@ -91,6 +93,7 @@ export function GameBoard({
                   isInteractive={isInteractive}
                   compact={compact}
                   showDailyDoubleHint={showDailyDoubleHint}
+                  showMediaHint={showMediaHint}
                   entranceDelayMs={tileEntranceBaseMs + tileIndex * tileEntranceStepMs}
                   onSelect={onSelectClue}
                 />

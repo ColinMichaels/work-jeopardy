@@ -40,9 +40,9 @@ If you use the in-app editor instead, those edits apply only to the current brow
           "dailyDouble": false,
           "media": [
             {
-              "type": "image",
-              "src": "optional/path.png",
-              "alt": "Optional description"
+              "type": "video",
+              "src": "https://www.youtube.com/watch?v=example",
+              "alt": "Optional media caption"
             }
           ]
         }
@@ -162,7 +162,7 @@ Fields:
 - `question`: correct Jeopardy-style response revealed by the host
 - `notes`: optional host-only supporting text
 - `dailyDouble`: optional boolean flag for special styling
-- `media`: optional array of references for future extensions
+- `media`: optional array of image, audio, or video references rendered with the clue
 
 Media entry:
 
@@ -180,7 +180,15 @@ Allowed media types:
 - `audio`
 - `video`
 
-The current MVP displays media references as metadata only. It does not yet render embedded media.
+Media behavior:
+
+- `image` renders an image preview inside the clue and can be expanded into a larger lightbox view.
+- `video` renders either an HTML5 video player or a YouTube embed when the URL points to YouTube.
+- A revealed clue will try to autoplay the currently selected YouTube or direct video item.
+- `audio` renders a browser audio player.
+- In dual-window mode, opening the media lightbox from the host view also opens it on the board window.
+
+For fully offline builds, prefer local assets bundled with the app. Remote media such as YouTube requires internet access when the clue is played.
 
 ### `settings`
 
