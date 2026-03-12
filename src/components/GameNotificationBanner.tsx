@@ -48,19 +48,47 @@ export function GameNotificationBanner({
     return null;
   }
 
+  const isFeatured = (notification.variant ?? 'default') === 'featured';
+
   return (
-    <div className={`pointer-events-none fixed inset-x-4 ${offsetClassName} z-[70] flex justify-center`}>
+    <div
+      className={[
+        'pointer-events-none fixed inset-x-4 z-[70] flex justify-center',
+        isFeatured ? 'top-1/2 -translate-y-1/2' : offsetClassName,
+      ].join(' ')}
+    >
       <div
         className={[
-          'scene-stage-enter w-full max-w-[min(760px,100%)] rounded-[1.6rem] border px-5 py-4 shadow-board backdrop-blur-md',
-          TONE_CLASS_NAMES[notification.tone],
+          isFeatured
+            ? 'notification-banner-featured w-full max-w-[min(720px,100%)] rounded-[2rem] border px-7 py-7 text-center shadow-board backdrop-blur-md sm:px-10 sm:py-9'
+            : 'scene-stage-enter w-full max-w-[min(760px,100%)] rounded-[1.6rem] border px-5 py-4 shadow-board backdrop-blur-md',
+          isFeatured ? 'border-amber-200/50 text-amber-50' : TONE_CLASS_NAMES[notification.tone],
         ].join(' ')}
       >
-        <p className="text-[11px] font-semibold uppercase tracking-[0.34em] opacity-85">
-          Game Update
+        <p
+          className={[
+            'font-semibold uppercase opacity-85',
+            isFeatured ? 'text-[12px] tracking-[0.42em]' : 'text-[11px] tracking-[0.34em]',
+          ].join(' ')}
+        >
+          {isFeatured ? 'Special Event' : 'Game Update'}
         </p>
-        <p className="mt-2 text-lg font-black uppercase tracking-[0.08em]">{notification.title}</p>
-        <p className="mt-2 text-sm leading-6 text-white/90">{notification.message}</p>
+        <p
+          className={[
+            'mt-2 font-black uppercase',
+            isFeatured ? 'text-4xl tracking-[0.12em] sm:text-5xl' : 'text-lg tracking-[0.08em]',
+          ].join(' ')}
+        >
+          {notification.title}
+        </p>
+        <p
+          className={[
+            'mt-2 text-white/90',
+            isFeatured ? 'text-base leading-7 sm:text-lg' : 'text-sm leading-6',
+          ].join(' ')}
+        >
+          {notification.message}
+        </p>
       </div>
     </div>
   );
