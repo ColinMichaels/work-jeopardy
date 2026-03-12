@@ -20,7 +20,7 @@ export const GAME_SOUND_DEFINITIONS: readonly GameSoundDefinition[] = [
     cue: 'boardFill',
     label: 'Board Fill',
     description: 'Use this when the round starts or the board resets.',
-    defaultPath: 'sounds/board-fill.mp3',
+    defaultPath: 'sounds/jeopardy-ding.mp3',
   },
   {
     cue: 'dailyDouble',
@@ -32,7 +32,7 @@ export const GAME_SOUND_DEFINITIONS: readonly GameSoundDefinition[] = [
     cue: 'tripleStumper',
     label: 'Triple Stumper',
     description: 'Use this when the room misses a revealed clue.',
-    defaultPath: 'sounds/triple-stumper.mp3',
+    defaultPath: 'sounds/jeopardy-incorrect-answer.mp3',
   },
   {
     cue: 'endRound',
@@ -44,13 +44,19 @@ export const GAME_SOUND_DEFINITIONS: readonly GameSoundDefinition[] = [
     cue: 'contestantBuzzer',
     label: 'Contestant Buzzer',
     description: 'Short cue for selecting the active team.',
-    defaultPath: 'sounds/contestant-buzzer.mp3',
+    defaultPath: 'sounds/jeopardy-ding.mp3',
   },
   {
     cue: 'correctAnswer',
     label: 'Correct Answer',
     description: 'Short cue for a correct answer.',
     defaultPath: 'sounds/correct-answer.mp3',
+  },
+  {
+    cue: 'introJeopardy',
+    label: 'Intro Jeopardy',
+    description: 'Plays when the game starts.',
+    defaultPath: 'sounds/intro-jeopardy.mp3',
   },
 ] as const;
 
@@ -171,6 +177,18 @@ function playContestantBuzzerFallback(context: AudioContext, volume: number): Pl
   };
 }
 
+function playCorrectAnswerFallback(context: AudioContext, volume: number): PlaybackHandle {
+  const startTime = context.currentTime;
+  const handles = [
+    scheduleTone(context, 784, startTime, 0.08, volume * 0.11, 'triangle'),
+    scheduleTone(context, 988, startTime + 0.08, 0.1, volume * 0.14, 'triangle'),
+  ];
+
+  return {
+    stop: () => handles.forEach((handle) => handle.stop()),
+  };
+}
+
 function createThinkMusicFallback(context: AudioContext, volume: number): PlaybackHandle {
   let intervalId: number | null = null;
 
@@ -211,6 +229,8 @@ function playFallbackCue(
       return playEndRoundFallback(context, volume);
     case 'contestantBuzzer':
       return playContestantBuzzerFallback(context, volume);
+    case 'correctAnswer':
+      return playCorrectAnswerFallback(context, volume);
   }
 
   return playBoardFillFallback(context, volume);
@@ -270,6 +290,14 @@ function playAssetCue(
   });
 }
 
+function resolveSoundAssetPath(cue: GameSoundCue, requestedPath?: string): string {
+  if (requestedPath) {
+    return requestedPath;
+  }
+
+  return SOUND_DEFINITION_MAP.get(cue)?.defaultPath ?? '';
+}
+
 interface UseSoundboardOptions {
   settings: GameSoundSettings;
   isOutputEnabled: boolean;
@@ -313,7 +341,7 @@ export function useSoundboard({ settings, isOutputEnabled }: UseSoundboardOption
     }
 
     const volume = clampVolume(settings.volume);
-    const cueSrc = settings.cues?.[cue] ?? definition.defaultPath;
+    const cueSrc = resolveSoundAssetPath(cue, settings.cues?.[cue] ?? definition.defaultPath);
     let handle = await playAssetCue(cueSrc, volume, Boolean(definition.loop));
 
     if (!handle) {

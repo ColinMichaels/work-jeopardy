@@ -86,7 +86,10 @@ export function HostConsole({
               Current Clue
             </h2>
           </div>
-          {clue ? <span className="brand-tag">{formatCurrencyValue(clue.value)}</span> : null}
+          <div className="flex items-center gap-2">
+            {clue?.dailyDouble ? <span className="brand-tag">Daily Double</span> : null}
+            {clue ? <span className="brand-tag">{formatCurrencyValue(clue.value)}</span> : null}
+          </div>
         </div>
 
         {clueEntry ? (

@@ -1,5 +1,6 @@
 export const GAME_SOUND_CUES = [
   'thinkMusic',
+  'introJeopardy',
   'boardFill',
   'dailyDouble',
   'tripleStumper',

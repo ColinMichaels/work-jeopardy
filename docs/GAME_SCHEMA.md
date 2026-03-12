@@ -55,7 +55,7 @@ If you use the in-app editor instead, those edits apply only to the current brow
       "enabled": true,
       "volume": 0.85,
       "cues": {
-        "boardFill": "sounds/board-fill.mp3",
+        "boardFill": "sounds/jeopardy-ding.mp3",
         "dailyDouble": "sounds/daily-double.mp3"
       }
     }
@@ -189,11 +189,12 @@ Settings object:
     "enabled": true,
     "volume": 0.85,
     "cues": {
-      "boardFill": "sounds/board-fill.mp3",
+      "boardFill": "sounds/jeopardy-ding.mp3",
       "dailyDouble": "sounds/daily-double.mp3",
-      "tripleStumper": "sounds/triple-stumper.mp3",
+      "tripleStumper": "sounds/jeopardy-incorrect-answer.mp3",
       "endRound": "sounds/end-round.mp3",
-      "contestantBuzzer": "sounds/contestant-buzzer.mp3",
+      "contestantBuzzer": "sounds/jeopardy-ding.mp3",
+      "correctAnswer": "sounds/correct-answer.mp3",
       "thinkMusic": "sounds/think-music.mp3"
     }
   }
@@ -221,11 +222,12 @@ Sound settings object:
   "volume": 0.85,
   "cues": {
     "thinkMusic": "sounds/think-music.mp3",
-    "boardFill": "sounds/board-fill.mp3",
+    "boardFill": "sounds/jeopardy-ding.mp3",
     "dailyDouble": "sounds/daily-double.mp3",
-    "tripleStumper": "sounds/triple-stumper.mp3",
+    "tripleStumper": "sounds/jeopardy-incorrect-answer.mp3",
     "endRound": "sounds/end-round.mp3",
-    "contestantBuzzer": "sounds/contestant-buzzer.mp3"
+    "contestantBuzzer": "sounds/jeopardy-ding.mp3",
+    "correctAnswer": "sounds/correct-answer.mp3"
   }
 }
 ```
@@ -244,6 +246,7 @@ Supported cue ids:
 - `tripleStumper`
 - `endRound`
 - `contestantBuzzer`
+- `correctAnswer`
 
 Notes:
 

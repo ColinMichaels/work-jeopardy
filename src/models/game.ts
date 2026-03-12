@@ -29,4 +29,5 @@ export interface SharedSessionSnapshot {
   gameState: GameState;
   activeTeamId: string | null;
   manualScoreDelta: number;
+  isPresenterMode: boolean;
 }

@@ -59,6 +59,7 @@ interface BootstrapState {
   manualScoreDelta: number;
   isUsingLocalConfig: boolean;
   isSoundOutputEnabled: boolean;
+  isPresenterMode: boolean;
 }
 
 function buildBootstrapState(bundledConfig: GameConfig): BootstrapState {
@@ -89,6 +90,7 @@ function buildBootstrapState(bundledConfig: GameConfig): BootstrapState {
     manualScoreDelta: getMinimumClueValue(config),
     isUsingLocalConfig,
     isSoundOutputEnabled: loadStoredBoolean(SOUND_ENABLED_STORAGE_KEY) ?? true,
+    isPresenterMode: false,
   };
 }
 
@@ -122,6 +124,7 @@ export default function App() {
   const [isSoundOutputEnabled, setIsSoundOutputEnabled] = useState<boolean>(
     bootstrapState.isSoundOutputEnabled,
   );
+  const [isPresenterMode, setIsPresenterMode] = useState<boolean>(bootstrapState.isPresenterMode);
   const [isHostPanelOpen, setIsHostPanelOpen] = useState(false);
   const [isConfigEditorOpen, setIsConfigEditorOpen] = useState(false);
 
@@ -143,6 +146,7 @@ export default function App() {
     gameState,
     activeTeamId,
     manualScoreDelta,
+    isPresenterMode,
   };
 
   useEffect(() => {
@@ -222,7 +226,12 @@ export default function App() {
       return;
     }
 
+    const isLastClue = answeredClues === totalClues;
     playClueCloseSound(true);
+
+    if (!isLastClue) {
+      void playCue(isCorrect ? 'correctAnswer' : 'tripleStumper');
+    }
 
     setGameState((currentState) =>
       applyClueOutcome(
@@ -332,6 +341,7 @@ export default function App() {
     setGameState(snapshot.gameState);
     setActiveTeamId(snapshot.activeTeamId);
     setManualScoreDelta(snapshot.manualScoreDelta);
+    setIsPresenterMode(snapshot.isPresenterMode);
   };
 
   useEffect(() => {
@@ -367,6 +377,12 @@ export default function App() {
   });
 
   const openWindowForView = (nextView: 'single' | 'board' | 'host') => {
+    if (nextView === 'host') {
+      setIsPresenterMode(true);
+    } else if (nextView === 'single') {
+      setIsPresenterMode(false);
+    }
+
     const targetUrl = buildWindowUrl(nextView, sessionId);
     const windowTargetName = buildWindowTargetName(nextView, sessionId);
     const nextWindow = window.open(targetUrl, windowTargetName);
@@ -384,22 +400,24 @@ export default function App() {
       <div
         className={`mx-auto flex w-full flex-col ${isBoardView ? 'h-[calc(100vh-1.5rem)] max-w-[1920px] gap-3' : 'max-w-[1800px] gap-4'}`}
       >
-        <ControlBar
-          title={config.title}
-          subtitle={config.subtitle}
-          answeredClues={answeredClues}
-          totalClues={totalClues}
-          isLocalStorageEnabled={config.settings.enableLocalStorage}
-          isUsingLocalConfig={isUsingLocalConfig}
-          sessionId={sessionId}
-          viewMode={viewMode}
-          syncTransport={transport}
-          compact={isBoardView}
-          onOpenHostPanel={viewMode === 'single' ? () => setIsHostPanelOpen(true) : undefined}
-          onOpenBoardWindow={() => openWindowForView('board')}
-          onOpenHostWindow={() => openWindowForView('host')}
-          onOpenSingleWindow={() => openWindowForView('single')}
-        />
+        {!isBoardView || !isPresenterMode ? (
+          <ControlBar
+            title={config.title}
+            subtitle={config.subtitle}
+            answeredClues={answeredClues}
+            totalClues={totalClues}
+            isLocalStorageEnabled={config.settings.enableLocalStorage}
+            isUsingLocalConfig={isUsingLocalConfig}
+            sessionId={sessionId}
+            viewMode={viewMode}
+            syncTransport={transport}
+            compact={isBoardView}
+            onOpenHostPanel={viewMode === 'single' ? () => setIsHostPanelOpen(true) : undefined}
+            onOpenBoardWindow={() => openWindowForView('board')}
+            onOpenHostWindow={() => openWindowForView('host')}
+            onOpenSingleWindow={() => openWindowForView('single')}
+          />
+        ) : null}
 
         {!isBoardView ? (
           <ScoreBoard
@@ -417,6 +435,7 @@ export default function App() {
               answeredClueIds={gameState.answeredClueIds}
               selectedClueId={gameState.selectedClueId}
               isInteractive
+              showDailyDoubleHint
               onSelectClue={handleSelectClue}
             />
 
@@ -457,11 +476,12 @@ export default function App() {
               <GameBoard
                 categories={config.categories}
                 answeredClueIds={gameState.answeredClueIds}
-                selectedClueId={gameState.selectedClueId}
-                isInteractive={false}
-                compact
-                onSelectClue={handleSelectClue}
-              />
+              selectedClueId={gameState.selectedClueId}
+              isInteractive={false}
+              compact
+              showDailyDoubleHint={false}
+              onSelectClue={handleSelectClue}
+            />
             </div>
             <div className="shrink-0">
               <ScoreBoard
@@ -480,6 +500,7 @@ export default function App() {
               answeredClueIds={gameState.answeredClueIds}
               selectedClueId={gameState.selectedClueId}
               isInteractive
+              showDailyDoubleHint={false}
               onSelectClue={handleSelectClue}
             />
           </>

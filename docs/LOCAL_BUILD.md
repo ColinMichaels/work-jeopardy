@@ -2,6 +2,8 @@
 
 This project is designed to build into static files that can be copied to another machine and opened locally during a meeting.
 
+For the actual meeting run flow after the build is ready, see the [host manual](./HOST_MANUAL.md).
+
 ## Prerequisites
 
 - Node.js 20+ recommended
@@ -62,8 +64,8 @@ The app now supports optional sound cues.
 
 How it works:
 
-1. Put audio files in `public/sounds/`.
-2. Point the cue paths in [`src/data/sample-game.json`](../src/data/sample-game.json) at those files.
+1. Add or replace audio files in `public/sounds/`.
+2. Point the cue paths in [`src/data/sample-game.json`](../src/data/sample-game.json) at those file names.
 3. Run `npm run build`.
 
 Example:
@@ -74,7 +76,7 @@ Example:
   "volume": 0.85,
   "cues": {
     "dailyDouble": "sounds/daily-double.mp3",
-    "tripleStumper": "sounds/triple-stumper.mp3"
+    "tripleStumper": "sounds/jeopardy-incorrect-answer.mp3"
   }
 }
 ```
@@ -82,7 +84,7 @@ Example:
 Important:
 
 - Use relative paths like `sounds/daily-double.mp3`, not `/sounds/daily-double.mp3`.
-- Files placed in `public/sounds/` are copied to `dist/sounds/` during build.
+- Files placed in `public/sounds/` are copied to the final build automatically.
 - If a configured file is missing, the app falls back to an internal synth cue so gameplay still works.
 - In dual-window mode, sound playback is triggered from the host-control window because that is the reliable user-interaction source for browsers.
 

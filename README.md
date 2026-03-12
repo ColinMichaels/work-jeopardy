@@ -15,6 +15,8 @@ Work Jeopardy is a browser-only Jeopardy-style trivia board for internal team me
 
 ## Docs
 
+- [Gameplay guide for players](./docs/GAMEPLAY_GUIDE.md)
+- [Host manual and meeting runbook](./docs/HOST_MANUAL.md)
 - [Game schema and JSON editing guide](./docs/GAME_SCHEMA.md)
 - [Local build and distribution guide](./docs/LOCAL_BUILD.md)
 - [Project rules and implementation constraints](./docs/PROJECT_RULES.md)
@@ -35,4 +37,6 @@ npm run build
 
 The output is written to `dist/`.
 
-Game content lives in [`src/data/sample-game.json`](./src/data/sample-game.json). Sound files, when used, should be placed in `public/sounds/` and are copied into the final `dist/` bundle automatically.
+Game content lives in [`src/data/sample-game.json`](./src/data/sample-game.json). Bundled sound files live in [`public/sounds`](./public/sounds), and the default game config is already wired to that asset set.
+
+For actual meeting use, start with the [host manual](./docs/HOST_MANUAL.md). For participants, share the [gameplay guide](./docs/GAMEPLAY_GUIDE.md).
