@@ -55,11 +55,7 @@ If you use the in-app editor instead, those edits apply only to the current brow
     "storageKey": "work-jeopardy-state",
     "sounds": {
       "enabled": true,
-      "volume": 0.85,
-      "cues": {
-        "boardFill": "sounds/jeopardy-ding.mp3",
-        "dailyDouble": "sounds/daily-double.mp3"
-      }
+      "volume": 0.85
     }
   },
   "finalJeopardy": {
@@ -205,16 +201,7 @@ Settings object:
   "storageKey": "work-jeopardy-state",
   "sounds": {
     "enabled": true,
-    "volume": 0.85,
-    "cues": {
-      "boardFill": "sounds/jeopardy-ding.mp3",
-      "dailyDouble": "sounds/daily-double.mp3",
-      "tripleStumper": "sounds/jeopardy-incorrect-answer.mp3",
-      "endRound": "sounds/end-round.mp3",
-      "contestantBuzzer": "sounds/jeopardy-ding.mp3",
-      "correctAnswer": "sounds/correct-answer.mp3",
-      "thinkMusic": "sounds/think-music.mp3"
-    }
+    "volume": 0.85
   }
 }
 ```
@@ -230,23 +217,14 @@ Fields:
 
 - Type: `GameSoundSettings`
 - Required: no
-- Controls whether sound is enabled, the default volume, and optional per-cue file paths
+- Controls whether sound is enabled and the default volume
 
 Sound settings object:
 
 ```json
 {
   "enabled": true,
-  "volume": 0.85,
-  "cues": {
-    "thinkMusic": "sounds/think-music.mp3",
-    "boardFill": "sounds/jeopardy-ding.mp3",
-    "dailyDouble": "sounds/daily-double.mp3",
-    "tripleStumper": "sounds/jeopardy-incorrect-answer.mp3",
-    "endRound": "sounds/end-round.mp3",
-    "contestantBuzzer": "sounds/jeopardy-ding.mp3",
-    "correctAnswer": "sounds/correct-answer.mp3"
-  }
+  "volume": 0.85
 }
 ```
 
@@ -254,7 +232,6 @@ Fields:
 
 - `enabled`: master switch for game sounds
 - `volume`: optional number from `0` to `1`
-- `cues`: optional map of cue ids to audio file paths
 
 ### `finalJeopardy`
 
@@ -290,20 +267,8 @@ Eligibility notes:
 - If `allowNonPositiveScores` is `true`, every team is eligible.
 - Teams with negative scores can still only wager `0`.
 
-Supported cue ids:
-
-- `thinkMusic`
-- `boardFill`
-- `dailyDouble`
-- `tripleStumper`
-- `endRound`
-- `contestantBuzzer`
-- `correctAnswer`
-
 Notes:
 
-- Paths should usually point at files inside `public/sounds/`.
-- Use relative paths like `sounds/daily-double.mp3` so local `dist/index.html` handoff still works.
 - If a sound file is missing, the app falls back to a small built-in synth cue instead of failing.
 
 ## Validation Rules
@@ -320,7 +285,6 @@ The app validates the JSON at runtime before rendering the board. The config fai
 - `dailyDouble`, `subtractOnIncorrect`, or `enableLocalStorage` is not a boolean
 - `settings.sounds.enabled` is not a boolean
 - `settings.sounds.volume` is outside `0` to `1`
-- `settings.sounds.cues` includes an unknown cue key or a non-string path
 - `media` is present but not an array of valid objects
 
 ## Authoring Guidelines
@@ -361,12 +325,6 @@ export interface CategoryConfig {
 export interface GameSoundSettings {
   enabled: boolean;
   volume?: number;
-  cues?: Partial<
-    Record<
-      'thinkMusic' | 'boardFill' | 'dailyDouble' | 'tripleStumper' | 'endRound' | 'contestantBuzzer',
-      string
-    >
-  >;
 }
 
 export interface GameSettings {

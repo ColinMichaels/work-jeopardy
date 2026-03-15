@@ -842,19 +842,21 @@ function LoadedApp({
   }, [isBoardView, isPresenterMode]);
 
   useEffect(() => {
-    const shouldPlayInitialIntro = viewMode === 'single' && !hasPlayedInitialIntroRef.current;
-    const shouldPlayBoardIntro =
+    const shouldPlayInitialBoardFill = viewMode === 'single' && !hasPlayedInitialIntroRef.current;
+    const shouldPlayRoundStartCue =
       viewMode !== 'board' &&
       !activeFinalJeopardy &&
-      (boardEntranceCycle > 0 || shouldPlayInitialIntro);
+      (boardEntranceCycle > 0 || shouldPlayInitialBoardFill);
 
-    if (!shouldPlayBoardIntro) {
+    if (!shouldPlayRoundStartCue) {
       return;
     }
 
     hasPlayedInitialIntroRef.current = true;
     stopSessionCue('thinkMusic');
-    void playSessionCue('introJeopardy');
+    stopSessionCue('introJeopardy');
+    stopSessionCue('boardFill');
+    void playSessionCue('boardFill');
   }, [activeFinalJeopardy, boardEntranceCycle, viewMode]);
 
   useEffect(() => {

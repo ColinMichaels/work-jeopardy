@@ -61,32 +61,26 @@ Important:
 
 ## Sound Assets
 
-The app now supports optional sound cues.
+The app uses built-in sound cues from `public/sounds/`.
 
 How it works:
 
 1. Add or replace audio files in `public/sounds/`.
-2. Point the cue paths in the relevant game JSON under [`src/data/`](../src/data/) at those file names.
-3. Run `npm run build`.
+2. Run `npm run build`.
 
 Example:
 
 ```json
 "sounds": {
   "enabled": true,
-  "volume": 0.85,
-  "cues": {
-    "dailyDouble": "sounds/daily-double.mp3",
-    "tripleStumper": "sounds/jeopardy-incorrect-answer.mp3"
-  }
+  "volume": 0.85
 }
 ```
 
 Important:
 
-- Use relative paths like `sounds/daily-double.mp3`, not `/sounds/daily-double.mp3`.
 - Files placed in `public/sounds/` are copied to the final build automatically.
-- If a configured file is missing, the app falls back to an internal synth cue so gameplay still works.
+- If a bundled file is missing, the app falls back to an internal synth cue so gameplay still works.
 - In dual-window mode, sound playback is triggered from the host-control window because that is the reliable user-interaction source for browsers.
 
 ## Running The Built Game On Another Computer
