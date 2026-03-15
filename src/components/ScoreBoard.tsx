@@ -26,7 +26,7 @@ export function ScoreBoard({
           const cardClassName = [
             'score-card flex-1 rounded-[1.55rem] border text-left transition',
             'focus:outline-none focus:ring-4 focus:ring-[rgba(255,223,133,0.22)]',
-            compact ? 'min-w-[150px] px-3 py-2' : 'min-w-[210px] px-4 py-3',
+            compact ? 'min-w-[150px] px-3 py-2' : 'min-w-[170px] px-4 py-3 sm:min-w-[210px]',
             isActive ? 'score-card--active' : '',
           ]
             .filter(Boolean)
@@ -72,7 +72,7 @@ export function ScoreBoard({
                   ? 'This team is active for clue scoring.'
                   : 'Click to make this team active for clue scoring.'
               }
-              className="min-w-[210px] flex-1"
+              className="min-w-[170px] flex-1 sm:min-w-[210px]"
             >
               <button
                 type="button"

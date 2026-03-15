@@ -54,16 +54,19 @@ export function HostGameplayBar({
   const activeTeam = teams.find((team) => team.id === activeTeamId) ?? null;
   const clue = clueEntry?.clue ?? null;
   const hasMedia = Boolean(clue?.media?.length);
+  const isRevealStep = Boolean(clue) && !isRevealed;
+  const isJudgeStep = Boolean(clue) && isRevealed;
+  const isMediaReady = hasMedia && activeMediaIndex === null;
 
   return (
-    <section className="panel relative p-5">
+    <section className="panel relative p-4">
       {onHide ? (
         <div className="absolute right-4 top-4 z-10">
           <PanelWindowButton label="Hide gameplay deck" onClick={onHide} />
         </div>
       ) : null}
 
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-3">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
             <h2 className="panel-heading">Gameplay</h2>
@@ -72,25 +75,25 @@ export function HostGameplayBar({
           <div className="flex flex-wrap items-center gap-2">
             {clueEntry && clue ? (
               <>
-                <span className="brand-tag">{clueEntry.categoryTitle}</span>
-                <span className="brand-tag">{formatCurrencyValue(clue.value)}</span>
-                {clue.dailyDouble ? <span className="brand-tag">Daily Double</span> : null}
-                {hasMedia ? (
-                  <span className="brand-tag">
-                    {clue.media?.length && clue.media.length > 1 ? `Media ${clue.media.length}` : 'Media'}
+                    <span className="brand-tag px-2 py-1 text-[10px] tracking-[0.16em]">{clueEntry.categoryTitle}</span>
+                    <span className="brand-tag px-2 py-1 text-[10px] tracking-[0.16em]">{formatCurrencyValue(clue.value)}</span>
+                    {clue.dailyDouble ? <span className="brand-tag px-2 py-1 text-[10px] tracking-[0.16em]">Daily Double</span> : null}
+                    {hasMedia ? (
+                      <span className={`brand-tag px-2 py-1 text-[10px] tracking-[0.16em] ${isMediaReady ? 'border-sky-300/40 bg-sky-300/12 text-sky-50' : ''}`}>
+                        {clue.media?.length && clue.media.length > 1 ? `Media ${clue.media.length}` : 'Media'}
+                      </span>
+                    ) : null}
+                    {isRevealed ? <span className="brand-tag px-2 py-1 text-[10px] tracking-[0.16em]">Revealed</span> : null}
+                  </>
+                ) : isFinalJeopardyReady ? (
+                  <span className="brand-tag px-2 py-1 text-[10px] tracking-[0.16em] border-amber-300/40 bg-amber-300/12">
+                    Final Ready{finalJeopardyEligibleTeamCount > 0 ? ` ${finalJeopardyEligibleTeamCount}` : ''}
                   </span>
-                ) : null}
-                {isRevealed ? <span className="brand-tag">Revealed</span> : null}
-              </>
-            ) : isFinalJeopardyReady ? (
-              <span className="brand-tag">
-                Final Ready{finalJeopardyEligibleTeamCount > 0 ? ` ${finalJeopardyEligibleTeamCount}` : ''}
-              </span>
-            ) : (
-              <span className="brand-tag">Waiting For Clue</span>
-            )}
-          </div>
-        </div>
+                ) : (
+                  <span className="brand-tag px-2 py-1 text-[10px] tracking-[0.16em]">Waiting For Clue</span>
+                )}
+              </div>
+            </div>
 
         <ScoreBoard
           teams={teams}
@@ -100,40 +103,42 @@ export function HostGameplayBar({
           onSelectTeam={onSelectTeam}
         />
 
-        <div className={showCluePreview ? 'grid gap-4 xl:grid-cols-[minmax(0,1fr)_360px]' : ''}>
-          <section className="panel-inset p-4">
+        <div className={showCluePreview ? 'grid gap-3 xl:grid-cols-[minmax(0,1fr)_320px]' : ''}>
+          <section className="panel-inset p-3">
             <div className="flex items-center justify-between gap-3">
               <div>
                 <p className="panel-heading">Clue Actions</p>
               </div>
-              {activeTeam ? <span className="brand-tag">{activeTeam.name}</span> : null}
+              {activeTeam ? <span className="brand-tag px-2 py-1 text-[10px] tracking-[0.16em]">{activeTeam.name}</span> : null}
             </div>
 
             {clueEntry && clue ? (
               <>
                 <div
                   className={[
-                    'mt-4 rounded-[1.4rem] border px-4 py-3',
-                    isRevealed
-                      ? 'border-amber-300/35 bg-amber-300/12'
-                      : 'border-sky-300/20 bg-sky-300/10',
+                    'mt-3 rounded-[1.2rem] border px-3 py-2.5',
+                    isRevealStep
+                      ? 'border-sky-300/35 bg-sky-300/12 shadow-[0_0_0_1px_rgba(125,211,252,0.1)]'
+                      : 'border-amber-300/35 bg-amber-300/12 shadow-[0_0_0_1px_rgba(252,211,77,0.08)]',
                   ].join(' ')}
                 >
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <div className="flex items-center gap-3">
-                      <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-slate-200">
-                        {isRevealed ? 'Action Required' : 'Ready To Reveal'}
+                      <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-slate-200">
+                        {isRevealed ? 'Scoring Window' : 'Next Step'}
                       </p>
                       <div className="h-3 w-px bg-white/10" />
-                      <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-slate-400">
-                        {isRevealed ? 'Score Next' : 'Preview Click Also Reveals'}
+                      <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400">
+                        {isRevealed ? 'Choose Result' : 'Reveal Response'}
                       </p>
                     </div>
-                    <span className="brand-tag">{isRevealed ? 'Judging' : 'Private'}</span>
+                    <span className={`brand-tag px-2 py-1 text-[10px] tracking-[0.16em] ${isRevealStep ? 'border-sky-300/40 bg-sky-300/12 text-sky-50' : 'border-amber-300/40 bg-amber-300/12 text-amber-50'}`}>
+                      {isRevealed ? 'Judging' : 'Private'}
+                    </span>
                   </div>
                 </div>
 
-                <div className="mt-4 grid gap-2 md:grid-cols-2 xl:grid-cols-3">
+                <div className="mt-3 grid gap-2 md:grid-cols-2 xl:grid-cols-3">
                   {!isRevealed ? (
                     <Tooltip
                       content="Reveal the correct response to every linked window."
@@ -142,7 +147,7 @@ export function HostGameplayBar({
                       <button
                         type="button"
                         onClick={onReveal}
-                        className="control-button w-full px-5 py-3 md:col-span-2 xl:col-span-3"
+                        className="control-button w-full px-4 py-2.5 text-[11px] tracking-[0.18em] shadow-[0_0_0_1px_rgba(255,224,138,0.18),0_0_28px_rgba(246,193,74,0.14)] md:col-span-2 xl:col-span-3"
                       >
                         Reveal To Players
                       </button>
@@ -157,7 +162,7 @@ export function HostGameplayBar({
                     <button
                       type="button"
                       onClick={onCloseClue}
-                      className="secondary-button w-full px-5 py-3"
+                      className="secondary-button w-full px-4 py-2.5 text-[11px] tracking-[0.16em]"
                     >
                       Close Clue
                     </button>
@@ -167,7 +172,7 @@ export function HostGameplayBar({
                     <button
                       type="button"
                       onClick={onRestoreClue}
-                      className="secondary-button w-full px-5 py-3"
+                      className="secondary-button w-full px-4 py-2.5 text-[11px] tracking-[0.16em]"
                     >
                       Return Tile
                     </button>
@@ -180,7 +185,10 @@ export function HostGameplayBar({
                         onClick={() =>
                           activeMediaIndex === null ? onOpenMedia(0) : onCloseMedia()
                         }
-                        className="secondary-button w-full px-5 py-3"
+                        className={[
+                          activeMediaIndex === null ? 'secondary-button border-sky-300/35 bg-sky-300/10 text-sky-50' : 'secondary-button',
+                          'w-full px-4 py-2.5 text-[11px] tracking-[0.16em]',
+                        ].join(' ')}
                       >
                         {activeMediaIndex === null ? 'Open Media' : 'Close Media'}
                       </button>
@@ -190,9 +198,9 @@ export function HostGameplayBar({
 
                 <div
                   className={[
-                    'mt-4 rounded-[1.45rem] border px-4 py-3',
-                    isRevealed
-                      ? 'border-amber-300/35 bg-[rgba(78,49,8,0.22)]'
+                    'mt-3 rounded-[1.25rem] border px-3 py-3',
+                    isJudgeStep
+                      ? 'border-emerald-300/35 bg-[rgba(10,64,46,0.26)] shadow-[0_0_0_1px_rgba(110,231,183,0.08)]'
                       : 'border-white/10 bg-[rgba(2,8,33,0.62)]',
                   ].join(' ')}
                 >
@@ -200,16 +208,16 @@ export function HostGameplayBar({
                     <div className="flex items-center gap-3">
                       <p className="panel-heading">Judge Response</p>
                       <div className="h-3 w-px bg-white/10" />
-                      <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-slate-400">
-                        {isRevealed ? 'Mark Result' : 'Pick Active Team'}
+                      <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400">
+                        {isRevealed ? 'Mark Result' : 'Pick Team First'}
                       </p>
                     </div>
-                    <span className="brand-tag">
+                    <span className={`brand-tag px-2 py-1 text-[10px] tracking-[0.16em] ${isJudgeStep ? 'border-emerald-300/40 bg-emerald-300/12 text-emerald-50' : ''}`}>
                       {activeTeam ? activeTeam.name : 'Select Team'}
                     </span>
                   </div>
 
-                  <div className="mt-4 grid gap-3 md:grid-cols-2">
+                  <div className="mt-3 grid gap-2 md:grid-cols-2">
                     <Tooltip
                       content="Award this clue to the active team and close it."
                       className="w-full"
@@ -218,7 +226,10 @@ export function HostGameplayBar({
                         type="button"
                         onClick={onMarkCorrect}
                         disabled={!activeTeamId}
-                        className="success-button w-full px-5 py-3 disabled:cursor-not-allowed disabled:opacity-50"
+                        className={[
+                          'success-button w-full px-4 py-2.5 text-[11px] tracking-[0.16em] disabled:cursor-not-allowed disabled:opacity-50',
+                          isJudgeStep && activeTeamId ? 'shadow-[0_0_0_1px_rgba(110,231,183,0.18),0_0_24px_rgba(16,185,129,0.12)]' : '',
+                        ].join(' ')}
                       >
                         Mark Correct
                       </button>
@@ -236,7 +247,10 @@ export function HostGameplayBar({
                         type="button"
                         onClick={onMarkIncorrect}
                         disabled={!activeTeamId}
-                        className="danger-button w-full px-5 py-3 disabled:cursor-not-allowed disabled:opacity-50"
+                        className={[
+                          'danger-button w-full px-4 py-2.5 text-[11px] tracking-[0.16em] disabled:cursor-not-allowed disabled:opacity-50',
+                          isJudgeStep && activeTeamId ? 'shadow-[0_0_0_1px_rgba(248,113,113,0.14),0_0_24px_rgba(239,68,68,0.12)]' : '',
+                        ].join(' ')}
                       >
                         Mark Incorrect{' '}
                         {subtractOnIncorrect
@@ -248,8 +262,8 @@ export function HostGameplayBar({
                 </div>
               </>
             ) : isFinalJeopardyReady && onStartFinalJeopardy ? (
-              <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-[1.35rem] border border-amber-300/30 bg-amber-300/10 px-4 py-4">
-                <p className="text-sm text-slate-100">
+              <div className="mt-3 flex flex-wrap items-center justify-between gap-3 rounded-[1.15rem] border border-amber-300/30 bg-amber-300/10 px-3 py-3">
+                <p className="text-xs text-slate-100">
                   {finalJeopardyEligibleTeamCount > 0
                     ? `${finalJeopardyEligibleTeamCount} teams are eligible for Final Jeopardy.`
                     : 'No teams are currently eligible for Final Jeopardy.'}
@@ -258,7 +272,7 @@ export function HostGameplayBar({
                   type="button"
                   onClick={onStartFinalJeopardy}
                   disabled={finalJeopardyEligibleTeamCount === 0}
-                  className="control-button disabled:cursor-not-allowed disabled:opacity-50"
+                  className="control-button px-4 py-2 text-[11px] tracking-[0.16em] disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   Start Final
                 </button>

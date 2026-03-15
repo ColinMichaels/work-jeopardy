@@ -10,6 +10,7 @@ interface HostConsoleProps {
     description: string;
   }>;
   selectedBundledGameId: string;
+  loadingBundledGameId?: string | null;
   teams: TeamState[];
   activeTeamId: string | null;
   manualScoreDelta: number;
@@ -41,6 +42,7 @@ interface HostConsoleProps {
   onResetScores: () => void;
   onResetGame: () => void;
   onClearSavedState: () => void;
+  onCleanBrowserStorage: () => void;
   onResetLocalConfig: () => void;
   onSelectTeam: (teamId: string) => void;
   onManualScoreDeltaChange: (value: number) => void;
@@ -52,6 +54,7 @@ interface HostConsoleProps {
 export function HostConsole({
   bundledGames,
   selectedBundledGameId,
+  loadingBundledGameId = null,
   teams,
   activeTeamId,
   manualScoreDelta,
@@ -73,6 +76,7 @@ export function HostConsole({
   onResetScores,
   onResetGame,
   onClearSavedState,
+  onCleanBrowserStorage,
   onResetLocalConfig,
   onSelectTeam,
   onManualScoreDeltaChange,
@@ -81,25 +85,27 @@ export function HostConsole({
   onHideSetupSection,
 }: HostConsoleProps) {
   return (
-    <aside className="space-y-4 xl:sticky xl:top-4 xl:max-h-[calc(100vh-2rem)] xl:overflow-y-auto xl:pr-1">
+    <aside className="space-y-3 lg:sticky lg:top-4 lg:max-h-[calc(100vh-2rem)] lg:overflow-y-auto lg:pr-1">
       {showSetupSection ? (
-        <section className="panel relative p-5">
+        <section className="panel relative p-3">
           {onHideSetupSection ? (
             <div className="absolute right-4 top-4 z-10">
               <PanelWindowButton label="Hide setup tools" onClick={onHideSetupSection} />
             </div>
           ) : null}
 
-          <div className="mb-4 flex items-center justify-between gap-3">
+          <div className="mb-3 flex items-center justify-between gap-3">
             <div>
               <h2 className="panel-heading">Host Tools</h2>
             </div>
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-3">
             <HostControlsSections
               bundledGames={bundledGames}
               selectedBundledGameId={selectedBundledGameId}
+              loadingBundledGameId={loadingBundledGameId}
+              dense
               teams={teams}
               activeTeamId={activeTeamId}
               manualScoreDelta={manualScoreDelta}
@@ -125,6 +131,7 @@ export function HostConsole({
               onResetScores={onResetScores}
               onResetGame={onResetGame}
               onClearSavedState={onClearSavedState}
+              onCleanBrowserStorage={onCleanBrowserStorage}
               onResetLocalConfig={onResetLocalConfig}
             />
           </div>

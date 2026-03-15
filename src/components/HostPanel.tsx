@@ -10,6 +10,7 @@ interface HostPanelProps {
     description: string;
   }>;
   selectedBundledGameId: string;
+  loadingBundledGameId?: string | null;
   teams: TeamState[];
   activeTeamId: string | null;
   manualScoreDelta: number;
@@ -47,6 +48,7 @@ interface HostPanelProps {
   onResetScores: () => void;
   onResetGame: () => void;
   onClearSavedState: () => void;
+  onCleanBrowserStorage: () => void;
   onResetLocalConfig: () => void;
   onStartFinalJeopardy?: () => void;
 }
@@ -55,6 +57,7 @@ export function HostPanel({
   isOpen,
   bundledGames,
   selectedBundledGameId,
+  loadingBundledGameId = null,
   teams,
   activeTeamId,
   manualScoreDelta,
@@ -82,6 +85,7 @@ export function HostPanel({
   onResetScores,
   onResetGame,
   onClearSavedState,
+  onCleanBrowserStorage,
   onResetLocalConfig,
   onStartFinalJeopardy,
 }: HostPanelProps) {
@@ -105,28 +109,34 @@ export function HostPanel({
 
       <aside
         className={[
-          'absolute right-0 top-0 flex h-full w-full max-w-[430px] flex-col border-l border-white/10 bg-[rgba(3,8,34,0.96)] shadow-board transition-transform duration-200',
+          'absolute right-0 top-0 flex h-full w-full max-w-[360px] flex-col border-l border-white/10 bg-[rgba(3,8,34,0.96)] shadow-board transition-transform duration-200 sm:max-w-[380px]',
           isOpen ? 'translate-x-0' : 'translate-x-full',
         ].join(' ')}
       >
-        <div className="flex items-center justify-between gap-3 border-b border-white/10 px-5 py-4">
+        <div className="flex items-center justify-between gap-3 border-b border-white/10 px-4 py-3">
           <div>
-            <p className="brand-overline text-[11px] font-semibold uppercase tracking-[0.35em]">
+            <p className="brand-overline text-[10px] font-semibold uppercase tracking-[0.3em]">
               Host Panel
             </p>
-            <h2 className="brand-title mt-1 text-2xl font-black uppercase tracking-[0.14em]">
+            <h2 className="brand-title mt-1 text-xl font-black uppercase tracking-[0.12em]">
               Controls
             </h2>
           </div>
-          <button type="button" onClick={onClose} className="secondary-button">
+          <button
+            type="button"
+            onClick={onClose}
+            className="secondary-button px-3 py-1.5 text-[10px] tracking-[0.14em]"
+          >
             Close
           </button>
         </div>
 
-        <div className="flex-1 space-y-5 overflow-y-auto px-5 py-5">
+        <div className="flex-1 space-y-3 overflow-y-auto px-3 py-3">
           <HostControlsSections
             bundledGames={bundledGames}
             selectedBundledGameId={selectedBundledGameId}
+            loadingBundledGameId={loadingBundledGameId}
+            dense
             teams={teams}
             activeTeamId={activeTeamId}
             manualScoreDelta={manualScoreDelta}
@@ -153,6 +163,7 @@ export function HostPanel({
             onResetScores={onResetScores}
             onResetGame={onResetGame}
             onClearSavedState={onClearSavedState}
+            onCleanBrowserStorage={onCleanBrowserStorage}
             onResetLocalConfig={onResetLocalConfig}
             onStartFinalJeopardy={onStartFinalJeopardy}
           />

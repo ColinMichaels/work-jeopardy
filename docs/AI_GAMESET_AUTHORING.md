@@ -8,6 +8,22 @@ The expected output is a complete JSON game file that matches the app schema and
 - pasted or adapted into the host-side editor
 - used by a future host-panel import or upload flow without further restructuring
 
+## Prompt Builder
+
+If you want a reusable prompt instead of writing one from scratch, use the static prompt builder at:
+
+- `/gameset-prompt-builder.html` while running the app locally
+- `dist/gameset-prompt-builder.html` after a production build
+
+That tool supports two flows:
+
+- creating a new game from a theme, era, genre, and category seeds
+- enriching an existing JSON game with verified media
+
+For the bundled demo boards in this repo, you can also run `npm run enrich:samples` to backfill
+remote media in place. It uses Wikipedia lead images plus YouTube watch URLs where configured and
+prints any unresolved clues so they can be reviewed manually.
+
 ## Goal
 
 Produce a clean, meeting-ready game set with:
@@ -75,6 +91,28 @@ Examples of facts that should be handled carefully:
 - live sports results
 - fast-changing company leadership
 
+## Media Authoring Rules
+
+If the user wants media-rich clues:
+
+- use verified real URLs only
+- do not invent media links
+- prefer official YouTube watch URLs for video
+- prefer stable cover art, item images, or artist photos for image media
+- include short alt text for each media item
+- if a clue has no confident media match, leave it without media and mention that in review notes
+
+Useful media-rich clue types include:
+
+- songs
+- artists
+- albums
+- films
+- products
+- spacecraft
+- landmarks
+- famous photos or archival moments
+
 ## Recommended Workflow
 
 1. Confirm the requested theme, audience, and tone.
@@ -83,7 +121,7 @@ Examples of facts that should be handled carefully:
 4. Research and outline clue topics per category.
 5. Write clue `answer` text.
 6. Write the correct `question` response for each clue.
-7. Add optional `notes`, `dailyDouble`, and `finalJeopardy` only if useful.
+7. Add optional `notes`, `dailyDouble`, `media`, and `finalJeopardy` only if useful.
 8. Validate the JSON structure before delivery.
 9. Review for ambiguity, repetition, and screen readability.
 
@@ -132,6 +170,7 @@ Optional clue fields:
 - Use stable slug-like ids such as `history-300` or `cat-science`.
 - Make the `question` field the exact answer the host should reveal.
 - Do not invent media references unless the user specifically asked for media assets.
+- When media is requested, prefer a smaller number of verified assets over a larger number of questionable links.
 - If `finalJeopardy.enabled` is `true`, include valid `category`, `clue`, and `correctResponse`.
 
 ## Quality Review Checklist
@@ -216,9 +255,10 @@ Also provide a short summary of the theme and any clues that may need human revi
 After the JSON is created:
 
 1. Validate it against the schema expectations in [GAME_SCHEMA.md](./GAME_SCHEMA.md).
-2. If you want the game bundled into the distributable build, add or replace a JSON file under [`src/data/`](../src/data/) and rebuild.
-3. If you only need a local host copy, use the host-side editing flow now.
-4. If a host-panel upload or import flow is added later, this same JSON should be the input format.
+2. If you generated or enriched media, spot-check a few links before the meeting.
+3. If you want the game bundled into the distributable build, add or replace a JSON file under [`src/data/`](../src/data/) and rebuild.
+4. If you only need a local host copy, use the host-side editing flow now.
+5. If a host-panel upload or import flow is added later, this same JSON should be the input format.
 
 ## Human Review Recommendation
 

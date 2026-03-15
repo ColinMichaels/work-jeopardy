@@ -1,0 +1,376 @@
+{
+  "title": "Sitcom Showdown",
+  "subtitle": "A board built around classic sitcoms from the 80's, 90's, and 2000's.",
+  "teams": [
+    {
+      "id": "team-1",
+      "name": "Team Neon"
+    },
+    {
+      "id": "team-2",
+      "name": "Team Sunset"
+    },
+    {
+      "id": "team-3",
+      "name": "Team Stereo"
+    }
+  ],
+  "categories": [
+    {
+      "id": "cat-80s-sitcoms",
+      "title": "80's Sitcoms",
+      "clues": [
+        {
+          "id": "80s-sitcoms-100",
+          "value": 100,
+          "answer": "This barroom sitcom's theme song says, 'Where everybody knows your name.'",
+          "question": "What is Cheers?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f7/Cheers.svg/1280px-Cheers.svg.png",
+              "alt": "Title image for Cheers"
+            },
+            {
+              "type": "video",
+              "src": "https://www.youtube.com/watch?v=7KtAgAMzaeg",
+              "alt": "Opening theme clip for Cheers"
+            },
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f7/Cheers.svg/330px-Cheers.svg.png",
+              "alt": "Title image for Cheers"
+            }
+          ]
+        },
+        {
+          "id": "80s-sitcoms-200",
+          "value": 200,
+          "answer": "This family sitcom starred Bill Cosby as Cliff Huxtable.",
+          "question": "What is The Cosby Show?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/56/The_Cosby_Show_%28Carsey-Werner_Television%29_logo.svg/1280px-The_Cosby_Show_%28Carsey-Werner_Television%29_logo.svg.png",
+              "alt": "Title image for The Cosby Show"
+            },
+            {
+              "type": "video",
+              "src": "https://www.youtube.com/watch?v=2bLgOmAl5Ak",
+              "alt": "Opening credits clip for The Cosby Show"
+            },
+            {
+              "type": "video",
+              "src": "https://www.youtube.com/watch?v=mFEh0-IHvxg",
+              "alt": "Opening credits clip for The Cosby Show"
+            },
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/56/The_Cosby_Show_%28Carsey-Werner_Television%29_logo.svg/330px-The_Cosby_Show_%28Carsey-Werner_Television%29_logo.svg.png",
+              "alt": "Title image for The Cosby Show"
+            }
+          ]
+        },
+        {
+          "id": "80s-sitcoms-300",
+          "value": 300,
+          "answer": "This sitcom follows Alex P. Keaton and the rest of the Keaton family.",
+          "question": "What is Family Ties?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Family_Ties_title.svg/1280px-Family_Ties_title.svg.png",
+              "alt": "Title image for Family Ties"
+            },
+            {
+              "type": "video",
+              "src": "https://www.youtube.com/watch?v=ip1szfz9nZ8",
+              "alt": "Opening credits clip for Family Ties"
+            },
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Family_Ties_title.svg/330px-Family_Ties_title.svg.png",
+              "alt": "Title image for Family Ties"
+            }
+          ]
+        },
+        {
+          "id": "80s-sitcoms-400",
+          "value": 400,
+          "answer": "This sitcom stars Bea Arthur, Betty White, Rue McClanahan, and Estelle Getty as four women sharing a home in Miami.",
+          "question": "What is The Golden Girls?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/25/Beatrice_Arthur_-_1973.jpg/500px-Beatrice_Arthur_-_1973.jpg",
+              "alt": "Promotional image associated with The Golden Girls"
+            },
+            {
+              "type": "video",
+              "src": "https://www.youtube.com/watch?v=23GrEhLUF_k",
+              "alt": "Opening credits clip for The Golden Girls"
+            }
+          ]
+        },
+        {
+          "id": "80s-sitcoms-500",
+          "value": 500,
+          "answer": "This sitcom featured Balki Bartokomous and his cousin Larry living in Chicago.",
+          "question": "What is Perfect Strangers?",
+          "dailyDouble": true,
+          "media": [
+            {
+              "type": "video",
+              "src": "https://www.youtube.com/watch?v=uz29uticRHQ",
+              "alt": "Opening credits clip for Perfect Strangers"
+            },
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/en/thumb/1/1d/Perfect_Strangers2.jpg/330px-Perfect_Strangers2.jpg",
+              "alt": "Title image for Perfect Strangers"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cat-90s-sitcoms",
+      "title": "90's Sitcoms",
+      "clues": [
+        {
+          "id": "90s-sitcoms-100",
+          "value": 100,
+          "answer": "This sitcom follows six friends living in New York and hanging out at Central Perk.",
+          "question": "What is Friends?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/16/JenniferAnistonHWoFFeb2012.jpg/500px-JenniferAnistonHWoFFeb2012.jpg",
+              "alt": "Promotional image associated with Friends"
+            },
+            {
+              "type": "video",
+              "src": "https://www.youtube.com/watch?v=sLisEEwYZvw",
+              "alt": "Opening theme clip for Friends"
+            }
+          ]
+        },
+        {
+          "id": "90s-sitcoms-200",
+          "value": 200,
+          "answer": "This 'show about nothing' stars Jerry, Elaine, George, and Kramer.",
+          "question": "What is Seinfeld?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Seinfeld_logo.svg/1280px-Seinfeld_logo.svg.png",
+              "alt": "Title image for Seinfeld"
+            },
+            {
+              "type": "video",
+              "src": "https://www.youtube.com/watch?v=rUxlwhlYphA",
+              "alt": "Opening credits clip for Seinfeld"
+            },
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Seinfeld_logo.svg/330px-Seinfeld_logo.svg.png",
+              "alt": "Title image for Seinfeld"
+            }
+          ]
+        },
+        {
+          "id": "90s-sitcoms-300",
+          "value": 300,
+          "answer": "This sitcom features Will moving from West Philadelphia to live with his relatives in Bel-Air.",
+          "question": "What is The Fresh Prince of Bel-Air?",
+          "media": [
+            {
+              "type": "video",
+              "src": "https://www.youtube.com/watch?v=1nCqRmx3Dnw",
+              "alt": "Opening theme clip for The Fresh Prince of Bel-Air"
+            },
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/en/thumb/c/c4/Fresh_Prince_Bel_Aire_logo.svg/330px-Fresh_Prince_Bel_Aire_logo.svg.png",
+              "alt": "Title image for The Fresh Prince of Bel-Air"
+            }
+          ]
+        },
+        {
+          "id": "90s-sitcoms-400",
+          "value": 400,
+          "answer": "This family sitcom starred Tim Allen as Tim 'The Tool Man' Taylor.",
+          "question": "What is Home Improvement?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/Home_Improvement_%28TV_series_logo%29.svg/1280px-Home_Improvement_%28TV_series_logo%29.svg.png",
+              "alt": "Title image for Home Improvement"
+            },
+            {
+              "type": "video",
+              "src": "https://www.youtube.com/watch?v=ZPyJYlg-roE",
+              "alt": "Opening credits clip for Home Improvement"
+            },
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/Home_Improvement_%28TV_series_logo%29.svg/330px-Home_Improvement_%28TV_series_logo%29.svg.png",
+              "alt": "Title image for Home Improvement"
+            }
+          ]
+        },
+        {
+          "id": "90s-sitcoms-500",
+          "value": 500,
+          "answer": "This NBC sitcom centers on the employees of a fictional New York City municipal office and starred Michael J. Fox in later seasons.",
+          "question": "What is Spin City?",
+          "media": [
+            {
+              "type": "video",
+              "src": "https://www.youtube.com/watch?v=mecLQ1Tbh2U",
+              "alt": "Opening credits clip for Spin City"
+            },
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/en/c/c7/Spin_City_-_title.jpg",
+              "alt": "Title image for Spin City"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cat-2000s-sitcoms",
+      "title": "2000's Sitcoms",
+      "clues": [
+        {
+          "id": "2000s-sitcoms-100",
+          "value": 100,
+          "answer": "This mockumentary sitcom is set at the Scranton branch of Dunder Mifflin.",
+          "question": "What is The Office?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Steve_Carell_-_The_40-Year-Old-Virgin.jpg/1280px-Steve_Carell_-_The_40-Year-Old-Virgin.jpg",
+              "alt": "Promotional image associated with The Office"
+            },
+            {
+              "type": "video",
+              "src": "https://www.youtube.com/watch?v=-C2z-nshFts",
+              "alt": "Trailer or official clip for The Office"
+            }
+          ]
+        },
+        {
+          "id": "2000s-sitcoms-200",
+          "value": 200,
+          "answer": "This nerdy sitcom features Sheldon, Leonard, Penny, Howard, and Raj.",
+          "question": "What is The Big Bang Theory?",
+          "media": [
+            {
+              "type": "video",
+              "src": "https://www.youtube.com/watch?v=hQjF0-T45dQ",
+              "alt": "Opening credits clip for The Big Bang Theory"
+            },
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/en/thumb/7/7b/The_Big_Bang_Theory_%28Official_Title_Card%29.png/330px-The_Big_Bang_Theory_%28Official_Title_Card%29.png",
+              "alt": "Title image for The Big Bang Theory"
+            }
+          ]
+        },
+        {
+          "id": "2000s-sitcoms-300",
+          "value": 300,
+          "answer": "This CBS sitcom follows a mother raising her kids while living with Charlie Harper and Alan.",
+          "question": "What is Two and a Half Men?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8b/Charlie_Sheen_March_2009.JPG/1280px-Charlie_Sheen_March_2009.JPG",
+              "alt": "Promotional image associated with Two and a Half Men"
+            },
+            {
+              "type": "video",
+              "src": "https://www.youtube.com/watch?v=zJV_STpyiTE",
+              "alt": "Opening credits clip for Two and a Half Men"
+            }
+          ]
+        },
+        {
+          "id": "2000s-sitcoms-400",
+          "value": 400,
+          "answer": "This cult sitcom follows the dysfunctional Bluth family.",
+          "question": "What is Arrested Development?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/Arrested_Development.svg/1280px-Arrested_Development.svg.png",
+              "alt": "Title image for Arrested Development"
+            },
+            {
+              "type": "video",
+              "src": "https://www.youtube.com/watch?v=3AszWG7TAqs",
+              "alt": "Trailer or official clip for Arrested Development"
+            },
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/Arrested_Development.svg/330px-Arrested_Development.svg.png",
+              "alt": "Title image for Arrested Development"
+            }
+          ]
+        },
+        {
+          "id": "2000s-sitcoms-500",
+          "value": 500,
+          "answer": "This NBC sitcom stars Tina Fey as Liz Lemon working behind the scenes of a sketch comedy show.",
+          "question": "What is 30 Rock?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/aa/30Rock_logo.svg/1280px-30Rock_logo.svg.png",
+              "alt": "Title image for 30 Rock"
+            },
+            {
+              "type": "video",
+              "src": "https://www.youtube.com/watch?v=6Og5GNktfkc",
+              "alt": "Trailer or official clip for 30 Rock"
+            },
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/aa/30Rock_logo.svg/330px-30Rock_logo.svg.png",
+              "alt": "Title image for 30 Rock"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "settings": {
+    "subtractOnIncorrect": true,
+    "enableLocalStorage": true,
+    "storageKey": "work-jeopardy-sitcoms",
+    "sounds": {
+      "enabled": true,
+      "volume": 0.85,
+      "cues": {
+        "thinkMusic": "sounds/think-music.mp3",
+        "boardFill": "sounds/jeopardy-ding.mp3",
+        "dailyDouble": "sounds/daily-double.mp3",
+        "tripleStumper": "sounds/jeopardy-incorrect-answer.mp3",
+        "endRound": "sounds/end-round.mp3",
+        "contestantBuzzer": "sounds/jeopardy-ding.mp3",
+        "correctAnswer": "sounds/correct-answer.mp3",
+        "introJeopardy": "sounds/intro-jeopardy.mp3"
+      }
+    }
+  },
+  "finalJeopardy": {
+    "enabled": true,
+    "category": "90's Sitcoms",
+    "clue": "On this sitcom, Ross, Rachel, Monica, Chandler, Joey, and Phoebe spent countless hours at Central Perk.",
+    "correctResponse": "What is Friends?",
+    "timerSeconds": 30,
+    "allowNonPositiveScores": false
+  }
+}

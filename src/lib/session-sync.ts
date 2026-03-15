@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef } from 'react';
 import type { SharedSessionSnapshot } from '../models/game';
+import { getSessionStorageKey, touchManagedStorageKey } from './storage';
 
 export type AppViewMode = 'single' | 'board' | 'host';
 
@@ -14,10 +15,9 @@ interface SessionSnapshotMessage {
   sessionId: string;
   sourceId: string;
   revision: number;
+  storedAt?: number;
   snapshot: SharedSessionSnapshot;
 }
-
-const SESSION_STORAGE_PREFIX = 'work-jeopardy-session';
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -29,10 +29,6 @@ function createWindowId(): string {
 
 function createSessionId(): string {
   return `session-${Math.random().toString(36).slice(2, 10)}`;
-}
-
-function getSessionStorageKey(sessionId: string): string {
-  return `${SESSION_STORAGE_PREFIX}:${sessionId}`;
 }
 
 function getChannelName(sessionId: string): string {
@@ -109,6 +105,7 @@ function isSessionSnapshotMessage(value: unknown): value is SessionSnapshotMessa
     typeof value.sessionId === 'string' &&
     typeof value.sourceId === 'string' &&
     typeof value.revision === 'number' &&
+    (value.storedAt === undefined || typeof value.storedAt === 'number') &&
     isRecord(value.snapshot)
   );
 }
@@ -126,7 +123,16 @@ function readStoredSnapshot(sessionId: string): SessionSnapshotMessage | null {
     }
 
     const parsedValue: unknown = JSON.parse(rawValue);
-    return isSessionSnapshotMessage(parsedValue) ? parsedValue : null;
+    if (!isSessionSnapshotMessage(parsedValue)) {
+      return null;
+    }
+
+    touchManagedStorageKey(
+      getSessionStorageKey(sessionId),
+      'session-snapshot',
+      parsedValue.storedAt ?? parsedValue.revision,
+    );
+    return parsedValue;
   } catch {
     return null;
   }
@@ -139,6 +145,11 @@ function persistSnapshot(sessionId: string, message: SessionSnapshotMessage): vo
 
   try {
     window.localStorage.setItem(getSessionStorageKey(sessionId), JSON.stringify(message));
+    touchManagedStorageKey(
+      getSessionStorageKey(sessionId),
+      'session-snapshot',
+      message.storedAt ?? message.revision,
+    );
   } catch {
     // Ignore storage failures and rely on BroadcastChannel only.
   }
@@ -274,6 +285,7 @@ export function useSessionSync({
       sessionId,
       sourceId: sourceIdRef.current,
       revision: revisionRef.current,
+      storedAt: Date.now(),
       snapshot,
     };
 

@@ -14,6 +14,7 @@ interface SoundControlsProps {
   isSoundOutputEnabled: boolean;
   activeCueIds: GameSoundCue[];
   activeLoopingCue: GameSoundCue | null;
+  dense?: boolean;
   onToggleSoundOutput: (enabled: boolean) => void;
   onPreviewCue: (cue: GameSoundCue) => void;
   onStopCue: (cue: GameSoundCue) => void;
@@ -26,6 +27,7 @@ export function SoundControls({
   isSoundOutputEnabled,
   activeCueIds,
   activeLoopingCue,
+  dense = false,
   onToggleSoundOutput,
   onPreviewCue,
   onStopCue,
@@ -34,17 +36,17 @@ export function SoundControls({
   const canPlaySound = isConfigSoundEnabled && isSoundOutputEnabled;
 
   return (
-    <section className="panel-inset p-4">
+    <section className={`panel-inset ${dense ? 'p-3' : 'p-4'}`}>
       <div className="flex items-center justify-between gap-3">
-        <p className="brand-overline text-[11px] font-semibold uppercase tracking-[0.35em]">
+        <p className={`brand-overline font-semibold uppercase ${dense ? 'text-[10px] tracking-[0.28em]' : 'text-[11px] tracking-[0.35em]'}`}>
           Sound
         </p>
-        <span className="status-pill">
+        <span className={`status-pill ${dense ? 'px-3 py-1 text-[10px] tracking-[0.18em]' : ''}`}>
           {isConfigSoundEnabled ? (isSoundOutputEnabled ? 'Audio On' : 'Muted') : 'Config Off'}
         </span>
       </div>
 
-      <div className="mt-4 flex flex-wrap gap-2">
+      <div className={`flex flex-wrap gap-2 ${dense ? 'mt-3' : 'mt-4'}`}>
         <Tooltip
           content={
             isConfigSoundEnabled
@@ -56,7 +58,10 @@ export function SoundControls({
             type="button"
             onClick={() => onToggleSoundOutput(!isSoundOutputEnabled)}
             disabled={!isConfigSoundEnabled}
-            className="secondary-button disabled:cursor-not-allowed disabled:opacity-50"
+            className={[
+              'secondary-button disabled:cursor-not-allowed disabled:opacity-50',
+              dense ? 'px-3 py-1.5 text-[10px] tracking-[0.14em]' : '',
+            ].join(' ')}
           >
             {isSoundOutputEnabled ? 'Mute Audio' : 'Unmute Audio'}
           </button>
@@ -66,14 +71,17 @@ export function SoundControls({
             type="button"
             onClick={onStopAll}
             disabled={activeCueIds.length === 0}
-            className="secondary-button disabled:cursor-not-allowed disabled:opacity-50"
+            className={[
+              'secondary-button disabled:cursor-not-allowed disabled:opacity-50',
+              dense ? 'px-3 py-1.5 text-[10px] tracking-[0.14em]' : '',
+            ].join(' ')}
           >
             Stop Audio
           </button>
         </Tooltip>
       </div>
 
-      <div className="mt-4 grid gap-2 sm:grid-cols-2">
+      <div className={`grid gap-2 sm:grid-cols-2 ${dense ? 'mt-3' : 'mt-4'}`}>
         {soundDefinitions.map((definition) => {
           const isActive = activeCueIds.includes(definition.cue);
           const isLooping = definition.loop && activeLoopingCue === definition.cue;
@@ -86,6 +94,7 @@ export function SoundControls({
                 disabled={!canPlaySound}
                 className={[
                   'w-full disabled:cursor-not-allowed disabled:opacity-50',
+                  dense ? 'px-3 py-1.5 text-[10px] tracking-[0.14em]' : '',
                   isActive ? 'control-button' : 'secondary-button',
                 ].join(' ')}
               >

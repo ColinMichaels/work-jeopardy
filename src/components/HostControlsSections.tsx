@@ -20,6 +20,8 @@ interface HostControlsSectionsProps {
     description: string;
   }>;
   selectedBundledGameId: string;
+  loadingBundledGameId?: string | null;
+  dense?: boolean;
   teams?: TeamState[];
   activeTeamId?: string | null;
   manualScoreDelta?: number;
@@ -53,6 +55,7 @@ interface HostControlsSectionsProps {
   onResetScores: () => void;
   onResetGame: () => void;
   onClearSavedState: () => void;
+  onCleanBrowserStorage: () => void;
   onResetLocalConfig: () => void;
   onStartFinalJeopardy?: () => void;
 }
@@ -60,6 +63,8 @@ interface HostControlsSectionsProps {
 export function HostControlsSections({
   bundledGames,
   selectedBundledGameId,
+  loadingBundledGameId = null,
+  dense = false,
   teams = [],
   activeTeamId = null,
   manualScoreDelta = 0,
@@ -88,6 +93,7 @@ export function HostControlsSections({
   onResetScores,
   onResetGame,
   onClearSavedState,
+  onCleanBrowserStorage,
   onResetLocalConfig,
   onStartFinalJeopardy,
 }: HostControlsSectionsProps) {
@@ -98,6 +104,9 @@ export function HostControlsSections({
     message: string;
   } | null>(null);
   const activeTeam = teams.find((team) => team.id === activeTeamId) ?? null;
+  const isBundledGameLoadPending = Boolean(loadingBundledGameId);
+  const compactButtonClass = dense ? 'px-3 py-1.5 text-[10px] tracking-[0.14em]' : '';
+  const compactTagClass = dense ? 'px-2 py-1 text-[10px] tracking-[0.16em]' : '';
 
   const handleImportFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -144,22 +153,30 @@ export function HostControlsSections({
 
   return (
     <>
-      <section className="panel-inset p-4">
+      <section className={`panel-inset ${dense ? 'p-3' : 'p-4'}`}>
         <div className="flex items-center justify-between gap-3">
           <div>
             <p className="panel-heading">Session Actions</p>
           </div>
-          {isUsingLocalConfig ? <span className="brand-tag">Local Edits Active</span> : null}
+          {isUsingLocalConfig ? <span className={`brand-tag ${compactTagClass}`}>Local Edits Active</span> : null}
         </div>
 
-        <div className="mt-4 flex flex-wrap gap-2">
+        <div className={`flex flex-wrap gap-2 ${dense ? 'mt-3' : 'mt-4'}`}>
           <Tooltip content="Open the local-only editor for title, teams, categories, clues, and settings.">
-            <button type="button" onClick={onOpenConfigEditor} className="control-button">
+            <button
+              type="button"
+              onClick={onOpenConfigEditor}
+              className={['control-button', compactButtonClass].join(' ')}
+            >
               Edit Game
             </button>
           </Tooltip>
           <Tooltip content="Download the current live game config as JSON for backup, editing, or reuse.">
-            <button type="button" onClick={handleExportClick} className="secondary-button">
+            <button
+              type="button"
+              onClick={handleExportClick}
+              className={['secondary-button', compactButtonClass].join(' ')}
+            >
               Export Game
             </button>
           </Tooltip>
@@ -168,31 +185,59 @@ export function HostControlsSections({
               type="button"
               onClick={() => fileInputRef.current?.click()}
               disabled={isImportingGame}
-              className="secondary-button disabled:cursor-not-allowed disabled:opacity-50"
+              className={[
+                'secondary-button disabled:cursor-not-allowed disabled:opacity-50',
+                compactButtonClass,
+              ].join(' ')}
             >
               {isImportingGame ? 'Importing...' : 'Import Game'}
             </button>
           </Tooltip>
           <Tooltip content="Reset all team scores while keeping used clues on the board.">
-            <button type="button" onClick={onResetScores} className="secondary-button">
+            <button
+              type="button"
+              onClick={onResetScores}
+              className={['secondary-button', compactButtonClass].join(' ')}
+            >
               Reset Scores
             </button>
           </Tooltip>
           <Tooltip content="Reset the full board, scores, and current clue selection.">
-            <button type="button" onClick={onResetGame} className="danger-button">
+            <button
+              type="button"
+              onClick={onResetGame}
+              className={['danger-button', compactButtonClass].join(' ')}
+            >
               Reset Game
             </button>
           </Tooltip>
           {isLocalStorageEnabled ? (
             <Tooltip content="Remove the saved board and scores from this browser profile.">
-              <button type="button" onClick={onClearSavedState} className="secondary-button">
+              <button
+                type="button"
+                onClick={onClearSavedState}
+                className={['secondary-button', compactButtonClass].join(' ')}
+              >
                 Clear Save
               </button>
             </Tooltip>
           ) : null}
+          <Tooltip content="Remove inactive board saves, unused local configs, and stale session snapshots while keeping the current game.">
+            <button
+              type="button"
+              onClick={onCleanBrowserStorage}
+              className={['secondary-button', compactButtonClass].join(' ')}
+            >
+              Clean Storage
+            </button>
+          </Tooltip>
           {isUsingLocalConfig ? (
             <Tooltip content="Discard the browser-only game override and return to the selected bundled game.">
-              <button type="button" onClick={onResetLocalConfig} className="secondary-button">
+              <button
+                type="button"
+                onClick={onResetLocalConfig}
+                className={['secondary-button', compactButtonClass].join(' ')}
+              >
                 Discard Local Edits
               </button>
             </Tooltip>
@@ -210,7 +255,7 @@ export function HostControlsSections({
         {transferStatus ? (
           <div
             className={[
-              'mt-3 rounded-[1.25rem] border px-4 py-3 text-sm',
+              dense ? 'mt-2 rounded-[1rem] border px-3 py-2 text-xs' : 'mt-3 rounded-[1.25rem] border px-4 py-3 text-sm',
               transferStatus.tone === 'success'
                 ? 'border-emerald-300/25 bg-emerald-300/10 text-emerald-50'
                 : 'border-rose-300/25 bg-rose-300/10 text-rose-50',
@@ -227,49 +272,53 @@ export function HostControlsSections({
         isSoundOutputEnabled={isSoundOutputEnabled}
         activeCueIds={activeCueIds}
         activeLoopingCue={activeLoopingCue}
+        dense={dense}
         onToggleSoundOutput={onToggleSoundOutput}
         onPreviewCue={onPreviewCue}
         onStopCue={onStopCue}
         onStopAll={onStopAllSounds}
       />
 
-      <section className="panel-inset p-4">
+      <section className={`panel-inset ${dense ? 'p-3' : 'p-4'}`}>
         <div className="flex items-center justify-between gap-3">
           <div>
             <p className="panel-heading">Bundled Games</p>
           </div>
-          <span className="brand-tag">{bundledGames.length} Available</span>
+          <span className={`brand-tag ${compactTagClass}`}>{bundledGames.length} Available</span>
         </div>
 
-        <div className="mt-4 space-y-2">
+        <div className={`space-y-2 ${dense ? 'mt-3' : 'mt-4'}`}>
           {bundledGames.map((bundledGame) => {
             const isSelected = bundledGame.id === selectedBundledGameId;
             const isActive = isSelected && !isUsingLocalConfig;
+            const isLoading = bundledGame.id === loadingBundledGameId;
 
             return (
               <button
                 key={bundledGame.id}
                 type="button"
                 onClick={() => onSelectBundledGame(bundledGame.id)}
-                disabled={isActive}
+                disabled={isActive || isBundledGameLoadPending}
                 className={[
-                  'flex w-full items-center justify-between gap-3 rounded-[1.35rem] border px-4 py-3 text-left transition',
+                  dense
+                    ? 'flex w-full items-center justify-between gap-2 rounded-[1rem] border px-3 py-2 text-left transition'
+                    : 'flex w-full items-center justify-between gap-3 rounded-[1.35rem] border px-4 py-3 text-left transition',
                   isSelected
                     ? 'border-amber-300/35 bg-amber-300/10'
                     : 'border-white/10 bg-white/5 hover:border-sky-300/35 hover:bg-sky-300/10',
-                  isActive ? 'cursor-default' : '',
+                  isActive || isBundledGameLoadPending ? 'cursor-default' : '',
                 ].join(' ')}
               >
                 <div>
-                  <p className="text-sm font-bold uppercase tracking-[0.18em] text-slate-50">
+                  <p className={dense ? 'text-[11px] font-bold uppercase tracking-[0.16em] text-slate-50' : 'text-sm font-bold uppercase tracking-[0.18em] text-slate-50'}>
                     {bundledGame.label}
                   </p>
-                  <p className="mt-1 text-xs leading-5 text-slate-300">
+                  <p className={dense ? 'mt-1 text-[11px] leading-4 text-slate-300' : 'mt-1 text-xs leading-5 text-slate-300'}>
                     {bundledGame.description}
                   </p>
                 </div>
-                <span className="brand-tag shrink-0">
-                  {isActive ? 'Active' : isSelected ? 'Base Game' : 'Load'}
+                <span className={`brand-tag shrink-0 ${compactTagClass}`}>
+                  {isLoading ? 'Loading' : isActive ? 'Active' : isSelected ? 'Base Game' : 'Load'}
                 </span>
               </button>
             );
@@ -278,25 +327,29 @@ export function HostControlsSections({
       </section>
 
       {showFinalJeopardyAction && onStartFinalJeopardy && isFinalJeopardyReady ? (
-        <section className="panel-inset p-4">
+        <section className={`panel-inset border-amber-300/30 bg-amber-300/8 ${dense ? 'p-3' : 'p-4'}`}>
           <div className="flex items-center justify-between gap-3">
             <div>
               <p className="panel-heading">Final Jeopardy</p>
             </div>
-            <span className="brand-tag">
+            <span className={`brand-tag ${compactTagClass}`}>
               {finalJeopardyEligibleTeamCount > 0
                 ? `${finalJeopardyEligibleTeamCount} Ready`
                 : 'No Teams'}
             </span>
           </div>
 
-          <div className="mt-4">
+          <div className={dense ? 'mt-3' : 'mt-4'}>
             <Tooltip content="Start Final Jeopardy with the currently eligible teams.">
               <button
                 type="button"
                 onClick={onStartFinalJeopardy}
                 disabled={finalJeopardyEligibleTeamCount === 0}
-                className="control-button w-full disabled:cursor-not-allowed disabled:opacity-50"
+                className={[
+                  'control-button w-full disabled:cursor-not-allowed disabled:opacity-50',
+                  compactButtonClass,
+                  finalJeopardyEligibleTeamCount > 0 ? 'shadow-[0_0_0_1px_rgba(255,224,138,0.18),0_0_30px_rgba(246,193,74,0.16)]' : '',
+                ].join(' ')}
               >
                 Start Final Jeopardy
               </button>
@@ -306,15 +359,15 @@ export function HostControlsSections({
       ) : null}
 
       {showScoreUtilities && onManualScoreDeltaChange && onAdjustTeamScore ? (
-        <section className="panel-inset p-4">
+        <section className={`panel-inset ${dense ? 'p-3' : 'p-4'}`}>
           <div className="flex items-center justify-between gap-3">
             <div>
               <p className="panel-heading">Manual Score</p>
             </div>
-            <span className="brand-tag">{formatCurrencyValue(manualScoreDelta)}</span>
+            <span className={`brand-tag ${compactTagClass}`}>{formatCurrencyValue(manualScoreDelta)}</span>
           </div>
 
-          <div className="mt-4 space-y-3">
+          <div className={`space-y-3 ${dense ? 'mt-3' : 'mt-4'}`}>
             <input
               type="number"
               min="0"
@@ -324,14 +377,14 @@ export function HostControlsSections({
                 const nextValue = Number.parseInt(event.target.value, 10);
                 onManualScoreDeltaChange(Number.isNaN(nextValue) ? 0 : Math.max(0, nextValue));
               }}
-              className="field-input text-xl font-semibold"
+              className={`field-input font-semibold ${dense ? 'px-3 py-2 text-base' : 'text-xl'}`}
             />
 
-            <div className="rounded-[1.25rem] border border-white/10 bg-[rgba(2,8,33,0.62)] px-4 py-3">
-              <p className="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">
+            <div className={`rounded-[1.25rem] border border-white/10 bg-[rgba(2,8,33,0.62)] ${dense ? 'px-3 py-2' : 'px-4 py-3'}`}>
+              <p className={dense ? 'text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400' : 'text-xs font-semibold uppercase tracking-[0.28em] text-slate-400'}>
                 Active Team
               </p>
-              <p className="mt-2 text-lg font-bold text-slate-50">
+              <p className={dense ? 'mt-1 text-sm font-bold text-slate-50' : 'mt-2 text-lg font-bold text-slate-50'}>
                 {activeTeam?.name ?? 'No Team Selected'}
               </p>
             </div>
@@ -344,7 +397,10 @@ export function HostControlsSections({
                   type="button"
                   onClick={() => activeTeamId && onAdjustTeamScore(activeTeamId, manualScoreDelta)}
                   disabled={!activeTeamId || manualScoreDelta === 0}
-                  className="control-button w-full disabled:cursor-not-allowed disabled:opacity-50"
+                  className={[
+                    'control-button w-full disabled:cursor-not-allowed disabled:opacity-50',
+                    compactButtonClass,
+                  ].join(' ')}
                 >
                   Add
                 </button>
@@ -358,7 +414,10 @@ export function HostControlsSections({
                     activeTeamId && onAdjustTeamScore(activeTeamId, -manualScoreDelta)
                   }
                   disabled={!activeTeamId || manualScoreDelta === 0}
-                  className="secondary-button w-full disabled:cursor-not-allowed disabled:opacity-50"
+                  className={[
+                    'secondary-button w-full disabled:cursor-not-allowed disabled:opacity-50',
+                    compactButtonClass,
+                  ].join(' ')}
                 >
                   Subtract
                 </button>
@@ -376,16 +435,18 @@ export function HostControlsSections({
                       type="button"
                       onClick={() => onSelectTeam(team.id)}
                       className={[
-                        'flex items-center justify-between gap-3 rounded-[1.15rem] border px-4 py-3 text-left transition',
+                        dense
+                          ? 'flex items-center justify-between gap-2 rounded-[1rem] border px-3 py-2 text-left transition'
+                          : 'flex items-center justify-between gap-3 rounded-[1.15rem] border px-4 py-3 text-left transition',
                         isActive
                           ? 'border-amber-300/35 bg-amber-300/10'
                           : 'border-white/10 bg-[rgba(2,8,33,0.58)] hover:border-sky-300/35 hover:bg-sky-300/10',
                       ].join(' ')}
                     >
-                      <span className="text-sm font-bold uppercase tracking-[0.14em] text-slate-50">
+                      <span className={dense ? 'text-[11px] font-bold uppercase tracking-[0.12em] text-slate-50' : 'text-sm font-bold uppercase tracking-[0.14em] text-slate-50'}>
                         {team.name.trim() || 'Unnamed Team'}
                       </span>
-                      <span className="brand-tag">
+                      <span className={`brand-tag ${compactTagClass}`}>
                         {index < 9 ? `Key ${index + 1}` : isActive ? 'Active' : 'Team'}
                       </span>
                     </button>
@@ -397,9 +458,9 @@ export function HostControlsSections({
         </section>
       ) : null}
 
-      <section className="panel-inset p-4">
+      <section className={`panel-inset ${dense ? 'p-3' : 'p-4'}`}>
         <p className="panel-heading">Keyboard</p>
-        <div className="mt-4 grid gap-2">
+        <div className={`grid gap-2 ${dense ? 'mt-3' : 'mt-4'}`}>
           {[
             ['1-9', 'Select active team'],
             ['R / Space / Enter', 'Reveal response'],
@@ -413,10 +474,12 @@ export function HostControlsSections({
           ].map(([keys, description]) => (
             <div
               key={keys}
-              className="flex items-center justify-between gap-3 rounded-[1.15rem] border border-white/10 bg-[rgba(2,8,33,0.6)] px-4 py-3"
+              className={dense
+                ? 'flex items-center justify-between gap-2 rounded-[1rem] border border-white/10 bg-[rgba(2,8,33,0.6)] px-3 py-2'
+                : 'flex items-center justify-between gap-3 rounded-[1.15rem] border border-white/10 bg-[rgba(2,8,33,0.6)] px-4 py-3'}
             >
-              <span className="brand-tag">{keys}</span>
-              <span className="text-sm text-slate-200">{description}</span>
+              <span className={`brand-tag ${compactTagClass}`}>{keys}</span>
+              <span className={dense ? 'text-[11px] text-slate-200' : 'text-sm text-slate-200'}>{description}</span>
             </div>
           ))}
         </div>
