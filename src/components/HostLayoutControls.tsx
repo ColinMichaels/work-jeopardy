@@ -53,7 +53,7 @@ export function HostLayoutControls({
   ];
 
   return (
-    <section className={`panel ${compact ? 'px-4 py-3' : 'p-4'}`}>
+    <section className={`panel ${compact ? 'px-3 py-2.5' : 'p-4'}`}>
       <div
         className={
           compact
@@ -79,13 +79,13 @@ export function HostLayoutControls({
         <div className="flex flex-wrap gap-2">
           {compact && onOpenBoardWindow && onOpenHostWindow && onOpenSingleWindow ? (
             <>
-              <button type="button" onClick={onOpenBoardWindow} className="secondary-button px-3 py-1.5 text-[11px] tracking-[0.14em]">
+              <button type="button" onClick={onOpenBoardWindow} className="secondary-button px-3 py-1.5 text-[10px] tracking-[0.14em]">
                 Board
               </button>
-              <button type="button" onClick={onOpenHostWindow} className="secondary-button px-3 py-1.5 text-[11px] tracking-[0.14em]">
+              <button type="button" onClick={onOpenHostWindow} className="secondary-button px-3 py-1.5 text-[10px] tracking-[0.14em]">
                 Host
               </button>
-              <button type="button" onClick={onOpenSingleWindow} className="secondary-button px-3 py-1.5 text-[11px] tracking-[0.14em]">
+              <button type="button" onClick={onOpenSingleWindow} className="secondary-button px-3 py-1.5 text-[10px] tracking-[0.14em]">
                 Single
               </button>
             </>
@@ -102,7 +102,9 @@ export function HostLayoutControls({
                 aria-pressed={isVisible}
                 className={[
                   isVisible ? 'control-button' : 'secondary-button',
-                  compact ? 'px-3 py-1.5 text-[11px] tracking-[0.14em]' : '',
+                  compact
+                    ? `px-3 py-1.5 text-[10px] tracking-[0.14em] ${isVisible ? 'shadow-[0_0_0_1px_rgba(255,224,138,0.16)]' : ''}`
+                    : '',
                 ].join(' ')}
                 title={panel.description}
               >

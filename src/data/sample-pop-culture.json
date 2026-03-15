@@ -2,9 +2,18 @@
   "title": "Pop Culture Showdown",
   "subtitle": "A lighter board built around movies, music, and television.",
   "teams": [
-    { "id": "team-1", "name": "Team Neon" },
-    { "id": "team-2", "name": "Team Sunset" },
-    { "id": "team-3", "name": "Team Stereo" }
+    {
+      "id": "team-1",
+      "name": "Team Neon"
+    },
+    {
+      "id": "team-2",
+      "name": "Team Sunset"
+    },
+    {
+      "id": "team-3",
+      "name": "Team Stereo"
+    }
   ],
   "categories": [
     {
@@ -15,32 +24,102 @@
           "id": "movies-100",
           "value": 100,
           "answer": "This 1993 dinosaur blockbuster takes place at Isla Nublar.",
-          "question": "What is Jurassic Park?"
+          "question": "What is Jurassic Park?",
+          "media": [
+            {
+              "type": "video",
+              "src": "https://www.youtube.com/watch?v=bx46tthKXmc",
+              "alt": "Trailer for Jurassic Park"
+            },
+            {
+              "type": "video",
+              "src": "https://www.youtube.com/watch?v=QWBKEmWWL38",
+              "alt": "Trailer for Jurassic Park"
+            },
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/en/e/e7/Jurassic_Park_poster.jpg",
+              "alt": "Poster or title image for Jurassic Park"
+            }
+          ]
         },
         {
           "id": "movies-200",
           "value": 200,
           "answer": "This 1939 film follows Dorothy to the land of Oz.",
-          "question": "What is The Wizard of Oz?"
+          "question": "What is The Wizard of Oz?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Wizard_of_oz_movie_poster.jpg/1280px-Wizard_of_oz_movie_poster.jpg",
+              "alt": "Poster or title image for The Wizard of Oz"
+            },
+            {
+              "type": "video",
+              "src": "https://www.youtube.com/watch?v=H_3T4DGw10U",
+              "alt": "Trailer for The Wizard of Oz"
+            },
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Wizard_of_oz_movie_poster.jpg/330px-Wizard_of_oz_movie_poster.jpg",
+              "alt": "Poster or title image for The Wizard of Oz"
+            }
+          ]
         },
         {
           "id": "movies-300",
           "value": 300,
           "answer": "This film franchise features Ethan Hunt and the IMF.",
-          "question": "What is Mission: Impossible?"
+          "question": "What is Mission: Impossible?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7d/Tom_Cruise-2428_%28cropped%29.jpg/1280px-Tom_Cruise-2428_%28cropped%29.jpg",
+              "alt": "Promotional image associated with Mission: Impossible"
+            },
+            {
+              "type": "video",
+              "src": "https://www.youtube.com/watch?v=L8Pbjh4EZRk",
+              "alt": "Trailer for Mission: Impossible"
+            }
+          ]
         },
         {
           "id": "movies-400",
           "value": 400,
           "answer": "In this Pixar film, emotions like Joy and Sadness live inside Riley's mind.",
-          "question": "What is Inside Out?"
+          "question": "What is Inside Out?",
+          "media": [
+            {
+              "type": "video",
+              "src": "https://www.youtube.com/watch?v=yRUAzGQ3nSY",
+              "alt": "Trailer for Inside Out"
+            },
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/en/thumb/0/0a/Inside_Out_%282015_film%29_poster.jpg/120px-Inside_Out_%282015_film%29_poster.jpg",
+              "alt": "Poster or title image for Inside Out"
+            }
+          ]
         },
         {
           "id": "movies-500",
           "value": 500,
           "answer": "This 1985 adventure film sends Marty McFly into the past in a DeLorean.",
           "question": "What is Back to the Future?",
-          "dailyDouble": true
+          "dailyDouble": true,
+          "media": [
+            {
+              "type": "video",
+              "src": "https://www.youtube.com/watch?v=qvsgGtivCgs",
+              "alt": "Trailer for Back to the Future"
+            },
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/en/thumb/d/d2/Back_to_the_Future.jpg/250px-Back_to_the_Future.jpg",
+              "alt": "Poster or title image for Back to the Future"
+            }
+          ]
         }
       ]
     },
@@ -52,31 +131,96 @@
           "id": "tv-100",
           "value": 100,
           "answer": "This sitcom coffee shop hangout was called Central Perk.",
-          "question": "What is Friends?"
+          "question": "What is Friends?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/16/JenniferAnistonHWoFFeb2012.jpg/500px-JenniferAnistonHWoFFeb2012.jpg",
+              "alt": "Promotional image associated with Friends"
+            },
+            {
+              "type": "video",
+              "src": "https://www.youtube.com/watch?v=sLisEEwYZvw",
+              "alt": "Opening theme clip for Friends"
+            }
+          ]
         },
         {
           "id": "tv-200",
           "value": 200,
           "answer": "This mockumentary workplace comedy is set at Dunder Mifflin's Scranton branch.",
-          "question": "What is The Office?"
+          "question": "What is The Office?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Steve_Carell_-_The_40-Year-Old-Virgin.jpg/1280px-Steve_Carell_-_The_40-Year-Old-Virgin.jpg",
+              "alt": "Promotional image associated with The Office"
+            },
+            {
+              "type": "video",
+              "src": "https://www.youtube.com/watch?v=-C2z-nshFts",
+              "alt": "Trailer or official clip for The Office"
+            }
+          ]
         },
         {
           "id": "tv-300",
           "value": 300,
           "answer": "This fantasy series is set largely on the continents of Westeros and Essos.",
-          "question": "What is Game of Thrones?"
+          "question": "What is Game of Thrones?",
+          "media": [
+            {
+              "type": "video",
+              "src": "https://www.youtube.com/watch?v=KPLWWIOCOOQ",
+              "alt": "Trailer for Game of Thrones"
+            },
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/en/thumb/d/d8/Game_of_Thrones_title_card.jpg/330px-Game_of_Thrones_title_card.jpg",
+              "alt": "Poster or title image for Game of Thrones"
+            }
+          ]
         },
         {
           "id": "tv-400",
           "value": 400,
           "answer": "This animated family lives at 742 Evergreen Terrace.",
-          "question": "What is The Simpsons?"
+          "question": "What is The Simpsons?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/The_Simpsons_yellow_logo.svg/1280px-The_Simpsons_yellow_logo.svg.png",
+              "alt": "Title image for The Simpsons"
+            },
+            {
+              "type": "video",
+              "src": "https://www.youtube.com/watch?v=aPzS3QYb868",
+              "alt": "Opening credits clip for The Simpsons"
+            },
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/The_Simpsons_yellow_logo.svg/330px-The_Simpsons_yellow_logo.svg.png",
+              "alt": "Title image for The Simpsons"
+            }
+          ]
         },
         {
           "id": "tv-500",
           "value": 500,
           "answer": "This cooking competition asks contestants to pack their knives and go.",
-          "question": "What is Top Chef?"
+          "question": "What is Top Chef?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/Padma_Lakshmi_%282017%29_05.jpg/1280px-Padma_Lakshmi_%282017%29_05.jpg",
+              "alt": "Promotional image associated with Top Chef"
+            },
+            {
+              "type": "video",
+              "src": "https://www.youtube.com/watch?v=IQB0GEK72-s",
+              "alt": "Trailer or official clip for Top Chef"
+            }
+          ]
         }
       ]
     },
@@ -88,31 +232,116 @@
           "id": "music-100",
           "value": 100,
           "answer": "This singer is known as the 'Queen of Pop.'",
-          "question": "Who is Madonna?"
+          "question": "Who is Madonna?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/MadonnaO2171023_%2897_of_133%29_%2853269593787%29_%28cropped%29.jpg/1280px-MadonnaO2171023_%2897_of_133%29_%2853269593787%29_%28cropped%29.jpg",
+              "alt": "Photo of Madonna"
+            },
+            {
+              "type": "video",
+              "src": "https://www.youtube.com/watch?v=79fzeNUqQbQ",
+              "alt": "Official music video for Like a Prayer"
+            },
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/MadonnaO2171023_%2897_of_133%29_%2853269593787%29_%28cropped%29.jpg/330px-MadonnaO2171023_%2897_of_133%29_%2853269593787%29_%28cropped%29.jpg",
+              "alt": "Photo of Madonna"
+            }
+          ]
         },
         {
           "id": "music-200",
           "value": 200,
           "answer": "This band released the album Abbey Road in 1969.",
-          "question": "Who are The Beatles?"
+          "question": "Who are The Beatles?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/The_Beatles_1963_Dezo_Hoffman_Capitol_Records_press_photo_2.jpg/1280px-The_Beatles_1963_Dezo_Hoffman_Capitol_Records_press_photo_2.jpg",
+              "alt": "Photo of The Beatles"
+            },
+            {
+              "type": "video",
+              "src": "https://www.youtube.com/watch?v=CGj85pVzRJs",
+              "alt": "Official music video for Let It Be"
+            },
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/The_Beatles_1963_Dezo_Hoffman_Capitol_Records_press_photo_2.jpg/330px-The_Beatles_1963_Dezo_Hoffman_Capitol_Records_press_photo_2.jpg",
+              "alt": "Photo of The Beatles"
+            }
+          ]
         },
         {
           "id": "music-300",
           "value": 300,
           "answer": "This artist's 1982 album Thriller became one of the best-selling albums ever.",
-          "question": "Who is Michael Jackson?"
+          "question": "Who is Michael Jackson?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b9/Michael_Jackson_1983_%283x4_cropped%29_%28contrast%29.jpg/1280px-Michael_Jackson_1983_%283x4_cropped%29_%28contrast%29.jpg",
+              "alt": "Photo of Michael Jackson"
+            },
+            {
+              "type": "video",
+              "src": "https://www.youtube.com/watch?v=sOnqjkJTMaA",
+              "alt": "Official music video for Thriller"
+            },
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b9/Michael_Jackson_1983_%283x4_cropped%29_%28contrast%29.jpg/330px-Michael_Jackson_1983_%283x4_cropped%29_%28contrast%29.jpg",
+              "alt": "Photo of Michael Jackson"
+            }
+          ]
         },
         {
           "id": "music-400",
           "value": 400,
           "answer": "This singer's fans are often nicknamed the BeyHive.",
-          "question": "Who is Beyonce?"
+          "question": "Who is Beyonce?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/Beyonc%C3%A9_-_Tottenham_Hotspur_Stadium_-_1st_June_2023_%2810_of_118%29_%2852946364598%29_%28best_crop%29.jpg/500px-Beyonc%C3%A9_-_Tottenham_Hotspur_Stadium_-_1st_June_2023_%2810_of_118%29_%2852946364598%29_%28best_crop%29.jpg",
+              "alt": "Photo of Beyonce"
+            },
+            {
+              "type": "video",
+              "src": "https://www.youtube.com/watch?v=4m1EFMoRFvY",
+              "alt": "Official music video for Single Ladies (Put a Ring on It)"
+            },
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/Beyonc%C3%A9_-_Tottenham_Hotspur_Stadium_-_1st_June_2023_%2810_of_118%29_%2852946364598%29_%28best_crop%29.jpg/330px-Beyonc%C3%A9_-_Tottenham_Hotspur_Stadium_-_1st_June_2023_%2810_of_118%29_%2852946364598%29_%28best_crop%29.jpg",
+              "alt": "Photo of Beyonce"
+            }
+          ]
         },
         {
           "id": "music-500",
           "value": 500,
           "answer": "This New Jersey-born rock artist is nicknamed 'The Boss.'",
-          "question": "Who is Bruce Springsteen?"
+          "question": "Who is Bruce Springsteen?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/93/Bruce_Springsteen_Springsteen-79_%28cropped%29.jpg/1280px-Bruce_Springsteen_Springsteen-79_%28cropped%29.jpg",
+              "alt": "Photo of Bruce Springsteen"
+            },
+            {
+              "type": "video",
+              "src": "https://www.youtube.com/watch?v=IxuThNgl3YA",
+              "alt": "Official music video for Born to Run"
+            },
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/93/Bruce_Springsteen_Springsteen-79_%28cropped%29.jpg/330px-Bruce_Springsteen_Springsteen-79_%28cropped%29.jpg",
+              "alt": "Photo of Bruce Springsteen"
+            }
+          ]
         }
       ]
     },

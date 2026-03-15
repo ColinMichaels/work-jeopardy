@@ -65,9 +65,9 @@ export function GameBoard({
 
   return (
     <section className={`panel board-shell scene-stage-enter overflow-hidden ${compact ? 'h-full' : ''}`}>
-      <div className={`${compact ? 'h-full p-2 sm:p-3' : 'overflow-x-auto p-3 sm:p-4'}`}>
+      <div className={`${compact ? 'h-full p-2 sm:p-3' : 'overflow-x-auto p-2 sm:p-4'}`}>
         <div
-          className={`grid ${compact ? 'h-full gap-2' : 'min-w-[980px] gap-2 sm:gap-3'}`}
+          className={`grid ${compact ? 'h-full gap-2' : 'min-w-[760px] gap-2 sm:min-w-[980px] sm:gap-3'}`}
           style={boardGridStyle}
         >
           {categories.map((category, categoryIndex) => (

@@ -22,6 +22,7 @@ Work Jeopardy is a browser-only Jeopardy-style trivia board for internal team me
 - [Host manual and meeting runbook](./docs/HOST_MANUAL.md)
 - [Game schema and JSON editing guide](./docs/GAME_SCHEMA.md)
 - [AI game-set authoring guide](./docs/AI_GAMESET_AUTHORING.md)
+- [Prompt builder workflow](./docs/PROMPT_BUILDER_WORKFLOW.md)
 - [GitHub Pages deployment guide](./docs/GITHUB_PAGES.md)
 - [Local build and distribution guide](./docs/LOCAL_BUILD.md)
 - [Project rules and implementation constraints](./docs/PROJECT_RULES.md)
@@ -41,6 +42,19 @@ npm run build
 ```
 
 The output is written to `dist/`.
+
+For repeatable AI prompt generation, run the dev server and open
+`/gameset-prompt-builder.html`. The same page is also copied to `dist/` during a build so it can
+be shared with a host as a static helper.
+
+To refresh the bundled sample boards with remote media examples, run:
+
+```bash
+npm run enrich:samples
+```
+
+That script enriches the sample JSON files in `src/data/`, skips clues that already have the
+needed image or video types, and prints a missing-media summary for manual cleanup.
 
 To publish a GitHub Pages demo:
 

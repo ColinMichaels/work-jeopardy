@@ -2,9 +2,18 @@
   "title": "Team Jeopardy",
   "subtitle": "A browser-only board for local team meetings.",
   "teams": [
-    { "id": "team-1", "name": "Blue Team" },
-    { "id": "team-2", "name": "Gold Team" },
-    { "id": "team-3", "name": "Green Team" }
+    {
+      "id": "team-1",
+      "name": "Blue Team"
+    },
+    {
+      "id": "team-2",
+      "name": "Gold Team"
+    },
+    {
+      "id": "team-3",
+      "name": "Green Team"
+    }
   ],
   "categories": [
     {
@@ -15,25 +24,53 @@
           "id": "ts-100",
           "value": 100,
           "answer": "A typed superset of JavaScript that compiles to plain JS.",
-          "question": "What is TypeScript?"
+          "question": "What is TypeScript?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f5/Typescript.svg/1280px-Typescript.svg.png",
+              "alt": "Logo for TypeScript"
+            }
+          ]
         },
         {
           "id": "ts-200",
           "value": 200,
           "answer": "This utility type makes every property in another type optional.",
-          "question": "What is Partial?"
+          "question": "What is Partial?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f5/Typescript.svg/1280px-Typescript.svg.png",
+              "alt": "Logo for TypeScript"
+            }
+          ]
         },
         {
           "id": "ts-300",
           "value": 300,
           "answer": "This keyword introduces a custom type alias.",
-          "question": "What is type?"
+          "question": "What is type?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f5/Typescript.svg/1280px-Typescript.svg.png",
+              "alt": "Logo for TypeScript"
+            }
+          ]
         },
         {
           "id": "ts-400",
           "value": 400,
           "answer": "This kind of type lets one variable be one of several declared types.",
-          "question": "What is a union type?"
+          "question": "What is a union type?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f5/Typescript.svg/1280px-Typescript.svg.png",
+              "alt": "Logo for TypeScript"
+            }
+          ]
         },
         {
           "id": "ts-500",
@@ -41,7 +78,14 @@
           "answer": "This operator validates that a value matches a type without widening its literal shape.",
           "question": "What is satisfies?",
           "dailyDouble": true,
-          "notes": "Great chance to talk through why it differs from an explicit annotation."
+          "notes": "Great chance to talk through why it differs from an explicit annotation.",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f5/Typescript.svg/1280px-Typescript.svg.png",
+              "alt": "Logo for TypeScript"
+            }
+          ]
         }
       ]
     },
@@ -53,31 +97,66 @@
           "id": "react-100",
           "value": 100,
           "answer": "This hook stores local component state.",
-          "question": "What is useState?"
+          "question": "What is useState?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/React_Logo_SVG.svg/1280px-React_Logo_SVG.svg.png",
+              "alt": "Logo for React"
+            }
+          ]
         },
         {
           "id": "react-200",
           "value": 200,
           "answer": "This hook runs side effects after render.",
-          "question": "What is useEffect?"
+          "question": "What is useEffect?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/React_Logo_SVG.svg/1280px-React_Logo_SVG.svg.png",
+              "alt": "Logo for React"
+            }
+          ]
         },
         {
           "id": "react-300",
           "value": 300,
           "answer": "This prop helps React identify stable items in a list.",
-          "question": "What is key?"
+          "question": "What is key?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/React_Logo_SVG.svg/1280px-React_Logo_SVG.svg.png",
+              "alt": "Logo for React"
+            }
+          ]
         },
         {
           "id": "react-400",
           "value": 400,
           "answer": "This pattern passes behavior or UI into another component as a function or child.",
-          "question": "What is composition?"
+          "question": "What is composition?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/React_Logo_SVG.svg/1280px-React_Logo_SVG.svg.png",
+              "alt": "Logo for React"
+            }
+          ]
         },
         {
           "id": "react-500",
           "value": 500,
           "answer": "This API mounts a React tree into a DOM container in modern React apps.",
-          "question": "What is createRoot?"
+          "question": "What is createRoot?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/React_Logo_SVG.svg/1280px-React_Logo_SVG.svg.png",
+              "alt": "Logo for React"
+            }
+          ]
         }
       ]
     },
@@ -89,31 +168,66 @@
           "id": "git-100",
           "value": 100,
           "answer": "This command shows changes in the current working tree.",
-          "question": "What is git status?"
+          "question": "What is git status?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f4/Git_session.svg/1280px-Git_session.svg.png",
+              "alt": "Logo for Git"
+            }
+          ]
         },
         {
           "id": "git-200",
           "value": 200,
           "answer": "This command downloads new remote history and updates the current branch in one step.",
-          "question": "What is git pull?"
+          "question": "What is git pull?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f4/Git_session.svg/1280px-Git_session.svg.png",
+              "alt": "Logo for Git"
+            }
+          ]
         },
         {
           "id": "git-300",
           "value": 300,
           "answer": "This command creates a new commit from currently staged changes.",
-          "question": "What is git commit?"
+          "question": "What is git commit?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f4/Git_session.svg/1280px-Git_session.svg.png",
+              "alt": "Logo for Git"
+            }
+          ]
         },
         {
           "id": "git-400",
           "value": 400,
           "answer": "This file often lists ignored paths like node_modules and dist.",
-          "question": "What is .gitignore?"
+          "question": "What is .gitignore?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f4/Git_session.svg/1280px-Git_session.svg.png",
+              "alt": "Logo for Git"
+            }
+          ]
         },
         {
           "id": "git-500",
           "value": 500,
           "answer": "This strategy replays your local commits on top of updated upstream history.",
-          "question": "What is rebase?"
+          "question": "What is rebase?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f4/Git_session.svg/1280px-Git_session.svg.png",
+              "alt": "Logo for Git"
+            }
+          ]
         }
       ]
     },

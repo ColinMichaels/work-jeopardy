@@ -1,0 +1,444 @@
+{
+  "title": "2000s Pop Party",
+  "subtitle": "Reality-show winners, dance-pop smashes, and ringtone-era hooks.",
+  "teams": [
+    {
+      "id": "team-1",
+      "name": "Team Cassette"
+    },
+    {
+      "id": "team-2",
+      "name": "Team CD"
+    },
+    {
+      "id": "team-3",
+      "name": "Team MP3"
+    }
+  ],
+  "categories": [
+    {
+      "id": "cat-hit-singles",
+      "title": "Hit Singles",
+      "clues": [
+        {
+          "id": "hit-singles-100",
+          "value": 100,
+          "answer": "Kelly Clarkson's Breakaway-era breakup anthem is this hit.",
+          "question": "What is \"Since U Been Gone\"?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/e3/7e/c5/e37ec5d7-725b-695c-333c-ee0deb5adcc6/dj.mveioodu.jpg/600x600bb.jpg",
+              "alt": "Single artwork for Since U Been Gone"
+            },
+            {
+              "type": "video",
+              "src": "https://www.youtube.com/watch?v=R7UrFYvl5TE",
+              "alt": "Official music video for Since U Been Gone"
+            }
+          ]
+        },
+        {
+          "id": "hit-singles-200",
+          "value": 200,
+          "answer": "Rihanna asked listeners to stand under this weather-themed smash featuring Jay-Z.",
+          "question": "What is \"Umbrella\"?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/2b/c0/81/2bc081c8-25f0-ba43-d451-587a54613778/16UMGIM59202.rgb.jpg/600x600bb.jpg",
+              "alt": "Single artwork for Umbrella"
+            },
+            {
+              "type": "video",
+              "src": "https://www.youtube.com/watch?v=CvBfHwUxHIk",
+              "alt": "Official music video for Umbrella"
+            }
+          ]
+        },
+        {
+          "id": "hit-singles-300",
+          "value": 300,
+          "answer": "OutKast's massive sing-along from Speakerboxxx/The Love Below carried this short title.",
+          "question": "What is \"Hey Ya!\"?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/a3/35/54/a33554b6-4122-cdfd-29e8-d17897280263/dj.yiwizfgg.jpg/600x600bb.jpg",
+              "alt": "Single artwork for Hey Ya!"
+            },
+            {
+              "type": "video",
+              "src": "https://www.youtube.com/watch?v=PWgvGjAhvIw",
+              "alt": "Official music video for Hey Ya!"
+            }
+          ]
+        },
+        {
+          "id": "hit-singles-400",
+          "value": 400,
+          "answer": "Beyonce's 2008 hit told a suitor to put a ring on it.",
+          "question": "What is \"Single Ladies (Put a Ring on It)\"?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/35/0f/55/350f55da-2104-162a-5872-cb35fef30410/mzi.morbeoaw.jpg/600x600bb.jpg",
+              "alt": "Single artwork for Single Ladies (Put a Ring on It)"
+            },
+            {
+              "type": "video",
+              "src": "https://www.youtube.com/watch?v=4m1EFMoRFvY",
+              "alt": "Official music video for Single Ladies (Put a Ring on It)"
+            }
+          ]
+        },
+        {
+          "id": "hit-singles-500",
+          "value": 500,
+          "answer": "Lady Gaga's breakthrough hit hid emotion behind this card-game expression.",
+          "question": "What is \"Poker Face\"?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://is1-ssl.mzstatic.com/image/thumb/Music112/v4/35/0d/d6/350dd697-4b78-8aaf-cf65-74b96c1adab8/21UMGIM68808.rgb.jpg/600x600bb.jpg",
+              "alt": "Single artwork for Poker Face"
+            },
+            {
+              "type": "video",
+              "src": "https://www.youtube.com/watch?v=bESGLojNYSo",
+              "alt": "Official music video for Poker Face"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cat-pop-stars",
+      "title": "Pop Stars",
+      "clues": [
+        {
+          "id": "pop-stars-100",
+          "value": 100,
+          "answer": "This Canadian singer broke out with \"Complicated\" and \"Sk8er Boi.\"",
+          "question": "Who is Avril Lavigne?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/54/Glaston2024_2806_300624_%28129_of_173%29_%28cropped%29.jpg/330px-Glaston2024_2806_300624_%28129_of_173%29_%28cropped%29.jpg",
+              "alt": "Photo of Avril Lavigne"
+            },
+            {
+              "type": "video",
+              "src": "https://www.youtube.com/watch?v=5NPBIwQyPWE",
+              "alt": "Official music video for Complicated"
+            }
+          ]
+        },
+        {
+          "id": "pop-stars-200",
+          "value": 200,
+          "answer": "After NSYNC, this singer launched a solo run with Justified and FutureSex/LoveSounds.",
+          "question": "Who is Justin Timberlake?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ed/Justin_Timberlake_by_Gage_Skidmore_2.jpg/330px-Justin_Timberlake_by_Gage_Skidmore_2.jpg",
+              "alt": "Photo of Justin Timberlake"
+            },
+            {
+              "type": "video",
+              "src": "https://www.youtube.com/watch?v=DksSPZTZES0",
+              "alt": "Official music video for Cry Me a River"
+            }
+          ]
+        },
+        {
+          "id": "pop-stars-300",
+          "value": 300,
+          "answer": "This Portuguese Canadian star had 2000s hits with \"Promiscuous\" and \"Say It Right.\"",
+          "question": "Who is Nelly Furtado?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Nelly_Furtado_at_Radio_Regenbogen_Award_2017_%285%29.jpg/330px-Nelly_Furtado_at_Radio_Regenbogen_Award_2017_%285%29.jpg",
+              "alt": "Photo of Nelly Furtado"
+            },
+            {
+              "type": "video",
+              "src": "https://www.youtube.com/watch?v=6JnGBs88sL0",
+              "alt": "Official music video for Say It Right"
+            }
+          ]
+        },
+        {
+          "id": "pop-stars-400",
+          "value": 400,
+          "answer": "This Black Eyed Peas member also scored solo hits with \"Glamorous\" and \"Big Girls Don't Cry.\"",
+          "question": "Who is Fergie?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/Fergie_Washington_D.C_2014_%28cropped%29.jpg/330px-Fergie_Washington_D.C_2014_%28cropped%29.jpg",
+              "alt": "Photo of Fergie"
+            },
+            {
+              "type": "video",
+              "src": "https://www.youtube.com/watch?v=q0SyUgw98tE",
+              "alt": "Official music video for Glamorous"
+            }
+          ]
+        },
+        {
+          "id": "pop-stars-500",
+          "value": 500,
+          "answer": "This British soul singer made Back to Black and \"Rehab\" defining 2000s works.",
+          "question": "Who is Amy Winehouse?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cf/Amy_Winehouse_f4962007_crop.jpg/330px-Amy_Winehouse_f4962007_crop.jpg",
+              "alt": "Photo of Amy Winehouse"
+            },
+            {
+              "type": "video",
+              "src": "https://www.youtube.com/watch?v=KUmZp8pR1uc",
+              "alt": "Official music video for Rehab"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cat-groups-duos",
+      "title": "Groups & Duos",
+      "clues": [
+        {
+          "id": "groups-duos-100",
+          "value": 100,
+          "answer": "Fergie joined this group for hits like \"Let's Get It Started\" and \"I Gotta Feeling.\"",
+          "question": "Who are the Black Eyed Peas?"
+        },
+        {
+          "id": "groups-duos-200",
+          "value": 200,
+          "answer": "Nicole Scherzinger fronted this group on \"Don't Cha.\"",
+          "question": "Who are the Pussycat Dolls?"
+        },
+        {
+          "id": "groups-duos-300",
+          "value": 300,
+          "answer": "This sibling trio found 2000s success with \"Burnin' Up\" and Disney Channel fame.",
+          "question": "Who are the Jonas Brothers?"
+        },
+        {
+          "id": "groups-duos-400",
+          "value": 400,
+          "answer": "This Russian duo broke through internationally with \"All the Things She Said.\"",
+          "question": "Who are t.A.T.u.?"
+        },
+        {
+          "id": "groups-duos-500",
+          "value": 500,
+          "answer": "CeeLo Green and Danger Mouse recorded together under this oddball duo name.",
+          "question": "Who are Gnarls Barkley?",
+          "dailyDouble": true
+        }
+      ]
+    },
+    {
+      "id": "cat-albums",
+      "title": "Albums",
+      "clues": [
+        {
+          "id": "albums-100",
+          "value": 100,
+          "answer": "Kelly Clarkson's 2004 album included \"Since U Been Gone\" and \"Because of You.\"",
+          "question": "What is Breakaway?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/e3/7e/c5/e37ec5d7-725b-695c-333c-ee0deb5adcc6/dj.mveioodu.jpg/600x600bb.jpg",
+              "alt": "Album artwork for Breakaway"
+            },
+            {
+              "type": "video",
+              "src": "https://www.youtube.com/watch?v=R7UrFYvl5TE",
+              "alt": "Official music video for Since U Been Gone"
+            }
+          ]
+        },
+        {
+          "id": "albums-200",
+          "value": 200,
+          "answer": "Usher's diamond-selling 2004 album included \"Yeah!\" and \"Burn.\"",
+          "question": "What is Confessions?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/02/c6/e1/02c6e1cd-8d57-97b4-6ef1-77d2be004509/mzi.sjrqsmrq.jpg/600x600bb.jpg",
+              "alt": "Album artwork for Confessions"
+            },
+            {
+              "type": "video",
+              "src": "https://www.youtube.com/watch?v=GxBSyx85Kp8",
+              "alt": "Official music video for Yeah!"
+            }
+          ]
+        },
+        {
+          "id": "albums-300",
+          "value": 300,
+          "answer": "Nelly Furtado teamed with Timbaland on this 2006 album.",
+          "question": "What is Loose?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/20/f2/be/20f2be1f-716d-a2df-913e-1aff99c08619/06UMGIM31170.rgb.jpg/600x600bb.jpg",
+              "alt": "Album artwork for Loose"
+            },
+            {
+              "type": "video",
+              "src": "https://www.youtube.com/watch?v=0J3vgcE5i2o",
+              "alt": "Official music video for Promiscuous"
+            }
+          ]
+        },
+        {
+          "id": "albums-400",
+          "value": 400,
+          "answer": "Lady Gaga introduced herself with this 2008 debut album.",
+          "question": "What is The Fame?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://is1-ssl.mzstatic.com/image/thumb/Music122/v4/e9/1a/4e/e91a4eb9-31e7-89fb-3aad-e8172e534bb6/09UMGIM42295.rgb.jpg/600x600bb.jpg",
+              "alt": "Album artwork for The Fame"
+            },
+            {
+              "type": "video",
+              "src": "https://www.youtube.com/watch?v=bESGLojNYSo",
+              "alt": "Official music video for Poker Face"
+            }
+          ]
+        },
+        {
+          "id": "albums-500",
+          "value": 500,
+          "answer": "Justin Timberlake released \"SexyBack\" on this 2006 album.",
+          "question": "What is FutureSex/LoveSounds?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/4c/44/30/4c4430dd-150b-d393-ec70-4894975f4b16/888880422095.jpg/600x600bb.jpg",
+              "alt": "Album artwork for FutureSex/LoveSounds"
+            },
+            {
+              "type": "video",
+              "src": "https://www.youtube.com/watch?v=3gOHvDP_vCs",
+              "alt": "Official music video for SexyBack"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cat-teen-pop",
+      "title": "Teen Pop",
+      "clues": [
+        {
+          "id": "teen-pop-100",
+          "value": 100,
+          "answer": "This singer won the first season of American Idol in 2002.",
+          "question": "Who is Kelly Clarkson?"
+        },
+        {
+          "id": "teen-pop-200",
+          "value": 200,
+          "answer": "This singer starred as Hannah Montana on Disney Channel.",
+          "question": "Who is Miley Cyrus?"
+        },
+        {
+          "id": "teen-pop-300",
+          "value": 300,
+          "answer": "Before 2000s hits like \"Come Clean,\" this singer played Lizzie McGuire.",
+          "question": "Who is Hilary Duff?"
+        },
+        {
+          "id": "teen-pop-400",
+          "value": 400,
+          "answer": "This Camp Rock star also released the 2008 single \"Get Back.\"",
+          "question": "Who is Demi Lovato?"
+        },
+        {
+          "id": "teen-pop-500",
+          "value": 500,
+          "answer": "This singer was just 13 when she released the 2004 debut single \"Leave (Get Out).\"",
+          "question": "Who is JoJo?"
+        }
+      ]
+    },
+    {
+      "id": "cat-collaborations",
+      "title": "Collaborations",
+      "clues": [
+        {
+          "id": "collaborations-100",
+          "value": 100,
+          "answer": "This rapper handled the verse on Rihanna's \"Umbrella.\"",
+          "question": "Who is Jay-Z?"
+        },
+        {
+          "id": "collaborations-200",
+          "value": 200,
+          "answer": "This producer and vocalist teamed with Nelly Furtado on \"Promiscuous.\"",
+          "question": "Who is Timbaland?"
+        },
+        {
+          "id": "collaborations-300",
+          "value": 300,
+          "answer": "This rapper appeared on Fergie's \"Glamorous.\"",
+          "question": "Who is Ludacris?"
+        },
+        {
+          "id": "collaborations-400",
+          "value": 400,
+          "answer": "Shakira teamed with this Fugees member on \"Hips Don't Lie.\"",
+          "question": "Who is Wyclef Jean?"
+        },
+        {
+          "id": "collaborations-500",
+          "value": 500,
+          "answer": "Lady Gaga's debut single \"Just Dance\" featured this singer, not yet a household name.",
+          "question": "Who is Colby O'Donis?"
+        }
+      ]
+    }
+  ],
+  "settings": {
+    "subtractOnIncorrect": true,
+    "enableLocalStorage": true,
+    "storageKey": "work-jeopardy-2000s-pop",
+    "sounds": {
+      "enabled": true,
+      "volume": 0.85,
+      "cues": {
+        "thinkMusic": "sounds/think-music.mp3",
+        "boardFill": "sounds/jeopardy-ding.mp3",
+        "dailyDouble": "sounds/daily-double.mp3",
+        "tripleStumper": "sounds/jeopardy-incorrect-answer.mp3",
+        "endRound": "sounds/end-round.mp3",
+        "contestantBuzzer": "sounds/jeopardy-ding.mp3",
+        "correctAnswer": "sounds/correct-answer.mp3",
+        "introJeopardy": "sounds/intro-jeopardy.mp3"
+      }
+    }
+  },
+  "finalJeopardy": {
+    "enabled": true,
+    "category": "2000s Pop Albums",
+    "clue": "This 2006 Nelly Furtado album included \"Promiscuous,\" \"Maneater,\" and \"Say It Right.\"",
+    "correctResponse": "What is Loose?",
+    "timerSeconds": 30,
+    "allowNonPositiveScores": false
+  }
+}

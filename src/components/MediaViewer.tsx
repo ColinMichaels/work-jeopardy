@@ -47,19 +47,27 @@ export function MediaViewer({
     resolvedType === 'audio'
       ? ''
       : isLightbox
-        ? 'min-h-[50vh] sm:min-h-[62vh]'
+        ? 'h-full min-h-0'
         : compact
           ? 'min-h-[220px] sm:min-h-[260px]'
           : 'min-h-[280px] sm:min-h-[360px]';
 
   if (resolvedType === 'image') {
     return (
-      <div className={`flex items-center justify-center bg-slate-950/70 ${frameHeightClass}`}>
+      <div
+        className={[
+          'flex items-center justify-center bg-slate-950/70',
+          isLightbox ? 'h-full min-h-0 px-2 py-2 sm:px-4 sm:py-4' : frameHeightClass,
+        ].join(' ')}
+      >
         <img
           src={media.src}
           alt={media.alt ?? title}
           loading={isLightbox ? 'eager' : 'lazy'}
-          className="max-h-[78vh] w-full object-contain"
+          className={[
+            'w-full object-contain',
+            isLightbox ? 'h-full max-h-full' : 'max-h-[78vh]',
+          ].join(' ')}
         />
       </div>
     );
@@ -73,17 +81,24 @@ export function MediaViewer({
     const embedUrl = getYouTubeEmbedUrl(media.src, { autoplay });
 
     return (
-      <div className={`bg-slate-950/70 ${frameHeightClass}`}>
-        <iframe
-          key={`${media.src}-${autoplay ? 'autoplay' : 'manual'}`}
-          src={embedUrl ?? media.src}
-          title={title}
-          loading="lazy"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          referrerPolicy="strict-origin-when-cross-origin"
-          allowFullScreen
-          className="aspect-video h-full w-full border-0"
-        />
+      <div
+        className={[
+          'bg-slate-950/70',
+          isLightbox ? 'flex h-full min-h-0 items-center justify-center px-2 py-2 sm:px-4 sm:py-4' : frameHeightClass,
+        ].join(' ')}
+      >
+        <div className={isLightbox ? 'aspect-video max-h-full w-full overflow-hidden rounded-[1.2rem]' : 'aspect-video h-full w-full'}>
+          <iframe
+            key={`${media.src}-${autoplay ? 'autoplay' : 'manual'}`}
+            src={embedUrl ?? media.src}
+            title={title}
+            loading="lazy"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            referrerPolicy="strict-origin-when-cross-origin"
+            allowFullScreen
+            className="h-full w-full border-0"
+          />
+        </div>
       </div>
     );
   }
@@ -94,14 +109,22 @@ export function MediaViewer({
     }
 
     return (
-      <div className={`bg-slate-950/70 ${frameHeightClass}`}>
+      <div
+        className={[
+          'bg-slate-950/70',
+          isLightbox ? 'flex h-full min-h-0 items-center justify-center px-2 py-2 sm:px-4 sm:py-4' : frameHeightClass,
+        ].join(' ')}
+      >
         <video
           key={`${media.src}-${autoplay ? 'autoplay' : 'manual'}`}
           controls
           autoPlay={autoplay}
           playsInline
           preload="metadata"
-          className="aspect-video h-full w-full bg-slate-950 object-contain"
+          className={[
+            'aspect-video bg-slate-950 object-contain',
+            isLightbox ? 'max-h-full w-full overflow-hidden rounded-[1.2rem]' : 'h-full w-full',
+          ].join(' ')}
         >
           <source src={media.src} />
           Your browser could not play this video source.

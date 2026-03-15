@@ -42,14 +42,14 @@ function ClueMediaLightbox({
   }
 
   return (
-    <div className="scene-overlay-enter fixed inset-0 z-[70] bg-slate-950/92 p-4 backdrop-blur-md sm:p-6">
-      <div className="modal-shell scene-stage-enter mx-auto flex h-full max-w-7xl flex-col overflow-hidden">
-        <div className="flex items-start justify-between gap-4 border-b border-white/10 px-6 py-5">
+    <div className="scene-overlay-enter fixed inset-0 z-[70] bg-slate-950/92 p-2 backdrop-blur-md sm:p-4">
+      <div className="modal-shell scene-stage-enter mx-auto flex h-full max-w-[min(96vw,1280px)] min-h-0 flex-col overflow-hidden">
+        <div className="flex items-start justify-between gap-3 border-b border-white/10 px-4 py-3 sm:px-5 sm:py-4">
           <div>
             <p className="brand-overline text-xs font-semibold uppercase tracking-[0.45em]">
               Clue Media
             </p>
-            <h3 className="brand-title mt-2 text-2xl font-black uppercase tracking-[0.12em] sm:text-3xl">
+            <h3 className="brand-title mt-1 text-xl font-black uppercase tracking-[0.12em] sm:text-2xl">
               {clueTitle}
             </h3>
           </div>
@@ -68,9 +68,9 @@ function ClueMediaLightbox({
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-6">
+        <div className="grid min-h-0 flex-1 grid-rows-[auto_minmax(0,1fr)_auto] gap-3 overflow-hidden p-3 sm:p-4">
           {media.length > 1 && canClose ? (
-            <div className="mb-4 flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-2 overflow-x-auto pb-1">
               {media.map((entry, index) => {
                 const isActive = index === activeLightboxIndex;
 
@@ -80,7 +80,7 @@ function ClueMediaLightbox({
                     type="button"
                     onClick={() => onSelectMedia(index)}
                     className={[
-                      'rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] transition',
+                      'rounded-full border px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.2em] transition',
                       isActive
                         ? 'border-amber-300/45 bg-amber-300/10 text-amber-50'
                         : 'border-white/10 bg-white/5 text-slate-200 hover:border-sky-300/30',
@@ -93,7 +93,7 @@ function ClueMediaLightbox({
             </div>
           ) : null}
 
-          <div className="overflow-hidden rounded-[1.7rem] border border-white/10 bg-[rgba(2,8,33,0.86)]">
+          <div className="min-h-0 overflow-hidden rounded-[1.4rem] border border-white/10 bg-[rgba(2,8,33,0.86)]">
             <MediaViewer
               media={activeMedia}
               title={`${clueTitle} media`}
@@ -103,7 +103,9 @@ function ClueMediaLightbox({
           </div>
 
           {activeMedia.alt ? (
-            <p className="mt-4 text-sm leading-6 text-slate-200">{activeMedia.alt}</p>
+            <div className="max-h-24 overflow-y-auto rounded-[1.1rem] border border-white/10 bg-white/5 px-3 py-2">
+              <p className="text-sm leading-5 text-slate-200">{activeMedia.alt}</p>
+            </div>
           ) : null}
         </div>
       </div>
@@ -185,7 +187,10 @@ export function ClueMediaPanel({
               <button
                 type="button"
                 onClick={() => onOpenLightbox(previewIndex)}
-                className="secondary-button"
+                className={[
+                  playbackEnabled ? 'control-button' : 'secondary-button',
+                  'px-3 py-1.5 text-[11px] tracking-[0.16em]',
+                ].join(' ')}
               >
                 {playbackEnabled ? 'Expand' : 'Show On Board'}
               </button>

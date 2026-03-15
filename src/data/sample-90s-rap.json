@@ -1,0 +1,444 @@
+{
+  "title": "90s Rap Classics",
+  "subtitle": "Golden-era albums, coast-to-coast stars, and unforgettable hooks.",
+  "teams": [
+    {
+      "id": "team-1",
+      "name": "Team Cassette"
+    },
+    {
+      "id": "team-2",
+      "name": "Team CD"
+    },
+    {
+      "id": "team-3",
+      "name": "Team MP3"
+    }
+  ],
+  "categories": [
+    {
+      "id": "cat-hit-singles",
+      "title": "Hit Singles",
+      "clues": [
+        {
+          "id": "hit-singles-100",
+          "value": 100,
+          "answer": "Dr. Dre and Snoop Doggy Dogg teamed up on this 1992 G-funk anthem.",
+          "question": "What is \"Nuthin' but a 'G' Thang\"?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/b4/a3/19/b4a31958-0323-07de-dedc-38d321ee0f88/15UMGIM66228.rgb.jpg/600x600bb.jpg",
+              "alt": "Single artwork for Nuthin' but a G' Thang"
+            },
+            {
+              "type": "video",
+              "src": "https://www.youtube.com/watch?v=8GliyDgAGQI",
+              "alt": "Official music video for Nuthin' but a G' Thang"
+            }
+          ]
+        },
+        {
+          "id": "hit-singles-200",
+          "value": 200,
+          "answer": "2Pac and Dr. Dre joined forces on this coast-defining 1995 single.",
+          "question": "What is \"California Love\"?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/33/84/fc/3384fc51-1eeb-e78f-2770-14844fcdd3b5/21UM1IM16262.rgb.jpg/600x600bb.jpg",
+              "alt": "Single artwork for California Love"
+            },
+            {
+              "type": "video",
+              "src": "https://www.youtube.com/watch?v=omfz62qu_Bc",
+              "alt": "Official music video for California Love"
+            }
+          ]
+        },
+        {
+          "id": "hit-singles-300",
+          "value": 300,
+          "answer": "Coolio turned this dangerous place into a 1995 chart-topping title.",
+          "question": "What is \"Gangsta's Paradise\"?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/c2/23/0b/c2230b5f-e753-e9b0-c032-b9ea0713450f/016998513262.png/600x600bb.jpg",
+              "alt": "Single artwork for Gangsta's Paradise"
+            },
+            {
+              "type": "video",
+              "src": "https://www.youtube.com/watch?v=fPO76Jlnz6c",
+              "alt": "Official music video for Gangsta's Paradise"
+            }
+          ]
+        },
+        {
+          "id": "hit-singles-400",
+          "value": 400,
+          "answer": "Biggie celebrated his rise from struggle on this breakthrough 1994 single.",
+          "question": "What is \"Juicy\"?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://is1-ssl.mzstatic.com/image/thumb/Features115/v4/08/66/e3/0866e3ef-c111-c0a2-f18e-a10035a5bb07/dj.hpsoegav.jpg/600x600bb.jpg",
+              "alt": "Single artwork for Juicy"
+            },
+            {
+              "type": "video",
+              "src": "https://www.youtube.com/watch?v=_JZom_gVfuw",
+              "alt": "Official music video for Juicy"
+            }
+          ]
+        },
+        {
+          "id": "hit-singles-500",
+          "value": 500,
+          "answer": "Wu-Tang Clan shortened \"Cash Rules Everything Around Me\" into this title.",
+          "question": "What is \"C.R.E.A.M.\"?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://is1-ssl.mzstatic.com/image/thumb/Music118/v4/ab/93/61/ab93616a-e4ec-6976-180e-01d4bb32af6b/886446512969.jpg/600x600bb.jpg",
+              "alt": "Single artwork for C.R.E.A.M."
+            },
+            {
+              "type": "video",
+              "src": "https://www.youtube.com/watch?v=PBwAxmrE194",
+              "alt": "Official music video for C.R.E.A.M."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cat-mcs",
+      "title": "MCs",
+      "clues": [
+        {
+          "id": "mcs-100",
+          "value": 100,
+          "answer": "This rapper released All Eyez on Me before his death in 1996.",
+          "question": "Who is Tupac Shakur?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/2pac_edit_cropped_further.jpg/330px-2pac_edit_cropped_further.jpg",
+              "alt": "Photo of Tupac Shakur"
+            },
+            {
+              "type": "video",
+              "src": "https://www.youtube.com/watch?v=omfz62qu_Bc",
+              "alt": "Official music video for California Love"
+            }
+          ]
+        },
+        {
+          "id": "mcs-200",
+          "value": 200,
+          "answer": "This Brooklyn MC was also known as Biggie Smalls.",
+          "question": "Who is The Notorious B.I.G.?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/en/8/8c/Biggie_Smalls_1997.jpg",
+              "alt": "Photo of The Notorious B.I.G."
+            },
+            {
+              "type": "video",
+              "src": "https://www.youtube.com/watch?v=_JZom_gVfuw",
+              "alt": "Official music video for Juicy"
+            }
+          ]
+        },
+        {
+          "id": "mcs-300",
+          "value": 300,
+          "answer": "This Queensbridge rapper made his debut with Illmatic.",
+          "question": "Who is Nas?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/be/Nas_%2852380600682%29_%28cropped%29.jpg/330px-Nas_%2852380600682%29_%28cropped%29.jpg",
+              "alt": "Photo of Nas"
+            },
+            {
+              "type": "video",
+              "src": "https://www.youtube.com/watch?v=mlp-IIG9ApU",
+              "alt": "Official music video for If I Ruled the World (Imagine That)"
+            }
+          ]
+        },
+        {
+          "id": "mcs-400",
+          "value": 400,
+          "answer": "This raspy-voiced Yonkers rapper broke through with It's Dark and Hell Is Hot in 1998.",
+          "question": "Who is DMX?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9f/DMX.rapper_%28cropped%29.jpg/330px-DMX.rapper_%28cropped%29.jpg",
+              "alt": "Photo of DMX"
+            },
+            {
+              "type": "video",
+              "src": "https://www.youtube.com/watch?v=ThlhSnRk21E",
+              "alt": "Official music video for Ruff Ryders' Anthem"
+            }
+          ]
+        },
+        {
+          "id": "mcs-500",
+          "value": 500,
+          "answer": "This former Fugees member released The Miseducation of Lauryn Hill in 1998.",
+          "question": "Who is Lauryn Hill?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Lauryn_Hill_Kongsberg_Jazzfestival_2019_%28221758%29_%28cropped%29.jpg/330px-Lauryn_Hill_Kongsberg_Jazzfestival_2019_%28221758%29_%28cropped%29.jpg",
+              "alt": "Photo of Lauryn Hill"
+            },
+            {
+              "type": "video",
+              "src": "https://www.youtube.com/watch?v=T6QKqFPRZSA",
+              "alt": "Official music video for Doo Wop (That Thing)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cat-classic-albums",
+      "title": "Classic Albums",
+      "clues": [
+        {
+          "id": "classic-albums-100",
+          "value": 100,
+          "answer": "Dr. Dre's 1992 solo debut was this album.",
+          "question": "What is The Chronic?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/b0/51/4f/b0514fda-a9ca-d08b-1e89-eca02d9e792f/00602547530684.rgb.jpg/600x600bb.jpg",
+              "alt": "Album artwork for The Chronic"
+            },
+            {
+              "type": "video",
+              "src": "https://www.youtube.com/watch?v=8GliyDgAGQI",
+              "alt": "Official music video for Nuthin' but a G' Thang"
+            }
+          ]
+        },
+        {
+          "id": "classic-albums-200",
+          "value": 200,
+          "answer": "Biggie's 1994 debut included \"Juicy\" and \"Big Poppa.\"",
+          "question": "What is Ready to Die?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/f8/6a/3d/f86a3db0-d518-cd49-c0c9-25e767ae0a6d/075679456861.jpg/600x600bb.jpg",
+              "alt": "Album artwork for Ready to Die"
+            },
+            {
+              "type": "video",
+              "src": "https://www.youtube.com/watch?v=_JZom_gVfuw",
+              "alt": "Official music video for Juicy"
+            }
+          ]
+        },
+        {
+          "id": "classic-albums-300",
+          "value": 300,
+          "answer": "Nas's 1994 debut was this nine-track landmark.",
+          "question": "What is Illmatic?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://is1-ssl.mzstatic.com/image/thumb/Music/27/27/88/mzi.qvzncpii.jpg/600x600bb.jpg",
+              "alt": "Album artwork for Illmatic"
+            },
+            {
+              "type": "video",
+              "src": "https://www.youtube.com/watch?v=e5PnuIRnJW8",
+              "alt": "Official music video for The World Is Yours"
+            }
+          ]
+        },
+        {
+          "id": "classic-albums-400",
+          "value": 400,
+          "answer": "2Pac's double album from 1996 carried this all-seeing title.",
+          "question": "What is All Eyez on Me?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/55/e5/7c/55e57cf2-8325-a088-7d54-3aeedad1143f/21UM1IM16263.rgb.jpg/600x600bb.jpg",
+              "alt": "Album artwork for All Eyez on Me"
+            },
+            {
+              "type": "video",
+              "src": "https://www.youtube.com/watch?v=omfz62qu_Bc",
+              "alt": "Official music video for California Love"
+            }
+          ]
+        },
+        {
+          "id": "classic-albums-500",
+          "value": 500,
+          "answer": "Wu-Tang Clan announced themselves with this 1993 debut album.",
+          "question": "What is Enter the Wu-Tang (36 Chambers)?",
+          "dailyDouble": true,
+          "media": [
+            {
+              "type": "image",
+              "src": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/8c/20/1f/8c201f03-7617-2d8b-3d8d-e0ba2d55041b/196872123784.jpg/600x600bb.jpg",
+              "alt": "Album artwork for Enter the Wu-Tang (36 Chambers)"
+            },
+            {
+              "type": "video",
+              "src": "https://www.youtube.com/watch?v=PBwAxmrE194",
+              "alt": "Official music video for C.R.E.A.M."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cat-crews-duos",
+      "title": "Crews & Duos",
+      "clues": [
+        {
+          "id": "crews-duos-100",
+          "value": 100,
+          "answer": "Andre 3000 and Big Boi recorded together under this group name.",
+          "question": "Who are OutKast?"
+        },
+        {
+          "id": "crews-duos-200",
+          "value": 200,
+          "answer": "Q-Tip and Phife Dawg were central members of this Native Tongues group.",
+          "question": "Who are A Tribe Called Quest?"
+        },
+        {
+          "id": "crews-duos-300",
+          "value": 300,
+          "answer": "This Cleveland group blended rapid-fire rap with harmonized hooks on \"Tha Crossroads.\"",
+          "question": "Who are Bone Thugs-n-Harmony?"
+        },
+        {
+          "id": "crews-duos-400",
+          "value": 400,
+          "answer": "Prodigy and Havoc recorded together under this Queensbridge duo name.",
+          "question": "Who are Mobb Deep?"
+        },
+        {
+          "id": "crews-duos-500",
+          "value": 500,
+          "answer": "RZA, GZA, Method Man, and Ghostface Killah were all members of this Staten Island collective.",
+          "question": "Who are Wu-Tang Clan?"
+        }
+      ]
+    },
+    {
+      "id": "cat-labels-moguls",
+      "title": "Labels & Moguls",
+      "clues": [
+        {
+          "id": "labels-moguls-100",
+          "value": 100,
+          "answer": "Suge Knight co-founded this label, home to Dr. Dre, Snoop, and 2Pac.",
+          "question": "What is Death Row Records?"
+        },
+        {
+          "id": "labels-moguls-200",
+          "value": 200,
+          "answer": "Sean Combs ran this label that released Biggie and Faith Evans records.",
+          "question": "What is Bad Boy Records?"
+        },
+        {
+          "id": "labels-moguls-300",
+          "value": 300,
+          "answer": "Russell Simmons and Rick Rubin built this influential label long before the 2000s.",
+          "question": "What is Def Jam Recordings?"
+        },
+        {
+          "id": "labels-moguls-400",
+          "value": 400,
+          "answer": "Master P turned this New Orleans label into a late-1990s force.",
+          "question": "What is No Limit Records?"
+        },
+        {
+          "id": "labels-moguls-500",
+          "value": 500,
+          "answer": "DMX and Eve both released music through this biker-themed collective.",
+          "question": "What is Ruff Ryders?"
+        }
+      ]
+    },
+    {
+      "id": "cat-women-rap",
+      "title": "Women In Rap",
+      "clues": [
+        {
+          "id": "women-rap-100",
+          "value": 100,
+          "answer": "This rapper and actor had earlier hits like \"U.N.I.T.Y.\" and starred on Living Single.",
+          "question": "Who is Queen Latifah?"
+        },
+        {
+          "id": "women-rap-200",
+          "value": 200,
+          "answer": "This trio told listeners \"Let's Talk About Sex\" before continuing its 1990s run.",
+          "question": "Who are Salt-N-Pepa?"
+        },
+        {
+          "id": "women-rap-300",
+          "value": 300,
+          "answer": "This Chicago rapper's Funkdafied made her the first solo female rapper to go platinum.",
+          "question": "Who is Da Brat?"
+        },
+        {
+          "id": "women-rap-400",
+          "value": 400,
+          "answer": "This Brooklyn rapper released Hard Core in 1996 and later scored with \"Crush on You.\"",
+          "question": "Who is Lil' Kim?"
+        },
+        {
+          "id": "women-rap-500",
+          "value": 500,
+          "answer": "This rapper released her 1996 debut Ill Na Na and often traded rhymes with Jay-Z.",
+          "question": "Who is Foxy Brown?"
+        }
+      ]
+    }
+  ],
+  "settings": {
+    "subtractOnIncorrect": true,
+    "enableLocalStorage": true,
+    "storageKey": "work-jeopardy-90s-rap",
+    "sounds": {
+      "enabled": true,
+      "volume": 0.85,
+      "cues": {
+        "thinkMusic": "sounds/think-music.mp3",
+        "boardFill": "sounds/jeopardy-ding.mp3",
+        "dailyDouble": "sounds/daily-double.mp3",
+        "tripleStumper": "sounds/jeopardy-incorrect-answer.mp3",
+        "endRound": "sounds/end-round.mp3",
+        "contestantBuzzer": "sounds/jeopardy-ding.mp3",
+        "correctAnswer": "sounds/correct-answer.mp3",
+        "introJeopardy": "sounds/intro-jeopardy.mp3"
+      }
+    }
+  },
+  "finalJeopardy": {
+    "enabled": true,
+    "category": "Classic Debuts",
+    "clue": "This Queensbridge rapper's 1994 debut album was Illmatic.",
+    "correctResponse": "Who is Nas?",
+    "timerSeconds": 30,
+    "allowNonPositiveScores": false
+  }
+}

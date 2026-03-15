@@ -10,6 +10,7 @@ import { HostConsole } from './components/HostConsole';
 import { HostGameplayBar } from './components/HostGameplayBar';
 import { HostLayoutControls } from './components/HostLayoutControls';
 import { HostPanel } from './components/HostPanel';
+import { LoadingScreen } from './components/LoadingScreen';
 import { PanelWindowButton } from './components/PanelWindowButton';
 import { ScoreBoard } from './components/ScoreBoard';
 import {
@@ -75,12 +76,12 @@ interface BundledGameDefinition extends BundledGameSource {
 }
 
 interface BundledGameCatalog {
-  games: ReadonlyArray<BundledGameDefinition>;
-  byId: ReadonlyMap<string, BundledGameDefinition>;
-  defaultGame: BundledGameDefinition;
+  games: ReadonlyArray<BundledGameSource>;
+  byId: ReadonlyMap<string, BundledGameSource>;
+  defaultGame: BundledGameSource;
 }
 
-interface BundledGameCatalogResult {
+interface BundledGameCatalogSuccess {
   ok: true;
   value: BundledGameCatalog;
 }
@@ -90,7 +91,42 @@ interface BundledGameCatalogFailure {
   errors: string[];
 }
 
-type BundledGameCatalogParseResult = BundledGameCatalogResult | BundledGameCatalogFailure;
+type BundledGameCatalogResult = BundledGameCatalogSuccess | BundledGameCatalogFailure;
+
+interface BundledGameLoadSuccess {
+  ok: true;
+  value: BundledGameDefinition;
+}
+
+type BundledGameLoadResult = BundledGameLoadSuccess | BundledGameCatalogFailure;
+
+interface BootstrapStateResultSuccess {
+  ok: true;
+  value: BootstrapState & {
+    preloadedBundledGames: ReadonlyArray<BundledGameDefinition>;
+  };
+}
+
+type BootstrapStateResult = BootstrapStateResultSuccess | BundledGameCatalogFailure;
+
+interface LoadedAppProps {
+  bundledGameCatalog: BundledGameCatalog;
+  bootstrapState: BootstrapState;
+  preloadedBundledGames: ReadonlyArray<BundledGameDefinition>;
+}
+
+type AppBootstrapPhase =
+  | {
+      status: 'loading';
+    }
+  | {
+      status: 'error';
+      errors: string[];
+    }
+  | {
+      status: 'ready';
+      value: BootstrapStateResultSuccess['value'];
+    };
 
 type RemoteAudioCommand =
   | {
@@ -119,33 +155,8 @@ interface RemoteAudioCommandMessage {
 const REMOTE_AUDIO_CHANNEL_PREFIX = 'work-jeopardy-audio';
 const GAME_SOUND_CUE_SET = new Set<string>(GAME_SOUND_CUES);
 
-function buildBundledGameCatalog(): BundledGameCatalogParseResult {
-  const errors: string[] = [];
-  const games: BundledGameDefinition[] = [];
-
-  BUNDLED_GAME_SOURCES.forEach((source) => {
-    const parseResult = loadGameConfig(source.rawConfig);
-
-    if (!parseResult.ok) {
-      errors.push(
-        ...parseResult.errors.map((error) => `${source.filename}: ${error}`),
-      );
-      return;
-    }
-
-    games.push({
-      ...source,
-      config: parseResult.value,
-    });
-  });
-
-  if (errors.length > 0) {
-    return {
-      ok: false,
-      errors,
-    };
-  }
-
+function buildBundledGameCatalog(): BundledGameCatalogResult {
+  const games = [...BUNDLED_GAME_SOURCES];
   const byId = new Map(games.map((game) => [game.id, game] as const));
   const defaultGame = byId.get(DEFAULT_BUNDLED_GAME_ID) ?? games[0];
 
@@ -166,7 +177,38 @@ function buildBundledGameCatalog(): BundledGameCatalogParseResult {
   };
 }
 
-// Import bundled JSON files as raw text so malformed edits fail inside the app instead of crashing the build.
+async function loadBundledGameDefinition(
+  source: BundledGameSource,
+): Promise<BundledGameLoadResult> {
+  let rawConfig = '';
+
+  try {
+    rawConfig = await source.loadRawConfig();
+  } catch {
+    return {
+      ok: false,
+      errors: [`${source.filename}: the file could not be loaded.`],
+    };
+  }
+
+  const parseResult = loadGameConfig(rawConfig);
+
+  if (!parseResult.ok) {
+    return {
+      ok: false,
+      errors: parseResult.errors.map((error) => `${source.filename}: ${error}`),
+    };
+  }
+
+  return {
+    ok: true,
+    value: {
+      ...source,
+      config: parseResult.value,
+    },
+  };
+}
+
 const bundledGameCatalogResult = buildBundledGameCatalog();
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -221,6 +263,69 @@ function shouldIgnoreKeyboardShortcut(target: EventTarget | null): boolean {
   return (
     target instanceof HTMLElement &&
     (target.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName))
+  );
+}
+
+export default function App() {
+  if (!bundledGameCatalogResult.ok) {
+    return <ErrorScreen errors={bundledGameCatalogResult.errors} />;
+  }
+
+  const [bootstrapPhase, setBootstrapPhase] = useState<AppBootstrapPhase>({
+    status: 'loading',
+  });
+
+  useEffect(() => {
+    let isCancelled = false;
+
+    void (async () => {
+      const bootstrapResult = await buildBootstrapState(bundledGameCatalogResult.value);
+
+      if (isCancelled) {
+        return;
+      }
+
+      if (!bootstrapResult.ok) {
+        setBootstrapPhase({
+          status: 'error',
+          errors: bootstrapResult.errors,
+        });
+        return;
+      }
+
+      setBootstrapPhase({
+        status: 'ready',
+        value: bootstrapResult.value,
+      });
+    })();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, []);
+
+  if (bootstrapPhase.status === 'loading') {
+    return (
+      <LoadingScreen
+        eyebrow="Loading Game"
+        title="Preparing the selected board."
+        message="Bundled game data is loading on demand so the initial app bundle stays lighter."
+      />
+    );
+  }
+
+  if (bootstrapPhase.status === 'error') {
+    return (
+      <ErrorScreen errors={bootstrapPhase.errors} />
+    );
+  }
+
+  return (
+    <LoadedApp
+      bundledGameCatalog={bundledGameCatalogResult.value}
+      bootstrapState={bootstrapPhase.value}
+      preloadedBundledGames={bootstrapPhase.value.preloadedBundledGames}
+    />
   );
 }
 
@@ -341,7 +446,9 @@ interface HostVisiblePanels {
   setup: boolean;
 }
 
-function buildBootstrapState(bundledGameCatalog: BundledGameCatalog): BootstrapState {
+async function buildBootstrapState(
+  bundledGameCatalog: BundledGameCatalog,
+): Promise<BootstrapStateResult> {
   const storedBundledGameId = loadStoredBundledGameSelection();
   const selectedBundledGame = storedBundledGameId
     ? bundledGameCatalog.byId.get(storedBundledGameId) ?? null
@@ -353,8 +460,9 @@ function buildBootstrapState(bundledGameCatalog: BundledGameCatalog): BootstrapS
 
   const storedOverride = loadStoredConfigOverride(CONFIG_OVERRIDE_STORAGE_KEY);
   const baseGame = selectedBundledGame ?? bundledGameCatalog.defaultGame;
-  let config = baseGame.config;
+  let config: GameConfig | null = null;
   let isUsingLocalConfig = false;
+  const preloadedBundledGames: BundledGameDefinition[] = [];
 
   if (storedOverride) {
     const overrideResult = loadGameConfig(storedOverride);
@@ -367,41 +475,54 @@ function buildBootstrapState(bundledGameCatalog: BundledGameCatalog): BootstrapS
     }
   }
 
+  if (!config) {
+    const bundledGameLoadResult = await loadBundledGameDefinition(baseGame);
+
+    if (!bundledGameLoadResult.ok) {
+      return bundledGameLoadResult;
+    }
+
+    preloadedBundledGames.push(bundledGameLoadResult.value);
+    config = bundledGameLoadResult.value.config;
+  }
+
   const storageKey = getStorageKey(config.settings);
   const storedState = config.settings.enableLocalStorage
     ? loadStoredGameState(storageKey)
     : null;
 
   return {
-    config,
-    selectedBundledGameId: baseGame.id,
-    gameState: hydrateGameState(config, storedState),
-    activeTeamId: config.teams[0]?.id ?? null,
-    manualScoreDelta: getMinimumClueValue(config),
-    isUsingLocalConfig,
-    isSoundOutputEnabled: loadStoredBoolean(SOUND_ENABLED_STORAGE_KEY) ?? true,
-    isPresenterMode: false,
+    ok: true,
+    value: {
+      config,
+      selectedBundledGameId: baseGame.id,
+      gameState: hydrateGameState(config, storedState),
+      activeTeamId: config.teams[0]?.id ?? null,
+      manualScoreDelta: getMinimumClueValue(config),
+      isUsingLocalConfig,
+      isSoundOutputEnabled: loadStoredBoolean(SOUND_ENABLED_STORAGE_KEY) ?? true,
+      isPresenterMode: false,
+      preloadedBundledGames,
+    },
   };
 }
 
-export default function App() {
-  if (!bundledGameCatalogResult.ok) {
-    return <ErrorScreen errors={bundledGameCatalogResult.errors} />;
-  }
-
-  const bundledGameCatalog = bundledGameCatalogResult.value;
-  const bootstrapRef = useRef<BootstrapState | null>(null);
+function LoadedApp({
+  bundledGameCatalog,
+  bootstrapState,
+  preloadedBundledGames,
+}: LoadedAppProps) {
+  const loadedBundledGamesRef = useRef<Map<string, BundledGameDefinition>>(
+    new Map(preloadedBundledGames.map((game) => [game.id, game] as const)),
+  );
+  const pendingBundledGameLoadsRef = useRef<Map<string, Promise<BundledGameLoadResult>>>(
+    new Map(),
+  );
   const hasPlayedInitialIntroRef = useRef(false);
   const remoteAudioCommandIdRef = useRef(0);
   const lastHandledRemoteAudioCommandIdRef = useRef(0);
   const sessionIdRef = useRef<string>(ensureSessionIdInUrl());
   const viewModeRef = useRef(getViewModeFromLocation());
-
-  if (!bootstrapRef.current) {
-    bootstrapRef.current = buildBootstrapState(bundledGameCatalog);
-  }
-
-  const bootstrapState = bootstrapRef.current;
   const sessionId = sessionIdRef.current;
   const viewMode = viewModeRef.current;
 
@@ -426,6 +547,7 @@ export default function App() {
   const [isBoardHeaderForcedVisible, setIsBoardHeaderForcedVisible] = useState(false);
   const [boardEntranceCycle, setBoardEntranceCycle] = useState(0);
   const [routedLoopingCue, setRoutedLoopingCue] = useState<GameSoundCue | null>(null);
+  const [loadingBundledGameId, setLoadingBundledGameId] = useState<string | null>(null);
   const [hostVisiblePanels, setHostVisiblePanels] = useState<HostVisiblePanels>({
     gameplay: true,
     board: true,
@@ -468,6 +590,49 @@ export default function App() {
       : 'top-24 sm:top-28'
     : 'top-4 sm:top-6';
   const boardCompleteMessage = getBoardCompleteMessage(Boolean(finalJeopardyConfig));
+
+  const ensureBundledGameLoaded = async (
+    source: BundledGameSource,
+  ): Promise<BundledGameLoadResult> => {
+    const cachedGame = loadedBundledGamesRef.current.get(source.id);
+
+    if (cachedGame) {
+      return {
+        ok: true,
+        value: cachedGame,
+      };
+    }
+
+    const pendingLoad = pendingBundledGameLoadsRef.current.get(source.id);
+
+    if (pendingLoad) {
+      return pendingLoad;
+    }
+
+    const nextLoad = loadBundledGameDefinition(source).then((result) => {
+      if (result.ok) {
+        loadedBundledGamesRef.current.set(source.id, result.value);
+      }
+
+      pendingBundledGameLoadsRef.current.delete(source.id);
+      return result;
+    });
+
+    pendingBundledGameLoadsRef.current.set(source.id, nextLoad);
+    return nextLoad;
+  };
+
+  const handleBundledGameLoadFailure = (source: BundledGameSource, errors: string[]) => {
+    setGameState((currentState) => ({
+      ...currentState,
+      notification: createGameNotification({
+        tone: 'error',
+        title: `Could Not Load ${source.label}`,
+        message: errors[0] ?? `Check ${source.filename} and try again.`,
+        durationMs: 7200,
+      }),
+    }));
+  };
 
   const sharedSnapshot: SharedSessionSnapshot = {
     config,
@@ -1057,12 +1222,21 @@ export default function App() {
     };
   };
 
-  const handleResetLocalConfig = () => {
+  const handleResetLocalConfig = async () => {
     if (!window.confirm('Discard the local host config and return to the selected bundled game?')) {
       return;
     }
 
-    applyRuntimeConfig(selectedBundledGame.config, {
+    setLoadingBundledGameId(selectedBundledGame.id);
+    const bundledGameLoadResult = await ensureBundledGameLoaded(selectedBundledGame);
+    setLoadingBundledGameId(null);
+
+    if (!bundledGameLoadResult.ok) {
+      handleBundledGameLoadFailure(selectedBundledGame, bundledGameLoadResult.errors);
+      return;
+    }
+
+    applyRuntimeConfig(bundledGameLoadResult.value.config, {
       rawConfig: null,
       isLocalOverride: false,
       selectedBundledGameId: selectedBundledGame.id,
@@ -1071,7 +1245,7 @@ export default function App() {
     setIsHostPanelOpen(false);
   };
 
-  const handleSelectBundledGame = (bundledGameId: string) => {
+  const handleSelectBundledGame = async (bundledGameId: string) => {
     const nextBundledGame = bundledGameCatalog.byId.get(bundledGameId);
 
     if (!nextBundledGame) {
@@ -1094,7 +1268,16 @@ export default function App() {
       return;
     }
 
-    applyRuntimeConfig(nextBundledGame.config, {
+    setLoadingBundledGameId(nextBundledGame.id);
+    const bundledGameLoadResult = await ensureBundledGameLoaded(nextBundledGame);
+    setLoadingBundledGameId(null);
+
+    if (!bundledGameLoadResult.ok) {
+      handleBundledGameLoadFailure(nextBundledGame, bundledGameLoadResult.errors);
+      return;
+    }
+
+    applyRuntimeConfig(bundledGameLoadResult.value.config, {
       rawConfig: null,
       isLocalOverride: false,
       selectedBundledGameId: nextBundledGame.id,
@@ -1371,7 +1554,7 @@ export default function App() {
             <div
               className={
                 shouldShowHostSidebar
-                  ? 'grid gap-4 xl:grid-cols-[minmax(0,1fr)_430px] 2xl:grid-cols-[minmax(0,1.08fr)_450px]'
+                  ? 'grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(320px,360px)] xl:grid-cols-[minmax(0,1fr)_430px] 2xl:grid-cols-[minmax(0,1.08fr)_450px]'
                   : ''
               }
             >
@@ -1416,7 +1599,10 @@ export default function App() {
                       </div>
                     </div>
 
-                    <div className="min-h-[340px]" style={{ height: 'min(58vh, 620px)' }}>
+                    <div
+                      className="min-h-[280px] sm:min-h-[340px]"
+                      style={{ height: 'clamp(280px, 58vh, 620px)' }}
+                    >
                       <GameBoard
                         key={`host-board-${boardEntranceCycle}`}
                         categories={config.categories}
@@ -1449,6 +1635,7 @@ export default function App() {
                 <HostConsole
                   bundledGames={bundledGameCatalog.games}
                   selectedBundledGameId={selectedBundledGameId}
+                  loadingBundledGameId={loadingBundledGameId}
                   teams={gameState.teams}
                   activeTeamId={activeTeamId}
                   manualScoreDelta={manualScoreDelta}
@@ -1549,6 +1736,7 @@ export default function App() {
           isOpen={isHostPanelOpen}
           bundledGames={bundledGameCatalog.games}
           selectedBundledGameId={selectedBundledGameId}
+          loadingBundledGameId={loadingBundledGameId}
           teams={gameState.teams}
           activeTeamId={activeTeamId}
           manualScoreDelta={manualScoreDelta}
