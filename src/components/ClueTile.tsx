@@ -3,6 +3,7 @@ import type { ClueConfig } from '../types/game-config';
 import { formatCurrencyValue } from '../lib/score-utils';
 
 interface ClueTileProps {
+  tileId?: string;
   clue?: ClueConfig;
   isAnswered: boolean;
   isActive: boolean;
@@ -15,6 +16,7 @@ interface ClueTileProps {
 }
 
 export function ClueTile({
+  tileId,
   clue,
   isAnswered,
   isActive,
@@ -32,6 +34,7 @@ export function ClueTile({
   if (!clue) {
     return (
       <div
+        id={tileId}
         className={`board-empty board-entrance-card border ${compact ? 'h-full min-h-0 ' : 'min-h-32 '}`}
         style={entranceStyle}
       />
@@ -82,7 +85,13 @@ export function ClueTile({
 
   if (!isInteractive || isAnswered) {
     return (
-      <div className={tileClassName} style={entranceStyle}>
+      <div
+        id={tileId}
+        className={tileClassName}
+        style={entranceStyle}
+        data-clue-id={clue.id}
+        data-clue-tile="true"
+      >
         {content}
       </div>
     );
@@ -90,10 +99,13 @@ export function ClueTile({
 
   return (
     <button
+      id={tileId}
       type="button"
       onClick={() => onSelect(clue.id)}
       className={tileClassName}
       style={entranceStyle}
+      data-clue-id={clue.id}
+      data-clue-tile="true"
     >
       {content}
     </button>

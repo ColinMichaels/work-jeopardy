@@ -91,6 +91,7 @@ export function HostPanel({
 }: HostPanelProps) {
   return (
     <div
+      id="host-panel-overlay"
       className={[
         'fixed inset-0 z-40 transition',
         isOpen ? 'pointer-events-auto' : 'pointer-events-none',
@@ -98,6 +99,7 @@ export function HostPanel({
       aria-hidden={!isOpen}
     >
       <button
+        id="host-panel-dismiss-layer"
         type="button"
         onClick={onClose}
         className={[
@@ -108,13 +110,14 @@ export function HostPanel({
       />
 
       <aside
+        id="host-panel"
         className={[
           'absolute right-0 top-0 flex h-full w-full max-w-[360px] flex-col border-l border-white/10 bg-[rgba(3,8,34,0.96)] shadow-board transition-transform duration-200 sm:max-w-[380px]',
           isOpen ? 'translate-x-0' : 'translate-x-full',
         ].join(' ')}
       >
-        <div className="flex items-center justify-between gap-3 border-b border-white/10 px-4 py-3">
-          <div>
+        <div id="host-panel-header" className="flex items-center justify-between gap-3 border-b border-white/10 px-4 py-3">
+          <div id="host-panel-title">
             <p className="brand-overline text-[10px] font-semibold uppercase tracking-[0.3em]">
               Host Panel
             </p>
@@ -131,8 +134,9 @@ export function HostPanel({
           </button>
         </div>
 
-        <div className="flex-1 space-y-3 overflow-y-auto px-3 py-3">
+        <div id="host-panel-content" className="flex-1 space-y-3 overflow-y-auto px-3 py-3">
           <HostControlsSections
+            idPrefix="host-panel-controls"
             bundledGames={bundledGames}
             selectedBundledGameId={selectedBundledGameId}
             loadingBundledGameId={loadingBundledGameId}

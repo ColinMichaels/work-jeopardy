@@ -85,23 +85,27 @@ export function HostConsole({
   onHideSetupSection,
 }: HostConsoleProps) {
   return (
-    <aside className="space-y-3 lg:sticky lg:top-4 lg:max-h-[calc(100vh-2rem)] lg:overflow-y-auto lg:pr-1">
+    <aside
+      id="host-console"
+      className="space-y-3 lg:sticky lg:top-4 lg:max-h-[calc(100vh-2rem)] lg:overflow-y-auto lg:pr-1"
+    >
       {showSetupSection ? (
-        <section className="panel relative p-3">
+        <section id="host-console-tools" className="panel relative p-3">
           {onHideSetupSection ? (
             <div className="absolute right-4 top-4 z-10">
               <PanelWindowButton label="Hide setup tools" onClick={onHideSetupSection} />
             </div>
           ) : null}
 
-          <div className="mb-3 flex items-center justify-between gap-3">
+          <div id="host-console-header" className="mb-3 flex items-center justify-between gap-3">
             <div>
               <h2 className="panel-heading">Host Tools</h2>
             </div>
           </div>
 
-          <div className="space-y-3">
+          <div id="host-console-content" className="space-y-3">
             <HostControlsSections
+              idPrefix="host-console-controls"
               bundledGames={bundledGames}
               selectedBundledGameId={selectedBundledGameId}
               loadingBundledGameId={loadingBundledGameId}

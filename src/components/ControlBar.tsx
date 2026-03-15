@@ -39,11 +39,15 @@ export function ControlBar({
   const sessionLabel = sessionId.slice(-6).toUpperCase();
 
   return (
-    <header className={`panel ${compact ? 'px-4 py-3 sm:px-5' : 'px-5 py-4 sm:px-6'}`}>
+    <header
+      id="control-bar"
+      className={`panel ${compact ? 'px-4 py-3 sm:px-5' : 'px-5 py-4 sm:px-6'}`}
+    >
       <div
+        id="control-bar-content"
         className={`flex ${compact ? 'flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between' : 'flex-col gap-4 xl:flex-row xl:items-center xl:justify-between'}`}
       >
-        <div>
+        <div id="control-bar-title-group">
           <p className="brand-overline text-[11px] font-semibold uppercase tracking-[0.45em]">
             Local Meeting Board
           </p>
@@ -55,7 +59,10 @@ export function ControlBar({
           {!compact && subtitle ? <p className="brand-subtitle mt-2 text-sm">{subtitle}</p> : null}
         </div>
 
-        <div className={`flex flex-wrap items-center gap-2 ${compact ? 'w-full sm:w-auto sm:justify-end' : 'xl:justify-end'}`}>
+        <div
+          id="control-bar-actions"
+          className={`flex flex-wrap items-center gap-2 ${compact ? 'w-full sm:w-auto sm:justify-end' : 'xl:justify-end'}`}
+        >
           <Tooltip content={`${answeredClues} of ${totalClues} clues have been used on this board.`}>
             <div className="status-pill">
               {answeredClues}/{totalClues}

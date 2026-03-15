@@ -1,4 +1,5 @@
 import type { GameSoundCue } from '../types/game-audio';
+import { buildDomId } from '../lib/dom-ids';
 import { Tooltip } from './Tooltip';
 
 interface SoundDefinitionSummary {
@@ -9,6 +10,7 @@ interface SoundDefinitionSummary {
 }
 
 interface SoundControlsProps {
+  sectionId?: string;
   soundDefinitions: readonly SoundDefinitionSummary[];
   isConfigSoundEnabled: boolean;
   isSoundOutputEnabled: boolean;
@@ -22,6 +24,7 @@ interface SoundControlsProps {
 }
 
 export function SoundControls({
+  sectionId = 'host-sound-controls',
   soundDefinitions,
   isConfigSoundEnabled,
   isSoundOutputEnabled,
@@ -36,8 +39,8 @@ export function SoundControls({
   const canPlaySound = isConfigSoundEnabled && isSoundOutputEnabled;
 
   return (
-    <section className={`panel-inset ${dense ? 'p-3' : 'p-4'}`}>
-      <div className="flex items-center justify-between gap-3">
+    <section id={sectionId} className={`panel-inset ${dense ? 'p-3' : 'p-4'}`}>
+      <div id={buildDomId(sectionId, 'header')} className="flex items-center justify-between gap-3">
         <p className={`brand-overline font-semibold uppercase ${dense ? 'text-[10px] tracking-[0.28em]' : 'text-[11px] tracking-[0.35em]'}`}>
           Sound
         </p>
@@ -46,7 +49,10 @@ export function SoundControls({
         </span>
       </div>
 
-      <div className={`flex flex-wrap gap-2 ${dense ? 'mt-3' : 'mt-4'}`}>
+      <div
+        id={buildDomId(sectionId, 'actions')}
+        className={`flex flex-wrap gap-2 ${dense ? 'mt-3' : 'mt-4'}`}
+      >
         <Tooltip
           content={
             isConfigSoundEnabled
@@ -55,6 +61,7 @@ export function SoundControls({
           }
         >
           <button
+            id={buildDomId(sectionId, 'toggle-output')}
             type="button"
             onClick={() => onToggleSoundOutput(!isSoundOutputEnabled)}
             disabled={!isConfigSoundEnabled}
@@ -68,6 +75,7 @@ export function SoundControls({
         </Tooltip>
         <Tooltip content="Stop any currently playing cue in this browser window.">
           <button
+            id={buildDomId(sectionId, 'stop-all')}
             type="button"
             onClick={onStopAll}
             disabled={activeCueIds.length === 0}
@@ -81,7 +89,10 @@ export function SoundControls({
         </Tooltip>
       </div>
 
-      <div className={`grid gap-2 sm:grid-cols-2 ${dense ? 'mt-3' : 'mt-4'}`}>
+      <div
+        id={buildDomId(sectionId, 'cue-grid')}
+        className={`grid gap-2 sm:grid-cols-2 ${dense ? 'mt-3' : 'mt-4'}`}
+      >
         {soundDefinitions.map((definition) => {
           const isActive = activeCueIds.includes(definition.cue);
           const isLooping = definition.loop && activeLoopingCue === definition.cue;
@@ -89,6 +100,7 @@ export function SoundControls({
           return (
             <Tooltip key={definition.cue} content={definition.description} className="w-full">
               <button
+                id={buildDomId(sectionId, 'cue', definition.cue)}
                 type="button"
                 onClick={() => (isActive ? onStopCue(definition.cue) : onPreviewCue(definition.cue))}
                 disabled={!canPlaySound}
