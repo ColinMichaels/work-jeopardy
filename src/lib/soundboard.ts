@@ -20,7 +20,7 @@ export const GAME_SOUND_DEFINITIONS: readonly GameSoundDefinition[] = [
     cue: 'boardFill',
     label: 'Board Fill',
     description: 'Use this when the round starts or the board resets.',
-    defaultPath: 'sounds/jeopardy-ding.mp3',
+    defaultPath: 'sounds/board-fill.mp3',
   },
   {
     cue: 'dailyDouble',
@@ -55,7 +55,7 @@ export const GAME_SOUND_DEFINITIONS: readonly GameSoundDefinition[] = [
   {
     cue: 'introJeopardy',
     label: 'Intro Jeopardy',
-    description: 'Plays when the game starts.',
+    description: 'Manual full-length opening sting for the host.',
     defaultPath: 'sounds/intro-jeopardy.mp3',
   },
 ] as const;
@@ -334,11 +334,7 @@ function playAssetCue(
   });
 }
 
-function resolveSoundAssetPath(cue: GameSoundCue, requestedPath?: string): string {
-  if (requestedPath) {
-    return requestedPath;
-  }
-
+function resolveSoundAssetPath(cue: GameSoundCue): string {
   return SOUND_DEFINITION_MAP.get(cue)?.defaultPath ?? '';
 }
 
@@ -423,7 +419,7 @@ export function useSoundboard({ settings, isOutputEnabled }: UseSoundboardOption
     }
 
     const volume = clampVolume(settings.volume);
-    const cueSrc = resolveSoundAssetPath(cue, settings.cues?.[cue] ?? definition.defaultPath);
+    const cueSrc = resolveSoundAssetPath(cue);
     let handle = await playAssetCue(cueSrc, volume, Boolean(definition.loop), () => {
       clearCueState(cue);
     });

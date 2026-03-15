@@ -1,5 +1,3 @@
-import { GAME_SOUND_CUES } from '../types/game-audio';
-import type { GameSoundCueOverrides } from '../types/game-audio';
 import type {
   ConfigParseResult,
   FinalJeopardyConfig,
@@ -148,40 +146,6 @@ function readOptionalNumberInRange(
   }
 
   return value;
-}
-
-function parseSoundOverrides(
-  value: unknown,
-  path: string,
-  errors: string[],
-): GameSoundCueOverrides | undefined {
-  if (value === undefined) {
-    return undefined;
-  }
-
-  if (!isRecord(value)) {
-    errors.push(`${path}.cues must be an object when provided.`);
-    return undefined;
-  }
-
-  const cueOverrides: GameSoundCueOverrides = {};
-  const validCueKeys = new Set<string>(GAME_SOUND_CUES);
-
-  Object.entries(value).forEach(([cue, src]) => {
-    if (!validCueKeys.has(cue)) {
-      errors.push(`${path}.cues contains an unknown cue key: "${cue}".`);
-      return;
-    }
-
-    if (typeof src !== 'string' || src.trim().length === 0) {
-      errors.push(`${path}.cues.${cue} must be a non-empty string.`);
-      return;
-    }
-
-    cueOverrides[cue as keyof GameSoundCueOverrides] = src.trim();
-  });
-
-  return Object.keys(cueOverrides).length > 0 ? cueOverrides : undefined;
 }
 
 function parseMedia(
@@ -473,7 +437,6 @@ export function loadGameConfig(rawConfig: string): ConfigParseResult {
           1,
           DEFAULT_SETTINGS.sounds.volume,
         ),
-        cues: parseSoundOverrides(soundsInput.cues, 'config.settings.sounds', errors),
       };
     }
   }
