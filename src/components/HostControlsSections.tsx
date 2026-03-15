@@ -55,6 +55,7 @@ interface HostControlsSectionsProps {
   onResetScores: () => void;
   onResetGame: () => void;
   onClearSavedState: () => void;
+  onCleanBrowserStorage: () => void;
   onResetLocalConfig: () => void;
   onStartFinalJeopardy?: () => void;
 }
@@ -92,6 +93,7 @@ export function HostControlsSections({
   onResetScores,
   onResetGame,
   onClearSavedState,
+  onCleanBrowserStorage,
   onResetLocalConfig,
   onStartFinalJeopardy,
 }: HostControlsSectionsProps) {
@@ -220,6 +222,15 @@ export function HostControlsSections({
               </button>
             </Tooltip>
           ) : null}
+          <Tooltip content="Remove inactive board saves, unused local configs, and stale session snapshots while keeping the current game.">
+            <button
+              type="button"
+              onClick={onCleanBrowserStorage}
+              className={['secondary-button', compactButtonClass].join(' ')}
+            >
+              Clean Storage
+            </button>
+          </Tooltip>
           {isUsingLocalConfig ? (
             <Tooltip content="Discard the browser-only game override and return to the selected bundled game.">
               <button

@@ -42,6 +42,7 @@ interface HostConsoleProps {
   onResetScores: () => void;
   onResetGame: () => void;
   onClearSavedState: () => void;
+  onCleanBrowserStorage: () => void;
   onResetLocalConfig: () => void;
   onSelectTeam: (teamId: string) => void;
   onManualScoreDeltaChange: (value: number) => void;
@@ -75,6 +76,7 @@ export function HostConsole({
   onResetScores,
   onResetGame,
   onClearSavedState,
+  onCleanBrowserStorage,
   onResetLocalConfig,
   onSelectTeam,
   onManualScoreDeltaChange,
@@ -129,6 +131,7 @@ export function HostConsole({
               onResetScores={onResetScores}
               onResetGame={onResetGame}
               onClearSavedState={onClearSavedState}
+              onCleanBrowserStorage={onCleanBrowserStorage}
               onResetLocalConfig={onResetLocalConfig}
             />
           </div>

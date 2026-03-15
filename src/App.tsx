@@ -52,6 +52,7 @@ import {
 } from './lib/session-sync';
 import { useSoundboard } from './lib/soundboard';
 import {
+  cleanupBrowserStorage,
   clearStoredBundledGameSelection,
   clearStoredConfigOverride,
   clearStoredGameState,
@@ -66,6 +67,7 @@ import {
   saveStoredConfigOverride,
   saveStoredGameState,
   SOUND_ENABLED_STORAGE_KEY,
+  type StorageCleanupResult,
 } from './lib/storage';
 import type { GameNotification, GameNotificationTone, GameState, SharedSessionSnapshot } from './models/game';
 import { GAME_SOUND_CUES, type GameSoundCue } from './types/game-audio';
@@ -371,6 +373,34 @@ function withGameNotification(
     ...nextState,
     notification: createGameNotification(notification),
   };
+}
+
+function formatStorageCleanupMessage(result: StorageCleanupResult): string {
+  const parts: string[] = [];
+
+  if (result.removedGameStateCount > 0) {
+    parts.push(
+      `${result.removedGameStateCount} saved board${result.removedGameStateCount === 1 ? '' : 's'}`,
+    );
+  }
+
+  if (result.removedConfigOverrideCount > 0) {
+    parts.push(
+      `${result.removedConfigOverrideCount} local config${result.removedConfigOverrideCount === 1 ? '' : 's'}`,
+    );
+  }
+
+  if (result.removedSessionSnapshotCount > 0) {
+    parts.push(
+      `${result.removedSessionSnapshotCount} session snapshot${result.removedSessionSnapshotCount === 1 ? '' : 's'}`,
+    );
+  }
+
+  if (parts.length === 0) {
+    return 'No inactive saved boards or stale session snapshots were found.';
+  }
+
+  return `Removed ${parts.join(', ')} from this browser.`;
 }
 
 function getFinalJeopardyPhaseNotification(
@@ -732,6 +762,14 @@ function LoadedApp({
   useEffect(() => {
     saveStoredBoolean(SOUND_ENABLED_STORAGE_KEY, isSoundOutputEnabled);
   }, [isSoundOutputEnabled]);
+
+  useEffect(() => {
+    cleanupBrowserStorage({
+      activeGameStorageKey: config.settings.enableLocalStorage ? storageKey : null,
+      activeSessionId: sessionId,
+      preserveConfigOverride: isUsingLocalConfig,
+    });
+  }, [config.settings.enableLocalStorage, isUsingLocalConfig, sessionId, storageKey]);
 
   useEffect(() => {
     if (shouldRouteAudioToBoard) {
@@ -1102,6 +1140,37 @@ function LoadedApp({
     }
 
     clearStoredGameState(storageKey);
+  };
+
+  const handleCleanBrowserStorage = () => {
+    if (
+      !window.confirm(
+        'Remove inactive saved boards, unused local config data, and stale session snapshots from this browser while keeping the current game?',
+      )
+    ) {
+      return;
+    }
+
+    const cleanupResult = cleanupBrowserStorage({
+      activeGameStorageKey: config.settings.enableLocalStorage ? storageKey : null,
+      activeSessionId: sessionId,
+      preserveConfigOverride: isUsingLocalConfig,
+      mode: 'inactive',
+    });
+    const removedCount =
+      cleanupResult.removedGameStateCount +
+      cleanupResult.removedConfigOverrideCount +
+      cleanupResult.removedSessionSnapshotCount;
+
+    setGameState((currentState) => ({
+      ...currentState,
+      notification: createGameNotification({
+        tone: removedCount > 0 ? 'success' : 'info',
+        title: removedCount > 0 ? 'Browser Storage Cleaned' : 'Storage Already Clean',
+        message: formatStorageCleanupMessage(cleanupResult),
+        durationMs: 4600,
+      }),
+    }));
   };
 
   const applyRuntimeConfig = (
@@ -1657,6 +1726,7 @@ function LoadedApp({
                   onResetScores={handleResetScores}
                   onResetGame={handleResetGame}
                   onClearSavedState={handleClearSavedState}
+                  onCleanBrowserStorage={handleCleanBrowserStorage}
                   onResetLocalConfig={handleResetLocalConfig}
                   onSelectTeam={handleSelectTeam}
                   onManualScoreDeltaChange={(value) => setManualScoreDelta(Math.max(0, value))}
@@ -1767,6 +1837,7 @@ function LoadedApp({
           onResetScores={handleResetScores}
           onResetGame={handleResetGame}
           onClearSavedState={handleClearSavedState}
+          onCleanBrowserStorage={handleCleanBrowserStorage}
           onResetLocalConfig={handleResetLocalConfig}
           onStartFinalJeopardy={handleStartFinalJeopardy}
         />

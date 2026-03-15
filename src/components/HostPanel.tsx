@@ -48,6 +48,7 @@ interface HostPanelProps {
   onResetScores: () => void;
   onResetGame: () => void;
   onClearSavedState: () => void;
+  onCleanBrowserStorage: () => void;
   onResetLocalConfig: () => void;
   onStartFinalJeopardy?: () => void;
 }
@@ -84,6 +85,7 @@ export function HostPanel({
   onResetScores,
   onResetGame,
   onClearSavedState,
+  onCleanBrowserStorage,
   onResetLocalConfig,
   onStartFinalJeopardy,
 }: HostPanelProps) {
@@ -161,6 +163,7 @@ export function HostPanel({
             onResetScores={onResetScores}
             onResetGame={onResetGame}
             onClearSavedState={onClearSavedState}
+            onCleanBrowserStorage={onCleanBrowserStorage}
             onResetLocalConfig={onResetLocalConfig}
             onStartFinalJeopardy={onStartFinalJeopardy}
           />
