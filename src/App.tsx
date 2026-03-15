@@ -1557,6 +1557,8 @@ function LoadedApp({
 
   return (
     <div
+      id="app-shell"
+      data-view-mode={viewMode}
       className={
         isBoardView
           ? 'h-screen overflow-hidden px-3 py-3 sm:px-4'
@@ -1566,6 +1568,15 @@ function LoadedApp({
       }
     >
       <div
+        id={
+          activeFinalJeopardy
+            ? 'final-jeopardy-view-layout'
+            : viewMode === 'host'
+              ? 'host-view-layout'
+              : isBoardView
+                ? 'board-view-layout'
+                : 'single-view-layout'
+        }
         className={`mx-auto flex w-full flex-col ${isBoardView ? 'h-[calc(100vh-1.5rem)] max-w-[1920px] gap-3' : 'max-w-[1800px] gap-4'}`}
       >
         {shouldShowControlBar ? (
@@ -1598,6 +1609,7 @@ function LoadedApp({
 
         {viewMode === 'single' && !activeFinalJeopardy ? (
           <ScoreBoard
+            scoreboardId="single-view-score-board"
             teams={gameState.teams}
             activeTeamId={activeTeamId}
             isInteractive
@@ -1606,7 +1618,10 @@ function LoadedApp({
         ) : null}
 
         {activeFinalJeopardy && finalJeopardyConfig ? (
-          <div className={isBoardView ? 'min-h-0 flex-1 overflow-y-auto' : ''}>
+          <div
+            id="final-jeopardy-screen-wrapper"
+            className={isBoardView ? 'min-h-0 flex-1 overflow-y-auto' : ''}
+          >
             <FinalJeopardyScreen
               config={finalJeopardyConfig}
               state={activeFinalJeopardy}
@@ -1621,15 +1636,16 @@ function LoadedApp({
             />
           </div>
         ) : viewMode === 'host' ? (
-          <div className="space-y-4">
+          <div id="host-view-content" className="space-y-4">
             <div
+              id="host-view-grid"
               className={
                 shouldShowHostSidebar
                   ? 'grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(320px,360px)] xl:grid-cols-[minmax(0,1fr)_430px] 2xl:grid-cols-[minmax(0,1.08fr)_450px]'
                   : ''
               }
             >
-              <div className="space-y-4">
+              <div id="host-view-main-column" className="space-y-4">
                 {hostVisiblePanels.gameplay ? (
                   <HostGameplayBar
                     clueEntry={activeClue}
@@ -1656,7 +1672,7 @@ function LoadedApp({
                 ) : null}
 
                 {hostVisiblePanels.board ? (
-                  <section className="panel relative p-3 sm:p-4">
+                  <section id="host-board-panel" className="panel relative p-3 sm:p-4">
                     <div className="absolute right-4 top-4 z-10">
                       <PanelWindowButton
                         label="Hide host board"
@@ -1671,10 +1687,12 @@ function LoadedApp({
                     </div>
 
                     <div
+                      id="host-board-region"
                       className="min-h-[280px] sm:min-h-[340px]"
                       style={{ height: 'clamp(280px, 58vh, 620px)' }}
                     >
                       <GameBoard
+                        boardId="host-view-game-board"
                         key={`host-board-${boardEntranceCycle}`}
                         categories={config.categories}
                         answeredClueIds={gameState.answeredClueIds}
@@ -1690,7 +1708,7 @@ function LoadedApp({
                 ) : null}
 
                 {!hostVisiblePanels.gameplay && !hostVisiblePanels.board && !shouldShowHostSidebar ? (
-                  <section className="panel-muted px-4 py-12 text-center">
+                  <section id="host-panels-hidden-state" className="panel-muted px-4 py-12 text-center">
                     <p className="text-[11px] font-semibold uppercase tracking-[0.34em]">
                       Host Panels Hidden
                     </p>
@@ -1740,9 +1758,10 @@ function LoadedApp({
             </div>
           </div>
         ) : isBoardView ? (
-          <div className="flex min-h-0 flex-1 flex-col gap-3">
-            <div className="min-h-0 flex-1">
+          <div id="board-view-content" className="flex min-h-0 flex-1 flex-col gap-3">
+            <div id="board-view-board-region" className="min-h-0 flex-1">
               <GameBoard
+                boardId="board-view-game-board"
                 key={`board-view-${boardEntranceCycle}`}
                 categories={config.categories}
                 answeredClueIds={gameState.answeredClueIds}
@@ -1753,8 +1772,9 @@ function LoadedApp({
                 onSelectClue={handleSelectClue}
               />
             </div>
-            <div className="shrink-0">
+            <div id="board-view-score-region" className="shrink-0">
               <ScoreBoard
+                scoreboardId="board-view-score-board"
                 teams={gameState.teams}
                 activeTeamId={activeTeamId}
                 isInteractive={false}
@@ -1766,6 +1786,7 @@ function LoadedApp({
         ) : (
           <>
             <GameBoard
+              boardId="single-view-game-board"
               key={`single-board-${boardEntranceCycle}`}
               categories={config.categories}
               answeredClueIds={gameState.answeredClueIds}
@@ -1780,7 +1801,10 @@ function LoadedApp({
       </div>
 
       {viewMode === 'host' && !activeFinalJeopardy ? (
-        <div className="pointer-events-none fixed inset-x-4 bottom-4 z-30 sm:inset-x-6 lg:inset-x-8">
+        <div
+          id="host-layout-controls-dock"
+          className="pointer-events-none fixed inset-x-4 bottom-4 z-30 sm:inset-x-6 lg:inset-x-8"
+        >
           <div className="mx-auto max-w-[1800px]">
             <div className="pointer-events-auto">
               <HostLayoutControls
@@ -1796,7 +1820,7 @@ function LoadedApp({
         </div>
       ) : null}
 
-      {viewMode !== 'host' ? (
+      {viewMode !== 'host' && !activeClue && gameState.activeClueMediaIndex === null ? (
         <GameNotificationBanner
           notification={gameState.notification}
           offsetClassName={notificationOffsetClass}

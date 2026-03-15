@@ -56,8 +56,9 @@ export function MediaViewer({
     return (
       <div
         className={[
-          'flex items-center justify-center bg-slate-950/70',
+          'flex items-center justify-center',
           isLightbox ? 'h-full min-h-0 px-2 py-2 sm:px-4 sm:py-4' : frameHeightClass,
+          isLightbox ? 'bg-transparent' : 'bg-slate-950/70',
         ].join(' ')}
       >
         <img
@@ -83,11 +84,11 @@ export function MediaViewer({
     return (
       <div
         className={[
-          'bg-slate-950/70',
+          isLightbox ? 'bg-transparent' : 'bg-slate-950/70',
           isLightbox ? 'flex h-full min-h-0 items-center justify-center px-2 py-2 sm:px-4 sm:py-4' : frameHeightClass,
         ].join(' ')}
       >
-        <div className={isLightbox ? 'aspect-video max-h-full w-full overflow-hidden rounded-[1.2rem]' : 'aspect-video h-full w-full'}>
+        <div className={isLightbox ? 'aspect-video max-h-full w-full overflow-hidden rounded-none' : 'aspect-video h-full w-full'}>
           <iframe
             key={`${media.src}-${autoplay ? 'autoplay' : 'manual'}`}
             src={embedUrl ?? media.src}
@@ -111,7 +112,7 @@ export function MediaViewer({
     return (
       <div
         className={[
-          'bg-slate-950/70',
+          isLightbox ? 'bg-transparent' : 'bg-slate-950/70',
           isLightbox ? 'flex h-full min-h-0 items-center justify-center px-2 py-2 sm:px-4 sm:py-4' : frameHeightClass,
         ].join(' ')}
       >
@@ -123,7 +124,7 @@ export function MediaViewer({
           preload="metadata"
           className={[
             'aspect-video bg-slate-950 object-contain',
-            isLightbox ? 'max-h-full w-full overflow-hidden rounded-[1.2rem]' : 'h-full w-full',
+            isLightbox ? 'max-h-full w-full overflow-hidden rounded-none' : 'h-full w-full',
           ].join(' ')}
         >
           <source src={media.src} />

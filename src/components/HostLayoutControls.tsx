@@ -53,8 +53,12 @@ export function HostLayoutControls({
   ];
 
   return (
-    <section className={`panel ${compact ? 'px-3 py-2.5' : 'p-4'}`}>
+    <section
+      id="host-layout-controls"
+      className={`panel ${compact ? 'px-3 py-2.5' : 'p-4'}`}
+    >
       <div
+        id="host-layout-controls-content"
         className={
           compact
             ? 'flex flex-wrap items-center justify-between gap-3'
@@ -96,6 +100,7 @@ export function HostLayoutControls({
 
             return (
               <button
+                id={`host-layout-toggle-${panel.id}`}
                 key={panel.id}
                 type="button"
                 onClick={() => onTogglePanel(panel.id)}

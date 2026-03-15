@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
 import type { ChangeEvent } from 'react';
+import { buildDomId } from '../lib/dom-ids';
 import type { GameSoundCue } from '../types/game-audio';
 import type { TeamState } from '../models/team';
 import { formatCurrencyValue } from '../lib/score-utils';
@@ -14,6 +15,7 @@ interface HostGameImportResult {
 }
 
 interface HostControlsSectionsProps {
+  idPrefix?: string;
   bundledGames: ReadonlyArray<{
     id: string;
     label: string;
@@ -61,6 +63,7 @@ interface HostControlsSectionsProps {
 }
 
 export function HostControlsSections({
+  idPrefix = 'host-controls',
   bundledGames,
   selectedBundledGameId,
   loadingBundledGameId = null,
@@ -153,7 +156,10 @@ export function HostControlsSections({
 
   return (
     <>
-      <section className={`panel-inset ${dense ? 'p-3' : 'p-4'}`}>
+      <section
+        id={buildDomId(idPrefix, 'session-actions')}
+        className={`panel-inset ${dense ? 'p-3' : 'p-4'}`}
+      >
         <div className="flex items-center justify-between gap-3">
           <div>
             <p className="panel-heading">Session Actions</p>
@@ -267,6 +273,7 @@ export function HostControlsSections({
       </section>
 
       <SoundControls
+        sectionId={buildDomId(idPrefix, 'sound-controls')}
         soundDefinitions={soundDefinitions}
         isConfigSoundEnabled={isConfigSoundEnabled}
         isSoundOutputEnabled={isSoundOutputEnabled}
@@ -279,7 +286,10 @@ export function HostControlsSections({
         onStopAll={onStopAllSounds}
       />
 
-      <section className={`panel-inset ${dense ? 'p-3' : 'p-4'}`}>
+      <section
+        id={buildDomId(idPrefix, 'bundled-games')}
+        className={`panel-inset ${dense ? 'p-3' : 'p-4'}`}
+      >
         <div className="flex items-center justify-between gap-3">
           <div>
             <p className="panel-heading">Bundled Games</p>
@@ -295,6 +305,7 @@ export function HostControlsSections({
 
             return (
               <button
+                id={buildDomId(idPrefix, 'bundled-game', bundledGame.id)}
                 key={bundledGame.id}
                 type="button"
                 onClick={() => onSelectBundledGame(bundledGame.id)}
@@ -327,7 +338,10 @@ export function HostControlsSections({
       </section>
 
       {showFinalJeopardyAction && onStartFinalJeopardy && isFinalJeopardyReady ? (
-        <section className={`panel-inset border-amber-300/30 bg-amber-300/8 ${dense ? 'p-3' : 'p-4'}`}>
+        <section
+          id={buildDomId(idPrefix, 'final-jeopardy')}
+          className={`panel-inset border-amber-300/30 bg-amber-300/8 ${dense ? 'p-3' : 'p-4'}`}
+        >
           <div className="flex items-center justify-between gap-3">
             <div>
               <p className="panel-heading">Final Jeopardy</p>
@@ -342,6 +356,7 @@ export function HostControlsSections({
           <div className={dense ? 'mt-3' : 'mt-4'}>
             <Tooltip content="Start Final Jeopardy with the currently eligible teams.">
               <button
+                id={buildDomId(idPrefix, 'start-final-jeopardy')}
                 type="button"
                 onClick={onStartFinalJeopardy}
                 disabled={finalJeopardyEligibleTeamCount === 0}
@@ -359,7 +374,10 @@ export function HostControlsSections({
       ) : null}
 
       {showScoreUtilities && onManualScoreDeltaChange && onAdjustTeamScore ? (
-        <section className={`panel-inset ${dense ? 'p-3' : 'p-4'}`}>
+        <section
+          id={buildDomId(idPrefix, 'manual-score')}
+          className={`panel-inset ${dense ? 'p-3' : 'p-4'}`}
+        >
           <div className="flex items-center justify-between gap-3">
             <div>
               <p className="panel-heading">Manual Score</p>
@@ -369,6 +387,7 @@ export function HostControlsSections({
 
           <div className={`space-y-3 ${dense ? 'mt-3' : 'mt-4'}`}>
             <input
+              id={buildDomId(idPrefix, 'manual-score-input')}
               type="number"
               min="0"
               step="100"
@@ -431,6 +450,7 @@ export function HostControlsSections({
 
                   return (
                     <button
+                      id={buildDomId(idPrefix, 'manual-team', team.id)}
                       key={team.id}
                       type="button"
                       onClick={() => onSelectTeam(team.id)}
@@ -458,7 +478,10 @@ export function HostControlsSections({
         </section>
       ) : null}
 
-      <section className={`panel-inset ${dense ? 'p-3' : 'p-4'}`}>
+      <section
+        id={buildDomId(idPrefix, 'keyboard-shortcuts')}
+        className={`panel-inset ${dense ? 'p-3' : 'p-4'}`}
+      >
         <p className="panel-heading">Keyboard</p>
         <div className={`grid gap-2 ${dense ? 'mt-3' : 'mt-4'}`}>
           {[
@@ -473,6 +496,7 @@ export function HostControlsSections({
             ['H', 'Toggle host tools in single view'],
           ].map(([keys, description]) => (
             <div
+              id={buildDomId(idPrefix, 'shortcut', keys)}
               key={keys}
               className={dense
                 ? 'flex items-center justify-between gap-2 rounded-[1rem] border border-white/10 bg-[rgba(2,8,33,0.6)] px-3 py-2'

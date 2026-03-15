@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import type { GameMediaReference } from '../types/game-config';
+import { buildDomId } from '../lib/dom-ids';
 import { getMediaLabel, getResolvedMediaType } from '../lib/media-utils';
 import { MediaViewer } from './MediaViewer';
 import { Tooltip } from './Tooltip';
@@ -10,6 +11,7 @@ interface ClueMediaPanelProps {
   activeLightboxIndex: number | null;
   canOpenLightbox: boolean;
   compact?: boolean;
+  displayMode?: 'panel' | 'stage-controls';
   shouldAutoplay?: boolean;
   playbackEnabled?: boolean;
   onOpenLightbox: (index: number) => void;
@@ -36,64 +38,74 @@ function ClueMediaLightbox({
   onClose,
 }: ClueMediaLightboxProps) {
   const activeMedia = media[activeLightboxIndex];
+  const lightboxId = buildDomId('clue-media-lightbox', clueTitle);
 
   if (!activeMedia) {
     return null;
   }
 
   return (
-    <div className="scene-overlay-enter fixed inset-0 z-[70] bg-slate-950/92 p-2 backdrop-blur-md sm:p-4">
-      <div className="modal-shell scene-stage-enter mx-auto flex h-full max-w-[min(96vw,1280px)] min-h-0 flex-col overflow-hidden">
-        <div className="flex items-start justify-between gap-3 border-b border-white/10 px-4 py-3 sm:px-5 sm:py-4">
-          <div>
-            <p className="brand-overline text-xs font-semibold uppercase tracking-[0.45em]">
-              Clue Media
-            </p>
-            <h3 className="brand-title mt-1 text-xl font-black uppercase tracking-[0.12em] sm:text-2xl">
-              {clueTitle}
-            </h3>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <span className="brand-tag">
+    <div
+      id={`${lightboxId}-overlay`}
+      className="scene-overlay-enter fixed inset-0 z-[70] bg-[#0a33c8]"
+    >
+      <div
+        id={lightboxId}
+        className="scene-stage-enter clue-stage-scene flex h-full min-h-0 flex-col"
+      >
+        <div
+          id={`${lightboxId}-header`}
+          className="flex shrink-0 flex-wrap items-start justify-between gap-3 px-4 py-4 sm:px-6 sm:py-5"
+        >
+          <div id={`${lightboxId}-meta`} className="flex flex-wrap items-center gap-2">
+            <span className="clue-stage-chip">Clue Media</span>
+            <span className="clue-stage-chip">{clueTitle}</span>
+            <span className="clue-stage-chip">
               {getResolvedMediaType(activeMedia) === 'youtube'
                 ? 'YouTube'
                 : getResolvedMediaType(activeMedia)}
             </span>
+          </div>
+
+          <div id={`${lightboxId}-controls`} className="flex flex-wrap items-center justify-end gap-2">
+            {media.length > 1 && canClose ? (
+              media.map((entry, index) => {
+                const isActive = index === activeLightboxIndex;
+
+                return (
+                  <button
+                    id={buildDomId(lightboxId, 'item', index + 1)}
+                    key={`${entry.type}-${entry.src}-${index}`}
+                    type="button"
+                    onClick={() => onSelectMedia(index)}
+                    className={[
+                      'clue-stage-chip clue-stage-chip--interactive',
+                      isActive ? 'clue-stage-chip--accent' : '',
+                    ].join(' ')}
+                  >
+                    {getMediaLabel(entry, index)}
+                  </button>
+                );
+              })
+            ) : null}
             {canClose ? (
-              <button type="button" onClick={onClose} className="secondary-button">
+              <button
+                id={`${lightboxId}-close`}
+                type="button"
+                onClick={onClose}
+                className="clue-stage-chip clue-stage-chip--interactive"
+              >
                 Close
               </button>
             ) : null}
           </div>
         </div>
 
-        <div className="grid min-h-0 flex-1 grid-rows-[auto_minmax(0,1fr)_auto] gap-3 overflow-hidden p-3 sm:p-4">
-          {media.length > 1 && canClose ? (
-            <div className="flex flex-wrap gap-2 overflow-x-auto pb-1">
-              {media.map((entry, index) => {
-                const isActive = index === activeLightboxIndex;
-
-                return (
-                  <button
-                    key={`${entry.type}-${entry.src}-${index}`}
-                    type="button"
-                    onClick={() => onSelectMedia(index)}
-                    className={[
-                      'rounded-full border px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.2em] transition',
-                      isActive
-                        ? 'border-amber-300/45 bg-amber-300/10 text-amber-50'
-                        : 'border-white/10 bg-white/5 text-slate-200 hover:border-sky-300/30',
-                    ].join(' ')}
-                  >
-                    {getMediaLabel(entry, index)}
-                  </button>
-                );
-              })}
-            </div>
-          ) : null}
-
-          <div className="min-h-0 overflow-hidden rounded-[1.4rem] border border-white/10 bg-[rgba(2,8,33,0.86)]">
+        <div
+          id={`${lightboxId}-body`}
+          className="min-h-0 flex-1 overflow-hidden px-4 pb-4 sm:px-6 sm:pb-6"
+        >
+          <div id={`${lightboxId}-viewer`} className="h-full overflow-hidden">
             <MediaViewer
               media={activeMedia}
               title={`${clueTitle} media`}
@@ -101,13 +113,15 @@ function ClueMediaLightbox({
               autoplay={shouldAutoplay}
             />
           </div>
-
-          {activeMedia.alt ? (
-            <div className="max-h-24 overflow-y-auto rounded-[1.1rem] border border-white/10 bg-white/5 px-3 py-2">
-              <p className="text-sm leading-5 text-slate-200">{activeMedia.alt}</p>
-            </div>
-          ) : null}
         </div>
+
+        {activeMedia.alt ? (
+          <div id={`${lightboxId}-caption`} className="shrink-0 px-4 pb-4 sm:px-6 sm:pb-6">
+            <p className="mx-auto max-w-[min(92vw,1400px)] text-center text-sm leading-6 text-slate-100/88 [text-shadow:0_2px_0_rgba(0,0,0,0.28),0_8px_20px_rgba(0,0,0,0.24)]">
+              {activeMedia.alt}
+            </p>
+          </div>
+        ) : null}
       </div>
     </div>
   );
@@ -119,12 +133,14 @@ export function ClueMediaPanel({
   activeLightboxIndex,
   canOpenLightbox,
   compact = false,
+  displayMode = 'panel',
   shouldAutoplay = false,
   playbackEnabled = true,
   onOpenLightbox,
   onCloseLightbox,
 }: ClueMediaPanelProps) {
   const [previewIndex, setPreviewIndex] = useState(0);
+  const mediaPanelId = buildDomId('clue-media', clueTitle, displayMode);
 
   useEffect(() => {
     setPreviewIndex(0);
@@ -155,12 +171,80 @@ export function ClueMediaPanel({
     playbackEnabled && shouldAutoplay && activeLightboxIndex === null;
   const shouldAutoplayLightbox =
     playbackEnabled && shouldAutoplay && activeLightboxIndex !== null;
+  const shouldRenderLightbox = playbackEnabled && activeLightboxIndex !== null;
+
+  if (displayMode === 'stage-controls') {
+    if (!canOpenLightbox && !shouldRenderLightbox) {
+      return null;
+    }
+
+    return (
+      <>
+        {canOpenLightbox ? (
+          <div
+            id={`${mediaPanelId}-stage-controls`}
+            className="flex flex-wrap items-center justify-end gap-2"
+          >
+            {media.length > 1
+              ? media.map((entry, index) => {
+                  const isActive = index === previewIndex;
+
+                  return (
+                    <button
+                      id={buildDomId(mediaPanelId, 'stage-item', index + 1)}
+                      key={`${entry.type}-${entry.src}-${index}`}
+                      type="button"
+                      onClick={() => setPreviewIndex(index)}
+                      className={[
+                        'clue-stage-chip clue-stage-chip--interactive',
+                        isActive ? 'clue-stage-chip--accent' : '',
+                      ].join(' ')}
+                    >
+                      {getMediaLabel(entry, index)}
+                    </button>
+                  );
+                })
+              : null}
+
+            <Tooltip
+              content={
+                playbackEnabled
+                  ? 'Open this clue media as a full-screen stage view.'
+                  : 'Show this clue media on the shared gameboard window.'
+              }
+            >
+              <button
+                id={`${mediaPanelId}-show`}
+                type="button"
+                onClick={() => onOpenLightbox(previewIndex)}
+                className="clue-stage-chip clue-stage-chip--interactive"
+              >
+                {playbackEnabled ? 'Show Media' : 'Show On Board'}
+              </button>
+            </Tooltip>
+          </div>
+        ) : null}
+
+        {shouldRenderLightbox ? (
+          <ClueMediaLightbox
+            media={media}
+            clueTitle={clueTitle}
+            activeLightboxIndex={activeLightboxIndex}
+            canClose={canOpenLightbox}
+            shouldAutoplay={shouldAutoplayLightbox}
+            onSelectMedia={onOpenLightbox}
+            onClose={onCloseLightbox}
+          />
+        ) : null}
+      </>
+    );
+  }
 
   return (
     <>
-      <div className="panel-inset mt-6 p-4">
-        <div className="flex items-start justify-between gap-3">
-          <div>
+      <div id={`${mediaPanelId}-panel`} className="panel-inset mt-6 p-4">
+        <div id={`${mediaPanelId}-panel-header`} className="flex items-start justify-between gap-3">
+          <div id={`${mediaPanelId}-panel-meta`}>
             <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">
               Clue Media
             </p>
@@ -185,6 +269,7 @@ export function ClueMediaPanel({
               }
             >
               <button
+                id={`${mediaPanelId}-expand`}
                 type="button"
                 onClick={() => onOpenLightbox(previewIndex)}
                 className={[
@@ -198,7 +283,10 @@ export function ClueMediaPanel({
           ) : null}
         </div>
 
-        <div className="mt-4 overflow-hidden rounded-[1.5rem] border border-white/10 bg-[rgba(2,8,33,0.8)]">
+        <div
+          id={`${mediaPanelId}-preview`}
+          className="mt-4 overflow-hidden rounded-[1.5rem] border border-white/10 bg-[rgba(2,8,33,0.8)]"
+        >
           <MediaViewer
             media={previewMedia}
             title={`${clueTitle} media`}
@@ -209,16 +297,19 @@ export function ClueMediaPanel({
         </div>
 
         {previewMedia.alt ? (
-          <p className="mt-3 text-sm leading-6 text-slate-200">{previewMedia.alt}</p>
+          <p id={`${mediaPanelId}-preview-caption`} className="mt-3 text-sm leading-6 text-slate-200">
+            {previewMedia.alt}
+          </p>
         ) : null}
 
         {media.length > 1 ? (
-          <div className="mt-4 flex flex-wrap gap-2">
+          <div id={`${mediaPanelId}-preview-items`} className="mt-4 flex flex-wrap gap-2">
             {media.map((entry, index) => {
               const isActive = index === previewIndex;
 
               return (
                 <button
+                  id={buildDomId(mediaPanelId, 'preview-item', index + 1)}
                   key={`${entry.type}-${entry.src}-${index}`}
                   type="button"
                   onClick={() => setPreviewIndex(index)}
@@ -237,7 +328,7 @@ export function ClueMediaPanel({
         ) : null}
       </div>
 
-      {playbackEnabled && activeLightboxIndex !== null ? (
+      {shouldRenderLightbox ? (
         <ClueMediaLightbox
           media={media}
           clueTitle={clueTitle}

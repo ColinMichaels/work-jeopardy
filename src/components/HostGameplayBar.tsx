@@ -59,20 +59,20 @@ export function HostGameplayBar({
   const isMediaReady = hasMedia && activeMediaIndex === null;
 
   return (
-    <section className="panel relative p-4">
+    <section id="host-gameplay-bar" className="panel relative p-4">
       {onHide ? (
         <div className="absolute right-4 top-4 z-10">
           <PanelWindowButton label="Hide gameplay deck" onClick={onHide} />
         </div>
       ) : null}
 
-      <div className="flex flex-col gap-3">
-        <div className="flex flex-wrap items-start justify-between gap-3">
-          <div>
+      <div id="host-gameplay-bar-content" className="flex flex-col gap-3">
+        <div id="host-gameplay-header" className="flex flex-wrap items-start justify-between gap-3">
+          <div id="host-gameplay-title">
             <h2 className="panel-heading">Gameplay</h2>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2">
+          <div id="host-gameplay-status" className="flex flex-wrap items-center gap-2">
             {clueEntry && clue ? (
               <>
                     <span className="brand-tag px-2 py-1 text-[10px] tracking-[0.16em]">{clueEntry.categoryTitle}</span>
@@ -96,6 +96,7 @@ export function HostGameplayBar({
             </div>
 
         <ScoreBoard
+          scoreboardId="host-gameplay-score-board"
           teams={teams}
           activeTeamId={activeTeamId}
           isInteractive
@@ -103,9 +104,12 @@ export function HostGameplayBar({
           onSelectTeam={onSelectTeam}
         />
 
-        <div className={showCluePreview ? 'grid gap-3 xl:grid-cols-[minmax(0,1fr)_320px]' : ''}>
-          <section className="panel-inset p-3">
-            <div className="flex items-center justify-between gap-3">
+        <div
+          id="host-gameplay-detail-grid"
+          className={showCluePreview ? 'grid gap-3 xl:grid-cols-[minmax(0,1fr)_320px]' : ''}
+        >
+          <section id="host-gameplay-clue-actions" className="panel-inset p-3">
+            <div id="host-gameplay-clue-actions-header" className="flex items-center justify-between gap-3">
               <div>
                 <p className="panel-heading">Clue Actions</p>
               </div>
@@ -115,6 +119,7 @@ export function HostGameplayBar({
             {clueEntry && clue ? (
               <>
                 <div
+                  id="host-gameplay-next-step"
                   className={[
                     'mt-3 rounded-[1.2rem] border px-3 py-2.5',
                     isRevealStep
@@ -138,7 +143,7 @@ export function HostGameplayBar({
                   </div>
                 </div>
 
-                <div className="mt-3 grid gap-2 md:grid-cols-2 xl:grid-cols-3">
+                <div id="host-gameplay-primary-actions" className="mt-3 grid gap-2 md:grid-cols-2 xl:grid-cols-3">
                   {!isRevealed ? (
                     <Tooltip
                       content="Reveal the correct response to every linked window."
@@ -197,6 +202,7 @@ export function HostGameplayBar({
                 </div>
 
                 <div
+                  id="host-gameplay-judge-actions"
                   className={[
                     'mt-3 rounded-[1.25rem] border px-3 py-3',
                     isJudgeStep

@@ -1,8 +1,10 @@
 import type { TeamState } from '../models/team';
+import { buildDomId } from '../lib/dom-ids';
 import { formatScore } from '../lib/score-utils';
 import { Tooltip } from './Tooltip';
 
 interface ScoreBoardProps {
+  scoreboardId?: string;
   teams: TeamState[];
   activeTeamId: string | null;
   isInteractive?: boolean;
@@ -11,6 +13,7 @@ interface ScoreBoardProps {
 }
 
 export function ScoreBoard({
+  scoreboardId = 'score-board',
   teams,
   activeTeamId,
   isInteractive = true,
@@ -18,11 +21,15 @@ export function ScoreBoard({
   onSelectTeam,
 }: ScoreBoardProps) {
   return (
-    <section className={`score-ribbon ${compact ? 'px-2 py-2 sm:px-3' : 'px-3 py-3 sm:px-4'}`}>
-      <div className="flex gap-3 overflow-x-auto pb-1">
+    <section
+      id={scoreboardId}
+      className={`score-ribbon ${compact ? 'px-2 py-2 sm:px-3' : 'px-3 py-3 sm:px-4'}`}
+    >
+      <div id={buildDomId(scoreboardId, 'list')} className="flex gap-3 overflow-x-auto pb-1">
         {teams.map((team) => {
           const isActive = team.id === activeTeamId;
           const isNegative = team.score < 0;
+          const teamCardId = buildDomId(scoreboardId, 'team', team.id);
           const cardClassName = [
             'score-card flex-1 rounded-[1.55rem] border text-left transition',
             'focus:outline-none focus:ring-4 focus:ring-[rgba(255,223,133,0.22)]',
@@ -58,7 +65,7 @@ export function ScoreBoard({
 
           if (!isInteractive) {
             return (
-              <div key={team.id} className={cardClassName}>
+              <div key={team.id} id={teamCardId} className={cardClassName}>
                 {content}
               </div>
             );
@@ -75,6 +82,7 @@ export function ScoreBoard({
               className="min-w-[170px] flex-1 sm:min-w-[210px]"
             >
               <button
+                id={teamCardId}
                 type="button"
                 onClick={() => onSelectTeam(team.id)}
                 className={`${cardClassName} h-full w-full`}
