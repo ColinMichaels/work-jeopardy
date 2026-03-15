@@ -41,6 +41,40 @@ const MEDIA_MAP = {
     clue('music-400', pageImage('Beyonce', 'Photo of Beyonce'), video('Beyonce Single Ladies official video', 'Official music video for Single Ladies (Put a Ring on It)')),
     clue('music-500', pageImage('Bruce Springsteen', 'Photo of Bruce Springsteen'), video('Bruce Springsteen Born to Run official video', 'Official music video for Born to Run')),
   ],
+  'src/data/sample-60s-pop.json': [
+    clue('hit-singles-100', pageImage('The Beatles', 'Photo of the Beatles associated with I Want to Hold Your Hand'), video('The Beatles I Want to Hold Your Hand official video', 'Official video or performance clip for I Want to Hold Your Hand')),
+    clue('hit-singles-200', pageImage('The Righteous Brothers', 'Photo of the Righteous Brothers associated with Unchained Melody'), video('The Righteous Brothers Unchained Melody official video', 'Official video or performance clip for Unchained Melody')),
+    clue('hit-singles-300', pageImage('These Boots Are Made for Walkin\'', 'Artwork or related image for These Boots Are Made for Walkin\''), video('Nancy Sinatra These Boots Are Made for Walkin official video', 'Official video or performance clip for These Boots Are Made for Walkin\'')),
+    clue('hit-singles-400', pageImage('The Beach Boys', 'Photo of the Beach Boys associated with Good Vibrations'), video('The Beach Boys Good Vibrations official video', 'Official video or performance clip for Good Vibrations')),
+    clue('hit-singles-500', pageImage('The 5th Dimension', 'Photo of the 5th Dimension associated with Aquarius/Let the Sunshine In'), video('The 5th Dimension Aquarius Let the Sunshine In official video', 'Official video or performance clip for Aquarius/Let the Sunshine In')),
+    clue('pop-stars-100', pageImage('Aretha Franklin', 'Photo of Aretha Franklin'), video('Aretha Franklin Respect official video', 'Official video or performance clip for Respect')),
+    clue('pop-stars-200', pageImage('Petula Clark', 'Photo of Petula Clark'), video('Petula Clark Downtown official video', 'Official video or performance clip for Downtown')),
+    clue('pop-stars-300', pageImage('Dusty Springfield', 'Photo of Dusty Springfield'), video('Dusty Springfield Son of a Preacher Man official video', 'Official video or performance clip for Son of a Preacher Man')),
+    clue('pop-stars-400', pageImage('Nancy Sinatra', 'Photo of Nancy Sinatra'), video('Nancy Sinatra These Boots Are Made for Walkin official video', 'Official video or performance clip for These Boots Are Made for Walkin\'')),
+    clue('pop-stars-500', pageImage('Lesley Gore', 'Photo of Lesley Gore'), video('Lesley Gore You Dont Own Me official video', 'Official video or performance clip for You Don\'t Own Me')),
+    clue('albums-100', pageImage('Sgt. Pepper\'s Lonely Hearts Club Band', 'Album cover for Sgt. Pepper\'s Lonely Hearts Club Band'), video('The Beatles Sgt Pepper official video', 'Official video or performance clip associated with Sgt. Pepper\'s Lonely Hearts Club Band')),
+    clue('albums-200', pageImage('Pet Sounds', 'Album cover for Pet Sounds'), video('The Beach Boys God Only Knows official video', 'Official video or performance clip associated with Pet Sounds')),
+    clue('albums-300', pageImage('Dusty Springfield', 'Photo of Dusty Springfield associated with Dusty in Memphis'), video('Dusty Springfield Son of a Preacher Man official video', 'Official video or performance clip associated with Dusty in Memphis')),
+    clue('albums-400', pageImage('Abbey Road', 'Album cover for Abbey Road'), video('The Beatles Come Together official video', 'Official video or performance clip associated with Abbey Road')),
+    clue('albums-500', pageImage('The Who', 'Photo of the Who associated with Tommy'), video('The Who Pinball Wizard official video', 'Official video or performance clip associated with Tommy')),
+  ],
+  'src/data/sample-70s-pop.json': [
+    clue('hit-singles-100', pageImage('ABBA', 'Photo of ABBA associated with Dancing Queen'), video('ABBA Dancing Queen official video', 'Official video or performance clip for Dancing Queen')),
+    clue('hit-singles-200', pageImage('Don McLean', 'Photo of Don McLean associated with American Pie'), video('Don McLean American Pie official video', 'Official video or performance clip for American Pie')),
+    clue('hit-singles-300', pageImage('Bee Gees', 'Photo of the Bee Gees associated with Stayin\' Alive'), video('Bee Gees Stayin Alive official video', 'Official video or performance clip for Stayin\' Alive')),
+    clue('hit-singles-400', pageImage('I Will Survive', 'Artwork or related image for I Will Survive'), video('Gloria Gaynor I Will Survive official video', 'Official video or performance clip for I Will Survive')),
+    clue('hit-singles-500', pageImage('Carly Simon', 'Photo of Carly Simon associated with You\'re So Vain'), video('Carly Simon Youre So Vain official video', 'Official video or performance clip for You\'re So Vain')),
+    clue('pop-stars-100', pageImage('Elton John', 'Photo of Elton John'), video('Elton John Rocket Man official video', 'Official video or performance clip for Rocket Man')),
+    clue('pop-stars-200', pageImage('Carole King', 'Photo of Carole King'), video('Carole King Its Too Late official video', 'Official video or performance clip for It\'s Too Late')),
+    clue('pop-stars-300', pageImage('Olivia Newton-John', 'Photo of Olivia Newton-John'), video('Olivia Newton John Hopelessly Devoted to You official video', 'Official video or performance clip for Hopelessly Devoted to You')),
+    clue('pop-stars-400', pageImage('Donna Summer', 'Photo of Donna Summer'), video('Donna Summer Last Dance official video', 'Official video or performance clip for Last Dance')),
+    clue('pop-stars-500', pageImage('Stevie Nicks', 'Photo of Stevie Nicks'), video('Fleetwood Mac Dreams official video', 'Official video or performance clip for Dreams')),
+    clue('albums-100', pageImage('Fleetwood Mac', 'Photo of Fleetwood Mac associated with Rumours'), video('Fleetwood Mac Dreams official video', 'Official video or performance clip associated with Rumours')),
+    clue('albums-200', pageImage('Bee Gees', 'Photo of the Bee Gees associated with Saturday Night Fever'), video('Bee Gees Stayin Alive official video', 'Official video or performance clip associated with Saturday Night Fever')),
+    clue('albums-300', pageImage('Elton John', 'Photo of Elton John associated with Goodbye Yellow Brick Road'), video('Elton John Bennie and the Jets official video', 'Official video or performance clip associated with Goodbye Yellow Brick Road')),
+    clue('albums-400', pageImage('Stevie Wonder', 'Photo of Stevie Wonder associated with Songs in the Key of Life'), video('Stevie Wonder Sir Duke official video', 'Official video or performance clip associated with Songs in the Key of Life')),
+    clue('albums-500', pageImage('Blondie (band)', 'Photo of Blondie associated with Parallel Lines'), video('Blondie Heart of Glass official video', 'Official video or performance clip associated with Parallel Lines')),
+  ],
   'src/data/sample-space-exploration.json': [
     clue('planets-100', pageImage('Mercury (planet)', 'Planet image for Mercury'), video('NASA Mercury planet', 'NASA or official educational video about Mercury')),
     clue('planets-200', pageImage('Jupiter', 'Planet image for Jupiter'), video('NASA Jupiter planet', 'NASA or official educational video about Jupiter')),
@@ -240,10 +274,11 @@ function resolveWikipediaTitle(title, normalizedMap, redirectsMap) {
   return current;
 }
 
-async function primeWikipediaImages() {
+async function primeWikipediaImages(filePaths = Object.keys(MEDIA_MAP)) {
   const requestedTitles = [
     ...new Set(
-      Object.values(MEDIA_MAP)
+      filePaths
+        .flatMap((filePath) => MEDIA_MAP[filePath] ?? [])
         .flat()
         .flatMap((mapping) => mapping.mediaSpecs)
         .filter((spec) => spec.kind === 'page-image')
@@ -441,9 +476,16 @@ async function enrichFile(filePath, mappings) {
 
 async function main() {
   const summary = [];
-  await primeWikipediaImages();
+  const requestedFiles = new Set(process.argv.slice(2));
+  const filePaths =
+    requestedFiles.size > 0
+      ? Object.keys(MEDIA_MAP).filter((filePath) => requestedFiles.has(filePath))
+      : Object.keys(MEDIA_MAP);
 
-  for (const [filePath, mappings] of Object.entries(MEDIA_MAP)) {
+  await primeWikipediaImages(filePaths);
+
+  for (const filePath of filePaths) {
+    const mappings = MEDIA_MAP[filePath];
     const result = await enrichFile(filePath, mappings);
     summary.push({
       filePath,

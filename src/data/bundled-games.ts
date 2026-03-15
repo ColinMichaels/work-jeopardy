@@ -57,6 +57,20 @@ export const BUNDLED_GAME_SOURCES: ReadonlyArray<BundledGameSource> = [
     loadRawConfig: createRawConfigLoader(() => import('./sample-2000s-pop.json?raw')),
   },
   {
+    id: '60s-pop-gold',
+    label: '60s Pop Gold',
+    description: 'British Invasion favorites, girl-group classics, and radio-era pop landmarks.',
+    filename: 'sample-60s-pop.json',
+    loadRawConfig: createRawConfigLoader(() => import('./sample-60s-pop.json?raw')),
+  },
+  {
+    id: '70s-pop-superstars',
+    label: '70s Pop Superstars',
+    description: 'Singer-songwriters, disco crossovers, FM staples, and blockbuster soundtrack hits.',
+    filename: 'sample-70s-pop.json',
+    loadRawConfig: createRawConfigLoader(() => import('./sample-70s-pop.json?raw')),
+  },
+  {
     id: '90s-rap-classics',
     label: '90s Rap Classics',
     description: 'Golden-era albums, iconic MCs, and essential East, West, and Southern rap.',
