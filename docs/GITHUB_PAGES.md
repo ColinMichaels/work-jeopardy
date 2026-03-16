@@ -1,45 +1,14 @@
 # GitHub Pages Deployment
 
-This project can be published as a static GitHub Pages demo using the `gh-pages` package.
+This repository deploys to GitHub Pages with GitHub Actions from
+[`.github/workflows/deploy-pages.yml`](../.github/workflows/deploy-pages.yml).
 
 ## One-Time Setup
 
-1. Make sure the repo is pushed to GitHub.
-2. Install dependencies:
-
-```bash
-npm install
-```
-
-3. Confirm the repo remote points at the correct GitHub repository:
-
-```bash
-git remote -v
-```
-
-## Publish The Demo
-
-Run:
-
-```bash
-npm run deploy
-```
-
-What this does:
-
-1. Runs `npm run build`
-2. Builds the static app into `dist/`
-3. Publishes `dist/` to the `gh-pages` branch
-
-## Enable GitHub Pages In The Repo
-
-After the first deploy:
-
-1. Open the GitHub repository settings.
-2. Go to `Pages`.
-3. Set the source to `Deploy from a branch`.
-4. Choose the `gh-pages` branch.
-5. Choose the `/ (root)` folder.
+1. Make sure the repository is pushed to GitHub.
+2. Open the GitHub repository settings.
+3. Go to `Pages`.
+4. Set the source to `GitHub Actions`.
 
 GitHub will then publish the site at a URL like:
 
@@ -53,16 +22,29 @@ For this repository, that should be:
 https://colinmichaels.github.io/work-jeopardy/
 ```
 
-## Updating The Demo
+## Automatic Deploys
 
-Any time you want to refresh the hosted demo:
+The Pages workflow runs when changes are pushed to either of these branches:
 
-1. Commit your changes locally.
-2. Run `npm run deploy`.
-3. Wait for GitHub Pages to refresh.
+- `dev`
+- `master`
+
+That means merges into either branch will trigger a fresh build and deployment automatically.
+The workflow can also be run manually from the `Actions` tab through `workflow_dispatch`.
+
+## Build And Deploy Flow
+
+The workflow:
+
+1. Checks out the repository
+2. Installs dependencies with `npm ci`
+3. Runs `npm run build`
+4. Uploads `dist/` as the Pages artifact
+5. Deploys that artifact to GitHub Pages
 
 ## Notes
 
 - The current Vite config uses relative asset paths, which works well for GitHub Pages project sites.
 - The deployed site is a static frontend only. No backend setup is required.
-- If you change the game JSON or sounds, rerun `npm run deploy` to publish the new build.
+- GitHub Pages hosts a single live site for the repository, so whichever deployment from `dev` or `master` runs most recently becomes the live version.
+- For a local production build, run `npm run build`.
