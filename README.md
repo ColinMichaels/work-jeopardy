@@ -56,11 +56,9 @@ npm run enrich:samples
 That script enriches the sample JSON files in `src/data/`, skips clues that already have the
 needed image or video types, and prints a missing-media summary for manual cleanup.
 
-To publish a GitHub Pages demo:
-
-```bash
-npm run deploy
-```
+GitHub Pages deploys automatically through GitHub Actions when changes are pushed or merged into
+`dev` or `master`. For the setup steps and deployment behavior, see the
+[GitHub Pages deployment guide](./docs/GITHUB_PAGES.md).
 
 Bundled game content lives in [`src/data/`](./src/data/). The app now ships with multiple sample boards that hosts can choose from in the host controls, and each file is a valid hand-editable JSON config. Bundled sound files live in [`public/sounds`](./public/sounds).
 
