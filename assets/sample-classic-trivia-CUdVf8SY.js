@@ -1,0 +1,361 @@
+const n=`{
+  "title": "Classic Trivia Night",
+  "subtitle": "A general knowledge board for broader team sessions.",
+  "teams": [
+    {
+      "id": "team-1",
+      "name": "Red Team"
+    },
+    {
+      "id": "team-2",
+      "name": "Blue Team"
+    },
+    {
+      "id": "team-3",
+      "name": "Gold Team"
+    }
+  ],
+  "categories": [
+    {
+      "id": "cat-capitals",
+      "title": "World Capitals",
+      "clues": [
+        {
+          "id": "capitals-100",
+          "value": 100,
+          "answer": "This Canadian capital sits in Ontario along the Ottawa River.",
+          "question": "What is Ottawa?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/22/Parliament-Ottawa.jpg/960px-Parliament-Ottawa.jpg",
+              "alt": "City image for Ottawa"
+            }
+          ]
+        },
+        {
+          "id": "capitals-200",
+          "value": 200,
+          "answer": "This capital city of Japan was once called Edo.",
+          "question": "What is Tokyo?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b2/Skyscrapers_of_Shinjuku_2009_January.jpg/1280px-Skyscrapers_of_Shinjuku_2009_January.jpg",
+              "alt": "City image for Tokyo"
+            }
+          ]
+        },
+        {
+          "id": "capitals-300",
+          "value": 300,
+          "answer": "This South American capital sits high in the Andes and is one of the world's highest capitals.",
+          "question": "What is La Paz?",
+          "notes": "Bolivia has two capitals. La Paz is the administrative capital.",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Vista_del_centro_de_La_Paz.jpg/1280px-Vista_del_centro_de_La_Paz.jpg",
+              "alt": "City image for La Paz"
+            }
+          ]
+        },
+        {
+          "id": "capitals-400",
+          "value": 400,
+          "answer": "This Australian capital city is located in the Australian Capital Territory.",
+          "question": "What is Canberra?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/Canberra_panorama_from_Mount_Ainslie.jpg/1280px-Canberra_panorama_from_Mount_Ainslie.jpg",
+              "alt": "City image for Canberra"
+            }
+          ]
+        },
+        {
+          "id": "capitals-500",
+          "value": 500,
+          "answer": "This capital of Morocco shares its first letter with its country and is on the Atlantic coast.",
+          "question": "What is Rabat?",
+          "dailyDouble": true,
+          "media": [
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Morocco_-_Rabat_%2831387775324%29.jpg/1280px-Morocco_-_Rabat_%2831387775324%29.jpg",
+              "alt": "City image for Rabat"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cat-books",
+      "title": "Famous Books",
+      "clues": [
+        {
+          "id": "books-100",
+          "value": 100,
+          "answer": "Harper Lee wrote this novel about Scout Finch and Atticus Finch.",
+          "question": "What is To Kill a Mockingbird?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4f/To_Kill_a_Mockingbird_%28first_edition_cover%29.jpg/1280px-To_Kill_a_Mockingbird_%28first_edition_cover%29.jpg",
+              "alt": "Cover image for To Kill a Mockingbird"
+            }
+          ]
+        },
+        {
+          "id": "books-200",
+          "value": 200,
+          "answer": "George Orwell wrote this dystopian novel set in Airstrip One.",
+          "question": "What is 1984?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/1984_first_edition_cover.jpg/120px-1984_first_edition_cover.jpg",
+              "alt": "Cover image for Nineteen Eighty-Four"
+            }
+          ]
+        },
+        {
+          "id": "books-300",
+          "value": 300,
+          "answer": "This Herman Melville novel features Captain Ahab chasing a white whale.",
+          "question": "What is Moby-Dick?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/Moby-Dick_FE_title_page.jpg/500px-Moby-Dick_FE_title_page.jpg",
+              "alt": "Cover image for Moby-Dick"
+            }
+          ]
+        },
+        {
+          "id": "books-400",
+          "value": 400,
+          "answer": "This J.R.R. Tolkien novel begins with Bilbo Baggins hosting an unexpected party.",
+          "question": "What is The Hobbit?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/J._R._R._Tolkien%2C_ca._1925.jpg/1280px-J._R._R._Tolkien%2C_ca._1925.jpg",
+              "alt": "Author image associated with The Hobbit"
+            }
+          ]
+        },
+        {
+          "id": "books-500",
+          "value": 500,
+          "answer": "In this Jane Austen novel, Elizabeth Bennet meets Fitzwilliam Darcy.",
+          "question": "What is Pride and Prejudice?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/17/PrideAndPrejudiceTitlePage.jpg/1280px-PrideAndPrejudiceTitlePage.jpg",
+              "alt": "Cover image for Pride and Prejudice"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cat-food",
+      "title": "Food & Drink",
+      "clues": [
+        {
+          "id": "food-100",
+          "value": 100,
+          "answer": "This Italian dish is made from flat dough baked with toppings like cheese and tomato sauce.",
+          "question": "What is pizza?"
+        },
+        {
+          "id": "food-200",
+          "value": 200,
+          "answer": "This caffeinated drink is traditionally brewed from roasted beans.",
+          "question": "What is coffee?"
+        },
+        {
+          "id": "food-300",
+          "value": 300,
+          "answer": "This Japanese dish usually combines vinegared rice with fish or vegetables.",
+          "question": "What is sushi?"
+        },
+        {
+          "id": "food-400",
+          "value": 400,
+          "answer": "This mother sauce is a classic French white sauce made with milk and a roux.",
+          "question": "What is bechamel?"
+        },
+        {
+          "id": "food-500",
+          "value": 500,
+          "answer": "This spice, harvested from crocus flowers, is often called the world's most expensive by weight.",
+          "question": "What is saffron?"
+        }
+      ]
+    },
+    {
+      "id": "cat-science",
+      "title": "Science",
+      "clues": [
+        {
+          "id": "science-100",
+          "value": 100,
+          "answer": "This planet is known as the Red Planet.",
+          "question": "What is Mars?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/Mars_-_August_30_2021_-_Flickr_-_Kevin_M._Gill.png/1280px-Mars_-_August_30_2021_-_Flickr_-_Kevin_M._Gill.png",
+              "alt": "Planet image for Mars"
+            }
+          ]
+        },
+        {
+          "id": "science-200",
+          "value": 200,
+          "answer": "This force keeps planets orbiting stars and objects anchored to Earth.",
+          "question": "What is gravity?"
+        },
+        {
+          "id": "science-300",
+          "value": 300,
+          "answer": "This part of the cell contains most of the genetic material in eukaryotes.",
+          "question": "What is the nucleus?"
+        },
+        {
+          "id": "science-400",
+          "value": 400,
+          "answer": "This gas, with the chemical symbol He, is lighter than air and used in balloons.",
+          "question": "What is helium?"
+        },
+        {
+          "id": "science-500",
+          "value": 500,
+          "answer": "This scientist proposed the three laws of motion and universal gravitation.",
+          "question": "Who is Isaac Newton?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f7/Portrait_of_Sir_Isaac_Newton%2C_1689_%28brightened%29.jpg/1280px-Portrait_of_Sir_Isaac_Newton%2C_1689_%28brightened%29.jpg",
+              "alt": "Portrait of Isaac Newton"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cat-history",
+      "title": "U.S. History",
+      "clues": [
+        {
+          "id": "history-100",
+          "value": 100,
+          "answer": "This document begins with the words, 'We the People.'",
+          "question": "What is the U.S. Constitution?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/Constitution_of_the_United_States%2C_page_1.jpg/1280px-Constitution_of_the_United_States%2C_page_1.jpg",
+              "alt": "Image for the U.S. Constitution"
+            }
+          ]
+        },
+        {
+          "id": "history-200",
+          "value": 200,
+          "answer": "This holiday in July marks the adoption of the Declaration of Independence.",
+          "question": "What is Independence Day?"
+        },
+        {
+          "id": "history-300",
+          "value": 300,
+          "answer": "This president delivered the Gettysburg Address during the Civil War.",
+          "question": "Who is Abraham Lincoln?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/57/Abraham_Lincoln_1863_Portrait_%283x4_cropped%29.jpg/1280px-Abraham_Lincoln_1863_Portrait_%283x4_cropped%29.jpg",
+              "alt": "Portrait of Abraham Lincoln"
+            }
+          ]
+        },
+        {
+          "id": "history-400",
+          "value": 400,
+          "answer": "This territory became the 49th U.S. state in 1959.",
+          "question": "What is Alaska?"
+        },
+        {
+          "id": "history-500",
+          "value": 500,
+          "answer": "This 1803 purchase doubled the size of the United States.",
+          "question": "What is the Louisiana Purchase?"
+        }
+      ]
+    },
+    {
+      "id": "cat-sports",
+      "title": "Sports Basics",
+      "clues": [
+        {
+          "id": "sports-100",
+          "value": 100,
+          "answer": "This sport uses a bat, a diamond, and nine defensive players.",
+          "question": "What is baseball?"
+        },
+        {
+          "id": "sports-200",
+          "value": 200,
+          "answer": "This piece of equipment is struck back and forth over a net in tennis.",
+          "question": "What is a tennis ball?"
+        },
+        {
+          "id": "sports-300",
+          "value": 300,
+          "answer": "This race is approximately 26.2 miles long.",
+          "question": "What is a marathon?"
+        },
+        {
+          "id": "sports-400",
+          "value": 400,
+          "answer": "This country hosted the 2016 Summer Olympics in Rio de Janeiro.",
+          "question": "What is Brazil?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/Cidade_Maravilhosa.jpg/1280px-Cidade_Maravilhosa.jpg",
+              "alt": "City image for Rio de Janeiro"
+            }
+          ]
+        },
+        {
+          "id": "sports-500",
+          "value": 500,
+          "answer": "In basketball, this line is worth one more point than a shot inside it.",
+          "question": "What is the three-point line?"
+        }
+      ]
+    }
+  ],
+  "settings": {
+    "subtractOnIncorrect": true,
+    "enableLocalStorage": true,
+    "storageKey": "work-jeopardy-classic-trivia",
+    "sounds": {
+      "enabled": true,
+      "volume": 0.85
+    }
+  },
+  "finalJeopardy": {
+    "enabled": true,
+    "category": "Inventors",
+    "clue": "This inventor is associated with U.S. patent no. 174,465 for the telephone.",
+    "correctResponse": "Who is Alexander Graham Bell?",
+    "timerSeconds": 30,
+    "allowNonPositiveScores": false
+  }
+}
+`;export{n as default};

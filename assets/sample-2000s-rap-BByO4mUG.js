@@ -1,0 +1,435 @@
+const n=`{
+  "title": "2000s Rap Essentials",
+  "subtitle": "Mixtape kings, chart monsters, and Southern rap dominance.",
+  "teams": [
+    {
+      "id": "team-1",
+      "name": "Team Cassette"
+    },
+    {
+      "id": "team-2",
+      "name": "Team CD"
+    },
+    {
+      "id": "team-3",
+      "name": "Team MP3"
+    }
+  ],
+  "categories": [
+    {
+      "id": "cat-hit-singles",
+      "title": "Hit Singles",
+      "clues": [
+        {
+          "id": "hit-singles-100",
+          "value": 100,
+          "answer": "50 Cent's breakout club anthem from Get Rich or Die Tryin' is this song.",
+          "question": "What is \\"In Da Club\\"?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://is1-ssl.mzstatic.com/image/thumb/Music112/v4/6e/56/af/6e56af83-bdff-56c2-7c6a-b30cd0d356ce/06UMGIM08757.rgb.jpg/600x600bb.jpg",
+              "alt": "Single artwork for In Da Club"
+            },
+            {
+              "type": "video",
+              "src": "https://www.youtube.com/watch?v=5qm8PH4xAss",
+              "alt": "Official music video for In Da Club"
+            }
+          ]
+        },
+        {
+          "id": "hit-singles-200",
+          "value": 200,
+          "answer": "Eminem won an Oscar for this 8 Mile anthem.",
+          "question": "What is \\"Lose Yourself\\"?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/08/23/fc/0823fcd9-cb44-695b-32bf-b3bf51d9f800/00606949351229.rgb.jpg/600x600bb.jpg",
+              "alt": "Single artwork for Lose Yourself"
+            },
+            {
+              "type": "video",
+              "src": "https://www.youtube.com/watch?v=7YuAzR2XVAM",
+              "alt": "Official music video for Lose Yourself"
+            }
+          ]
+        },
+        {
+          "id": "hit-singles-300",
+          "value": 300,
+          "answer": "Nelly turned the temperature up with this 2002 crossover smash.",
+          "question": "What is \\"Hot in Herre\\"?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/37/35/62/373562e8-ab69-254b-bbf2-f1cb9aca66fe/06UMGIM16889.rgb.jpg/600x600bb.jpg",
+              "alt": "Single artwork for Hot in Herre"
+            },
+            {
+              "type": "video",
+              "src": "https://www.youtube.com/watch?v=GeZZr_p6vB8",
+              "alt": "Official music video for Hot in Herre"
+            }
+          ]
+        },
+        {
+          "id": "hit-singles-400",
+          "value": 400,
+          "answer": "Kanye West and Jamie Foxx teamed up on this gold-digging 2005 hit.",
+          "question": "What is \\"Gold Digger\\"?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/f7/6b/c2/f76bc2b0-525b-9889-7244-ff6109931be5/a7e5ead5-2439-4981-9a6a-e2b99ad3ed0a.jpg/600x600bb.jpg",
+              "alt": "Single artwork for Gold Digger"
+            },
+            {
+              "type": "video",
+              "src": "https://www.youtube.com/watch?v=6vwNcNOTVzY",
+              "alt": "Official music video for Gold Digger"
+            }
+          ]
+        },
+        {
+          "id": "hit-singles-500",
+          "value": 500,
+          "answer": "Lil Wayne's 2008 hit paired candy imagery with a static-filled hook.",
+          "question": "What is \\"Lollipop\\"?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/f9/6c/dc/f96cdc5c-09fe-06b6-4629-be4afeb71cca/08UMGIM15512.rgb.jpg/600x600bb.jpg",
+              "alt": "Single artwork for Lollipop"
+            },
+            {
+              "type": "video",
+              "src": "https://www.youtube.com/watch?v=2IH8tNQAzSs",
+              "alt": "Official music video for Lollipop"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cat-rap-stars",
+      "title": "Rap Stars",
+      "clues": [
+        {
+          "id": "rap-stars-100",
+          "value": 100,
+          "answer": "This Queens rapper broke out with Get Rich or Die Tryin'.",
+          "question": "Who is 50 Cent?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/Curtis_%2250_Cent%22_Jackson_visits_Barksdale_AFB_%285%29_%28cropped%29.jpg/330px-Curtis_%2250_Cent%22_Jackson_visits_Barksdale_AFB_%285%29_%28cropped%29.jpg",
+              "alt": "Photo of 50 Cent"
+            },
+            {
+              "type": "video",
+              "src": "https://www.youtube.com/watch?v=5qm8PH4xAss",
+              "alt": "Official music video for In Da Club"
+            }
+          ]
+        },
+        {
+          "id": "rap-stars-200",
+          "value": 200,
+          "answer": "This Detroit rapper starred in 8 Mile and recorded \\"Stan.\\"",
+          "question": "Who is Eminem?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0f/Eminem_2021_Color_Corrected.jpg/330px-Eminem_2021_Color_Corrected.jpg",
+              "alt": "Photo of Eminem"
+            },
+            {
+              "type": "video",
+              "src": "https://www.youtube.com/watch?v=7YuAzR2XVAM",
+              "alt": "Official music video for Lose Yourself"
+            }
+          ]
+        },
+        {
+          "id": "rap-stars-300",
+          "value": 300,
+          "answer": "This Chicago producer-turned-rapper made his debut with The College Dropout.",
+          "question": "Who is Kanye West?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Kanye_West_at_the_2009_Tribeca_Film_Festival_%28crop_2%29.jpg/330px-Kanye_West_at_the_2009_Tribeca_Film_Festival_%28crop_2%29.jpg",
+              "alt": "Photo of Kanye West"
+            },
+            {
+              "type": "video",
+              "src": "https://www.youtube.com/watch?v=_EfMbCx6tWM",
+              "alt": "Official music video for Through the Wire"
+            }
+          ]
+        },
+        {
+          "id": "rap-stars-400",
+          "value": 400,
+          "answer": "This Atlanta rapper released Trap Muzik and King before acting in film and TV.",
+          "question": "Who is T.I.?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/T.I._February_2026.png/330px-T.I._February_2026.png",
+              "alt": "Photo of T.I."
+            },
+            {
+              "type": "video",
+              "src": "https://www.youtube.com/watch?v=BjrF1-Qjt14",
+              "alt": "Official music video for What You Know"
+            }
+          ]
+        },
+        {
+          "id": "rap-stars-500",
+          "value": 500,
+          "answer": "This New Orleans MC built his catalog through Tha Carter albums and a flood of mixtapes.",
+          "question": "Who is Lil Wayne?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/Lil_Wayne_Feb._2020.jpg/330px-Lil_Wayne_Feb._2020.jpg",
+              "alt": "Photo of Lil Wayne"
+            },
+            {
+              "type": "video",
+              "src": "https://www.youtube.com/watch?v=2IH8tNQAzSs",
+              "alt": "Official music video for Lollipop"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cat-albums",
+      "title": "Albums",
+      "clues": [
+        {
+          "id": "albums-100",
+          "value": 100,
+          "answer": "50 Cent's blockbuster debut album was this title.",
+          "question": "What is Get Rich or Die Tryin'?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://is1-ssl.mzstatic.com/image/thumb/Music112/v4/6e/56/af/6e56af83-bdff-56c2-7c6a-b30cd0d356ce/06UMGIM08757.rgb.jpg/600x600bb.jpg",
+              "alt": "Album artwork for Get Rich or Die Tryin'"
+            },
+            {
+              "type": "video",
+              "src": "https://www.youtube.com/watch?v=5qm8PH4xAss",
+              "alt": "Official music video for In Da Club"
+            }
+          ]
+        },
+        {
+          "id": "albums-200",
+          "value": 200,
+          "answer": "Kanye West's debut album carried this college-themed title.",
+          "question": "What is The College Dropout?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://is1-ssl.mzstatic.com/image/thumb/Music118/v4/15/05/09/15050911-a2f1-9ebc-0d16-6e8faad1cf80/00602567924326.rgb.jpg/600x600bb.jpg",
+              "alt": "Album artwork for The College Dropout"
+            },
+            {
+              "type": "video",
+              "src": "https://www.youtube.com/watch?v=_EfMbCx6tWM",
+              "alt": "Official music video for Through the Wire"
+            }
+          ]
+        },
+        {
+          "id": "albums-300",
+          "value": 300,
+          "answer": "Lil Wayne hit a commercial peak with this 2008 Carter installment.",
+          "question": "What is Tha Carter III?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/f9/6c/dc/f96cdc5c-09fe-06b6-4629-be4afeb71cca/08UMGIM15512.rgb.jpg/600x600bb.jpg",
+              "alt": "Album artwork for Tha Carter III"
+            },
+            {
+              "type": "video",
+              "src": "https://www.youtube.com/watch?v=2IH8tNQAzSs",
+              "alt": "Official music video for Lollipop"
+            }
+          ]
+        },
+        {
+          "id": "albums-400",
+          "value": 400,
+          "answer": "Jay-Z released this 2001 album featuring \\"Izzo (H.O.V.A.).\\"",
+          "question": "What is The Blueprint?",
+          "dailyDouble": true,
+          "media": [
+            {
+              "type": "image",
+              "src": "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/19/c0/e3/19c0e3b6-4c2f-17ee-2a4a-6e2208de8aa6/00857366006951.rgb.jpg/600x600bb.jpg",
+              "alt": "Album artwork for The Blueprint"
+            },
+            {
+              "type": "video",
+              "src": "https://www.youtube.com/watch?v=GRKmpn3SBdw",
+              "alt": "Official music video for Izzo (H.O.V.A.)"
+            }
+          ]
+        },
+        {
+          "id": "albums-500",
+          "value": 500,
+          "answer": "OutKast released \\"Ms. Jackson\\" and \\"B.O.B.\\" on this 2000 album.",
+          "question": "What is Stankonia?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://is1-ssl.mzstatic.com/image/thumb/Music114/v4/d6/21/fb/d621fbde-c099-6794-7102-2692f10c4dbb/886448814283.jpg/600x600bb.jpg",
+              "alt": "Album artwork for Stankonia"
+            },
+            {
+              "type": "video",
+              "src": "https://www.youtube.com/watch?v=MYxAiK6VnXw",
+              "alt": "Official music video for Ms. Jackson"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cat-crews-labels",
+      "title": "Crews & Labels",
+      "clues": [
+        {
+          "id": "crews-labels-100",
+          "value": 100,
+          "answer": "50 Cent's core crew used this military-sounding name.",
+          "question": "What is G-Unit?"
+        },
+        {
+          "id": "crews-labels-200",
+          "value": 200,
+          "answer": "Eminem launched 50 Cent through this label.",
+          "question": "What is Shady Records?"
+        },
+        {
+          "id": "crews-labels-300",
+          "value": 300,
+          "answer": "Jay-Z cofounded this label with Damon Dash and Kareem Burke.",
+          "question": "What is Roc-A-Fella Records?"
+        },
+        {
+          "id": "crews-labels-400",
+          "value": 400,
+          "answer": "Birdman and Slim built this New Orleans label that backed Lil Wayne.",
+          "question": "What is Cash Money Records?"
+        },
+        {
+          "id": "crews-labels-500",
+          "value": 500,
+          "answer": "Lil Wayne later used this imprint to launch Drake and Nicki Minaj.",
+          "question": "What is Young Money Entertainment?"
+        }
+      ]
+    },
+    {
+      "id": "cat-southern-rap",
+      "title": "Southern Rap",
+      "clues": [
+        {
+          "id": "southern-rap-100",
+          "value": 100,
+          "answer": "This Atlanta rapper shouted \\"When I move, you move\\" on \\"Stand Up.\\"",
+          "question": "Who is Ludacris?"
+        },
+        {
+          "id": "southern-rap-200",
+          "value": 200,
+          "answer": "This Atlanta rapper built his reputation with trap records like Let's Get It: Thug Motivation 101.",
+          "question": "Who is Young Jeezy?"
+        },
+        {
+          "id": "southern-rap-300",
+          "value": 300,
+          "answer": "Bun B and Pimp C recorded together under this short group name.",
+          "question": "Who are UGK?"
+        },
+        {
+          "id": "southern-rap-400",
+          "value": 400,
+          "answer": "This Memphis group won an Oscar for \\"It's Hard out Here for a Pimp.\\"",
+          "question": "Who are Three 6 Mafia?"
+        },
+        {
+          "id": "southern-rap-500",
+          "value": 500,
+          "answer": "This Miami rapper broke out in 2006 with the hustler's mantra \\"Every day I'm...\\"",
+          "question": "Who is Rick Ross?"
+        }
+      ]
+    },
+    {
+      "id": "cat-hooks-features",
+      "title": "Hooks & Features",
+      "clues": [
+        {
+          "id": "hooks-features-100",
+          "value": 100,
+          "answer": "Nelly's \\"Dilemma\\" featured this Destiny's Child singer on the hook.",
+          "question": "Who is Kelly Rowland?"
+        },
+        {
+          "id": "hooks-features-200",
+          "value": 200,
+          "answer": "Kanye's \\"Gold Digger\\" borrowed its chorus from this actor-singer.",
+          "question": "Who is Jamie Foxx?"
+        },
+        {
+          "id": "hooks-features-300",
+          "value": 300,
+          "answer": "Snoop Dogg's \\"Drop It Like It's Hot\\" featured this Neptunes producer and singer.",
+          "question": "Who is Pharrell?"
+        },
+        {
+          "id": "hooks-features-400",
+          "value": 400,
+          "answer": "T.I. teamed with this pop superstar on the 2008 hit \\"Live Your Life.\\"",
+          "question": "Who is Rihanna?"
+        },
+        {
+          "id": "hooks-features-500",
+          "value": 500,
+          "answer": "This singer teamed with Eminem on the 2006 single \\"Smack That.\\"",
+          "question": "Who is Akon?"
+        }
+      ]
+    }
+  ],
+  "settings": {
+    "subtractOnIncorrect": true,
+    "enableLocalStorage": true,
+    "storageKey": "work-jeopardy-2000s-rap",
+    "sounds": {
+      "enabled": true,
+      "volume": 0.85
+    }
+  },
+  "finalJeopardy": {
+    "enabled": true,
+    "category": "Rap Labels",
+    "clue": "Lil Wayne founded this imprint, which later signed both Drake and Nicki Minaj.",
+    "correctResponse": "What is Young Money Entertainment?",
+    "timerSeconds": 30,
+    "allowNonPositiveScores": false
+  }
+}
+`;export{n as default};

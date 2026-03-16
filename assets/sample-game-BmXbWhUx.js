@@ -1,0 +1,361 @@
+const n=`{
+  "title": "Team Jeopardy",
+  "subtitle": "A browser-only board for local team meetings.",
+  "teams": [
+    {
+      "id": "team-1",
+      "name": "Blue Team"
+    },
+    {
+      "id": "team-2",
+      "name": "Gold Team"
+    },
+    {
+      "id": "team-3",
+      "name": "Green Team"
+    }
+  ],
+  "categories": [
+    {
+      "id": "cat-typescript",
+      "title": "TypeScript",
+      "clues": [
+        {
+          "id": "ts-100",
+          "value": 100,
+          "answer": "A typed superset of JavaScript that compiles to plain JS.",
+          "question": "What is TypeScript?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f5/Typescript.svg/1280px-Typescript.svg.png",
+              "alt": "Logo for TypeScript"
+            }
+          ]
+        },
+        {
+          "id": "ts-200",
+          "value": 200,
+          "answer": "This utility type makes every property in another type optional.",
+          "question": "What is Partial?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f5/Typescript.svg/1280px-Typescript.svg.png",
+              "alt": "Logo for TypeScript"
+            }
+          ]
+        },
+        {
+          "id": "ts-300",
+          "value": 300,
+          "answer": "This keyword introduces a custom type alias.",
+          "question": "What is type?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f5/Typescript.svg/1280px-Typescript.svg.png",
+              "alt": "Logo for TypeScript"
+            }
+          ]
+        },
+        {
+          "id": "ts-400",
+          "value": 400,
+          "answer": "This kind of type lets one variable be one of several declared types.",
+          "question": "What is a union type?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f5/Typescript.svg/1280px-Typescript.svg.png",
+              "alt": "Logo for TypeScript"
+            }
+          ]
+        },
+        {
+          "id": "ts-500",
+          "value": 500,
+          "answer": "This operator validates that a value matches a type without widening its literal shape.",
+          "question": "What is satisfies?",
+          "dailyDouble": true,
+          "notes": "Great chance to talk through why it differs from an explicit annotation.",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f5/Typescript.svg/1280px-Typescript.svg.png",
+              "alt": "Logo for TypeScript"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cat-react",
+      "title": "React",
+      "clues": [
+        {
+          "id": "react-100",
+          "value": 100,
+          "answer": "This hook stores local component state.",
+          "question": "What is useState?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/React_Logo_SVG.svg/1280px-React_Logo_SVG.svg.png",
+              "alt": "Logo for React"
+            }
+          ]
+        },
+        {
+          "id": "react-200",
+          "value": 200,
+          "answer": "This hook runs side effects after render.",
+          "question": "What is useEffect?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/React_Logo_SVG.svg/1280px-React_Logo_SVG.svg.png",
+              "alt": "Logo for React"
+            }
+          ]
+        },
+        {
+          "id": "react-300",
+          "value": 300,
+          "answer": "This prop helps React identify stable items in a list.",
+          "question": "What is key?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/React_Logo_SVG.svg/1280px-React_Logo_SVG.svg.png",
+              "alt": "Logo for React"
+            }
+          ]
+        },
+        {
+          "id": "react-400",
+          "value": 400,
+          "answer": "This pattern passes behavior or UI into another component as a function or child.",
+          "question": "What is composition?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/React_Logo_SVG.svg/1280px-React_Logo_SVG.svg.png",
+              "alt": "Logo for React"
+            }
+          ]
+        },
+        {
+          "id": "react-500",
+          "value": 500,
+          "answer": "This API mounts a React tree into a DOM container in modern React apps.",
+          "question": "What is createRoot?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/React_Logo_SVG.svg/1280px-React_Logo_SVG.svg.png",
+              "alt": "Logo for React"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cat-git",
+      "title": "Git",
+      "clues": [
+        {
+          "id": "git-100",
+          "value": 100,
+          "answer": "This command shows changes in the current working tree.",
+          "question": "What is git status?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f4/Git_session.svg/1280px-Git_session.svg.png",
+              "alt": "Logo for Git"
+            }
+          ]
+        },
+        {
+          "id": "git-200",
+          "value": 200,
+          "answer": "This command downloads new remote history and updates the current branch in one step.",
+          "question": "What is git pull?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f4/Git_session.svg/1280px-Git_session.svg.png",
+              "alt": "Logo for Git"
+            }
+          ]
+        },
+        {
+          "id": "git-300",
+          "value": 300,
+          "answer": "This command creates a new commit from currently staged changes.",
+          "question": "What is git commit?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f4/Git_session.svg/1280px-Git_session.svg.png",
+              "alt": "Logo for Git"
+            }
+          ]
+        },
+        {
+          "id": "git-400",
+          "value": 400,
+          "answer": "This file often lists ignored paths like node_modules and dist.",
+          "question": "What is .gitignore?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f4/Git_session.svg/1280px-Git_session.svg.png",
+              "alt": "Logo for Git"
+            }
+          ]
+        },
+        {
+          "id": "git-500",
+          "value": 500,
+          "answer": "This strategy replays your local commits on top of updated upstream history.",
+          "question": "What is rebase?",
+          "media": [
+            {
+              "type": "image",
+              "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f4/Git_session.svg/1280px-Git_session.svg.png",
+              "alt": "Logo for Git"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cat-testing",
+      "title": "Testing",
+      "clues": [
+        {
+          "id": "testing-100",
+          "value": 100,
+          "answer": "These tests exercise a small unit of logic in isolation.",
+          "question": "What are unit tests?"
+        },
+        {
+          "id": "testing-200",
+          "value": 200,
+          "answer": "This word describes a test that always produces the same result for the same inputs.",
+          "question": "What is deterministic?"
+        },
+        {
+          "id": "testing-300",
+          "value": 300,
+          "answer": "This kind of test verifies multiple parts of a system working together.",
+          "question": "What is an integration test?"
+        },
+        {
+          "id": "testing-400",
+          "value": 400,
+          "answer": "This practice checks how much of the codebase is executed by tests.",
+          "question": "What is coverage?"
+        },
+        {
+          "id": "testing-500",
+          "value": 500,
+          "answer": "This anti-pattern makes a test suite unreliable because it passes and fails unpredictably.",
+          "question": "What is a flaky test?"
+        }
+      ]
+    },
+    {
+      "id": "cat-browser",
+      "title": "Browser APIs",
+      "clues": [
+        {
+          "id": "browser-100",
+          "value": 100,
+          "answer": "This storage API keeps simple key-value data in the browser between sessions.",
+          "question": "What is localStorage?"
+        },
+        {
+          "id": "browser-200",
+          "value": 200,
+          "answer": "This API lets JavaScript make HTTP requests from the browser with promises.",
+          "question": "What is fetch?"
+        },
+        {
+          "id": "browser-300",
+          "value": 300,
+          "answer": "This event fires when a user presses a key on the keyboard.",
+          "question": "What is keydown?"
+        },
+        {
+          "id": "browser-400",
+          "value": 400,
+          "answer": "This interface represents an element in the rendered page tree.",
+          "question": "What is an HTMLElement?"
+        },
+        {
+          "id": "browser-500",
+          "value": 500,
+          "answer": "This API lets code inspect or modify the current page URL and navigation history.",
+          "question": "What is the History API?"
+        }
+      ]
+    },
+    {
+      "id": "cat-general",
+      "title": "General Dev",
+      "clues": [
+        {
+          "id": "general-100",
+          "value": 100,
+          "answer": "This term describes code that is easy to understand, modify, and extend.",
+          "question": "What is maintainable code?"
+        },
+        {
+          "id": "general-200",
+          "value": 200,
+          "answer": "This document usually explains setup, usage, and project purpose.",
+          "question": "What is a README?"
+        },
+        {
+          "id": "general-300",
+          "value": 300,
+          "answer": "This acronym refers to the user interface layer of an application.",
+          "question": "What is UI?"
+        },
+        {
+          "id": "general-400",
+          "value": 400,
+          "answer": "This file format is common for hand-editable structured config in frontend projects.",
+          "question": "What is JSON?"
+        },
+        {
+          "id": "general-500",
+          "value": 500,
+          "answer": "This phrase describes solving today's problem without building speculative complexity.",
+          "question": "What is avoiding premature optimization?"
+        }
+      ]
+    }
+  ],
+  "settings": {
+    "subtractOnIncorrect": true,
+    "enableLocalStorage": true,
+    "storageKey": "work-jeopardy-state",
+    "sounds": {
+      "enabled": true,
+      "volume": 0.85
+    }
+  },
+  "finalJeopardy": {
+    "enabled": true,
+    "category": "Programming History",
+    "clue": "This language's original slogan was often paraphrased as 'write once, run anywhere.'",
+    "correctResponse": "What is Java?",
+    "timerSeconds": 30,
+    "allowNonPositiveScores": false
+  }
+}
+`;export{n as default};
